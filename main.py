@@ -40,7 +40,7 @@ if __name__ == '__main__':
     G.add_nodes_from(["A", "B", "C", "D", "E"])
 
     # Kanten mit Gewichten hinzufügen
-    G.add_weighted_edges_from([("A", "B", 2), ("B", "C", 4), ("C", "D", 1), ("D", "E", 3), ("E", "A", 5)])
+    G.add_weighted_edges_from([("A", "B", 2), ("B", "A", 2), ("B", "C", 4), ("C", "D", 1), ("D", "E", 3), ("E", "B", 5)])
 
     node_colors = ["red", "green", "blue", "yellow", "purple"]
     edge_colors = ["black"] * len(G.edges)
@@ -49,13 +49,13 @@ if __name__ == '__main__':
     # Animation erstellen
     animation = FuncAnimation(plt.gcf(), update, frames=len(G.edges), interval=500)
 
-    root = tk.Tk()
+    #root = tk.Tk()
 
-    start_button = tk.Button(root, text="Start Animation", command=start_animation)
-    start_button.pack()
+    #start_button = tk.Button(root, text="Start Animation", command=start_animation)
+    #start_button.pack()
 
-    stop_button = tk.Button(root, text="Stop Animation", command=stop_animation)
-    stop_button.pack()
+    #stop_button = tk.Button(root, text="Stop Animation", command=stop_animation)
+    #stop_button.pack()
 
     # Graphen anzeigen
     nx.draw(G)
