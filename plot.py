@@ -1,6 +1,3 @@
-from tkinter import *
-import tkinter as tk
-
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.widgets import Button, TextBox
@@ -32,11 +29,13 @@ class Render:
 
         add_edge_ax = fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
         self.add_edge_button = Button(add_edge_ax, label='Add')
-        self.add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text, textbox_weight.text))  # Füge den Callback hinzu
+        self.add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text,
+                                                                    textbox_weight.text))  # Füge den Callback hinzu
 
         delete_edge_ax = fig.add_axes([0.7, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
         self.delete_edge_button = Button(delete_edge_ax, label='Remove')
-        self.delete_edge_button.on_clicked(lambda event: self.delete_edge(textbox_tail.text, textbox_head.text))  # Füge den Callback hinzu
+        self.delete_edge_button.on_clicked(
+            lambda event: self.delete_edge(textbox_tail.text, textbox_head.text))  # Füge den Callback hinzu
 
         plt.sca(ax)
         self.update_plot()
@@ -76,7 +75,6 @@ class Render:
         else:
             self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
         self.update_plot()
-
 
     def delete_edge(self, tail, head):
         # Entfernen der Kante zum Graphen
