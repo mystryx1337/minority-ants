@@ -15,5 +15,5 @@ class Minority_Ants():
 
     def run(self):
         while not self.stop_event.is_set():
-            print(self.G)
+            # print(self.G)
             time.sleep(2)
