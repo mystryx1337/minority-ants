@@ -3,7 +3,7 @@ import tkinter as tk
 
 import matplotlib.pyplot as plt
 import networkx as nx
-from matplotlib.widgets import Button
+from matplotlib.widgets import Button, TextBox
 
 
 class Edge:
@@ -18,16 +18,25 @@ class Render:
         self.G = G
 
         self.pos = nx.spring_layout(G)  # positions for all nodes
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(10, 8))
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
 
-        add_edge_ax = fig.add_axes([0.02, 0.02, 0.18, 0.06])  # Position und Größe des Knopfes
-        self.add_edge_button = Button(add_edge_ax, label='Neue Kante')
-        self.add_edge_button.on_clicked(self.input_field)  # Füge den Callback hinzu
+        ax_tail = fig.add_axes([0.25, 0.05, 0.1, 0.075])
+        textbox_tail = TextBox(ax_tail, 'Start')
 
-        delete_edge_ax = fig.add_axes([0.22, 0.02, 0.18, 0.06])  # Position und Größe des Knopfes
-        self.delete_edge_button = Button(delete_edge_ax, label='Kante löschen')
-        self.delete_edge_button.on_clicked(self.input_field_delete)  # Füge den Callback hinzu
+        ax_head = fig.add_axes([0.4, 0.05, 0.1, 0.075])
+        textbox_head = TextBox(ax_head, 'Ende')
+
+        ax_weight = fig.add_axes([0.55, 0.05, 0.1, 0.075])
+        textbox_weight = TextBox(ax_weight, 'Weight')
+
+        add_edge_ax = fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        self.add_edge_button = Button(add_edge_ax, label='Add')
+        self.add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text, textbox_weight.text))  # Füge den Callback hinzu
+
+        delete_edge_ax = fig.add_axes([0.7, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        self.delete_edge_button = Button(delete_edge_ax, label='Remove')
+        self.delete_edge_button.on_clicked(lambda event: self.delete_edge(textbox_tail.text, textbox_head.text))  # Füge den Callback hinzu
 
         plt.sca(ax)
         self.update_plot()
@@ -56,6 +65,11 @@ class Render:
     def add_edge(self, tail, head, weight):
         global G, pos
 
+        try:
+            weight = float(weight)
+        except ValueError:
+            weight = 1.0
+
         if not self.G.has_node(tail) or not self.G.has_node(head):
             self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
             self.pos = nx.spring_layout(self.G)  # Recalculate layout
@@ -63,81 +77,15 @@ class Render:
             self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
         self.update_plot()
 
-    def input_field(self, event):
-        self.input_root = tk.Tk()
-        self.input_root.title("Add Edge")
-        Label(self.input_root, text="Startknoten").grid(row=0)
-        Label(self.input_root, text="Zielknoten").grid(row=1)
-        Label(self.input_root, text="Gewicht").grid(row=2)
 
-        # Entries
-        tail_entry = Entry(self.input_root)
-        tail_entry.grid(row=0, column=1)
-        head_entry = Entry(self.input_root)
-        head_entry.grid(row=1, column=1)
-        weight_entry = Entry(self.input_root)
-        weight_entry.grid(row=2, column=1)
-
-        # Submit button
-        submit_btn = tk.Button(self.input_root, text="Submit",
-                               command=lambda: self.submit_edge(tail_entry, head_entry, weight_entry))
-        submit_btn.grid(row=3, columnspan=2)
-
-        self.input_root.mainloop()
-
-    def submit_edge(self, tail_entry, head_entry, weight_entry):
-        tail = tail_entry.get()
-        head = head_entry.get()
-        weight = float(weight_entry.get())
-        self.add_edge(tail, head, weight)
-        self.input_root.destroy()  # Close the input window
-
-    def input_field_delete(self, event):
-        self.delete_root = tk.Tk()
-        self.delete_root.title("Delete Edge")
-        Label(self.delete_root, text="Startknoten").grid(row=0)
-        Label(self.delete_root, text="Zielknoten").grid(row=1)
-
-        # Entries
-        tail_entry = Entry(self.delete_root)
-        tail_entry.grid(row=0, column=1)
-        head_entry = Entry(self.delete_root)
-        head_entry.grid(row=1, column=1)
-
-        # Delete button
-        delete_btn = tk.Button(self.delete_root, text="Delete",
-                               command=lambda: self.delete_edge(tail_entry, head_entry))
-        delete_btn.grid(row=2, columnspan=2)
-
-        self.delete_root.mainloop()
-
-    def delete_edge(self, tail_entry, head_entry):
-        tail = tail_entry.get()
-        head = head_entry.get()
-
+    def delete_edge(self, tail, head):
         # Entfernen der Kante zum Graphen
-        self.G.remove_edge(tail, head)
+        try:
+            self.G.remove_edge(tail, head)
+        except nx.NetworkXError:  # Kante existiert nicht
+            pass
 
         # TODO: Knoten löschen, wenn keine Kante mehr exisitiert
         # und dann Redesign
 
         self.update_plot()
-
-    def input_field_delete(self, event):
-        self.delete_root = tk.Tk()
-        self.delete_root.title("Delete Edge")
-        Label(self.delete_root, text="Startknoten").grid(row=0)
-        Label(self.delete_root, text="Zielknoten").grid(row=1)
-
-        # Entries
-        tail_entry = Entry(self.delete_root)
-        tail_entry.grid(row=0, column=1)
-        head_entry = Entry(self.delete_root)
-        head_entry.grid(row=1, column=1)
-
-        # Delete button
-        delete_btn = tk.Button(self.delete_root, text="Delete",
-                               command=lambda: self.delete_edge(tail_entry, head_entry))
-        delete_btn.grid(row=2, columnspan=2)
-
-        self.delete_root.mainloop()
