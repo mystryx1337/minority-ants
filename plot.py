@@ -80,10 +80,15 @@ class Render:
         # Entfernen der Kante zum Graphen
         try:
             self.G.remove_edge(tail, head)
+
+            # Lösche Knoten, falls keine Kante mehr dazu existiert
+            if self.G.degree[tail] == 0:
+                self.G.remove_node(tail)
+                self.pos = nx.spring_layout(self.G)  # Recalculate layout
+            if self.G.degree[head] == 0:
+                self.G.remove_node(head)
+                self.pos = nx.spring_layout(self.G)  # Recalculate layout
         except nx.NetworkXError:  # Kante existiert nicht
             pass
-
-        # TODO: Knoten löschen, wenn keine Kante mehr exisitiert
-        # und dann Redesign
 
         self.update_plot()
