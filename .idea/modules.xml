@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/minority-ants.iml" filepath="$PROJECT_DIR$/.idea/minority-ants.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ants.iml" filepath="$PROJECT_DIR$/.idea/minority-ants.iml" />
     </modules>
   </component>
 </project>
