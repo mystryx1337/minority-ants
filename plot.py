@@ -58,13 +58,14 @@ class AcoPlot:
         self.ants.stop()
 
     def update_plot(self):
+        # draw graph with current edges
         try:
-
-            # draw graph with current edges
             weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
             pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
             node_colors = ["purple"] * len(self.G.nodes)
             # edge_colors = ["black"] * len(self.G.edges)
+
+            plt.cla()  # delete previous plotted draw
 
             nx.draw(self.G, self.pos, node_color=node_colors, with_labels=False)
             nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
@@ -72,9 +73,8 @@ class AcoPlot:
             nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
             nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
 
-            #self.fig.canvas.draw()
-            plt.cla()  # delete previous plotted draw
-            plt.draw()
+            self.fig.canvas.draw()
+            #plt.draw()
         except: #window is already closed and thread tries to update plot
             pass
 

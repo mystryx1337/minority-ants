@@ -49,6 +49,7 @@ class Routing():
         self.stop_event.set()
 
     def run(self):
+        time.sleep(1)
         while not self.stop_event.is_set():
             weight = self.G["A"]["B"]["weight"]
             pheromone = self.G["A"]["B"]["pheromone"]
