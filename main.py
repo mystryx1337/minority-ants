@@ -1,6 +1,5 @@
 import networkx as nx
 import plot
-import minority_ants as ma
 
 
 # Press the green button in the gutter to run the script.
@@ -15,8 +14,4 @@ if __name__ == '__main__':
                       ("D", "E", {'weight': 3, 'pheromone': 0.2}),
                       ("E", "B", {'weight': 5, 'pheromone': 0.6})])
 
-    ants = ma.Minority_Ants(G)
-    ants.start()
-
-    plot.Render(G)
-    ants.stop()
+    AcoPlotObj = plot.AcoPlot(G)

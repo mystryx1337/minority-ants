@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.widgets import Button, TextBox
+import aco_minority_ants as ma
 
 
 class Edge:
@@ -10,56 +11,72 @@ class Edge:
         self.weight = weight
 
 
-class Render:
+class AcoPlot:
+    G: nx.DiGraph
+    pos: dict
+
     def __init__(self, G):
         self.G = G
 
-        self.pos = nx.spring_layout(G)  # positions for all nodes
-        fig, ax = plt.subplots(figsize=(10, 8))
+        #area for buttons
+        self.pos = nx.spring_layout(self.G)  # positions for all nodes
+        self.fig, self.ax = plt.subplots(figsize=(10, 8))
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
 
-        ax_tail = fig.add_axes([0.25, 0.05, 0.1, 0.075])
+        #buttons and input-fields
+        ax_tail = self.fig.add_axes([0.25, 0.05, 0.1, 0.075])
         textbox_tail = TextBox(ax_tail, 'Start')
 
-        ax_head = fig.add_axes([0.4, 0.05, 0.1, 0.075])
+        ax_head = self.fig.add_axes([0.4, 0.05, 0.1, 0.075])
         textbox_head = TextBox(ax_head, 'Ende')
 
-        ax_weight = fig.add_axes([0.55, 0.05, 0.1, 0.075])
+        ax_weight = self.fig.add_axes([0.55, 0.05, 0.1, 0.075])
         textbox_weight = TextBox(ax_weight, 'Weight')
 
-        add_edge_ax = fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
-        self.add_edge_button = Button(add_edge_ax, label='Add')
-        self.add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text,
+        add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        add_edge_button = Button(add_edge_ax, label='Add')
+        add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text,
                                                                     textbox_weight.text))  # Füge den Callback hinzu
 
-        delete_edge_ax = fig.add_axes([0.7, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
-        self.delete_edge_button = Button(delete_edge_ax, label='Remove')
-        self.delete_edge_button.on_clicked(
+        delete_edge_ax = self.fig.add_axes([0.7, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        delete_edge_button = Button(delete_edge_ax, label='Remove')
+        delete_edge_button.on_clicked(
             lambda event: self.delete_edge(textbox_tail.text, textbox_head.text))  # Füge den Callback hinzu
 
-        plt.sca(ax)
+        #set focus to plot area
+        plt.sca(self.ax)
+
+        #start ant colony (threaded)
+        self.ants = ma.Minority_Ants(G, self)
+        self.ants.start()
+
+        #draw initial graph
         self.update_plot()
 
+        #keep the graph-window
         plt.show()
+        self.ants.stop()
 
     def update_plot(self):
+        try:
 
-        # Zeichne den Graphen mit den aktualisierten Kanten
-        plt.cla()  # Lösche vorherige Zeichnung
+            # draw graph with current edges
+            weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
+            pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
+            node_colors = ["purple"] * len(self.G.nodes)
+            # edge_colors = ["black"] * len(self.G.edges)
 
-        weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
-        pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
-        node_colors = ["purple"] * len(self.G.nodes)
-        # edge_colors = ["black"] * len(self.G.edges)
+            nx.draw(self.G, self.pos, node_color=node_colors, with_labels=False)
+            nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
+                                    labels={n: n for n in self.G.nodes()})
+            nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
+            nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
 
-        nx.draw(self.G, self.pos, node_color=node_colors, with_labels=False)
-        nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
-                                labels={n: n for n in self.G.nodes()})
-        nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
-        nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
-
-        # fig.canvas.draw()
-        plt.draw()
+            #self.fig.canvas.draw()
+            plt.cla()  # delete previous plotted draw
+            plt.draw()
+        except: #window is already closed and thread tries to update plot
+            pass
 
     def add_edge(self, tail, head, weight):
         global G, pos
