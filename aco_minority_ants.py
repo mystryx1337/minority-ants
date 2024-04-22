@@ -1,5 +1,3 @@
-import threading
-import time
 import aco_routing
 
 class Minority_Ants(aco_routing.Routing):

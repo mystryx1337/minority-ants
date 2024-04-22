@@ -3,8 +3,6 @@ import time
 import random
 import networkx as nx
 from typing import List, Tuple
-import plot
-import matplotlib as plt
 
 '''
 Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization/blob/master/aco_routing/aco.py
@@ -54,7 +52,7 @@ class Routing():
             weight = self.G["A"]["B"]["weight"]
             pheromone = self.G["A"]["B"]["pheromone"]
 
-            self.G["A"]["B"].update({'weight': (weight + 1), 'pheromone': pheromone})
+            self.G["A"]["B"].update({'weight': weight, 'pheromone': pheromone + 0.1})
 
             self.plot.update_plot()
-            time.sleep(1)
+            time.sleep(2)

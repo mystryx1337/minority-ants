@@ -18,9 +18,9 @@ if __name__ == '__main__':
                       ("B", "E", {'weight': 1, 'pheromone': 0.0}),
                       ("B", "F", {'weight': 1, 'pheromone': 0.0}),
 
-                      ("C", "B", {'weight': 1, 'pheromone': 0.0}),
-                      ("C", "E", {'weight': 1, 'pheromone': 0.0}),
-                      ("C", "F", {'weight': 1, 'pheromone': 0.0}),
+                      ("C", "B", {'weight': 3, 'pheromone': 0.0}),
+                      ("C", "E", {'weight': 3, 'pheromone': 0.0}),
+                      ("C", "F", {'weight': 3, 'pheromone': 0.0}),
 
                       ("D", "A", {'weight': 1, 'pheromone': 0.0}),
                       ("D", "B", {'weight': 1, 'pheromone': 0.0}),
@@ -36,12 +36,10 @@ if __name__ == '__main__':
                       ("E", "F", {'weight': 1, 'pheromone': 0.0}),
                       ("E", "G", {'weight': 1, 'pheromone': 0.0}),
                       ("E", "H", {'weight': 1, 'pheromone': 0.0}),
-                      ("E", "I", {'weight': 1, 'pheromone': 0.0}),
 
                       ("F", "B", {'weight': 1, 'pheromone': 0.0}),
                       ("F", "C", {'weight': 1, 'pheromone': 0.0}),
                       ("F", "E", {'weight': 1, 'pheromone': 0.0}),
-                      ("F", "H", {'weight': 1, 'pheromone': 0.0}),
                       ("F", "I", {'weight': 1, 'pheromone': 0.0}),
 
                       ("G", "D", {'weight': 1, 'pheromone': 0.0}),
@@ -52,22 +50,20 @@ if __name__ == '__main__':
 
                       ("H", "D", {'weight': 1, 'pheromone': 0.0}),
                       ("H", "E", {'weight': 1, 'pheromone': 0.0}),
-                      ("H", "F", {'weight': 1, 'pheromone': 0.0}),
                       ("H", "G", {'weight': 1, 'pheromone': 0.0}),
                       ("H", "I", {'weight': 1, 'pheromone': 0.0}),
                       ("H", "J", {'weight': 1, 'pheromone': 0.0}),
                       ("H", "K", {'weight': 1, 'pheromone': 0.0}),
                       ("H", "L", {'weight': 1, 'pheromone': 0.0}),
 
-                      ("I", "E", {'weight': 1, 'pheromone': 0.0}),
                       ("I", "F", {'weight': 1, 'pheromone': 0.0}),
                       ("I", "H", {'weight': 1, 'pheromone': 0.0}),
                       ("I", "K", {'weight': 1, 'pheromone': 0.0}),
                       ("I", "L", {'weight': 1, 'pheromone': 0.0}),
 
-                      ("J", "G", {'weight': 1, 'pheromone': 0.0}),
-                      ("J", "H", {'weight': 1, 'pheromone': 0.0}),
-                      ("J", "K", {'weight': 1, 'pheromone': 0.0}),
+                      ("J", "G", {'weight': 1, 'pheromone': 0.8}),
+                      ("J", "H", {'weight': 1, 'pheromone': 1.0}),
+                      ("J", "K", {'weight': 1, 'pheromone': 0.4}),
 
                       ("K", "G", {'weight': 1, 'pheromone': 0.0}),
                       ("K", "H", {'weight': 1, 'pheromone': 0.0}),

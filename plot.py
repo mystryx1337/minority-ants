@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib as mpl
 import networkx as nx
 from matplotlib.widgets import Button, TextBox
 import aco_minority_ants as ma
@@ -17,6 +19,8 @@ class AcoPlot:
 
     def __init__(self, G):
         self.G = G
+
+        self.cmap = mpl.colormaps['cool']  # colormap  https://matplotlib.org/stable/users/explain/colors/colormaps.html
 
         #area for buttons
         self.pos = nx.spring_layout(self.G)  # positions for all nodes
@@ -59,24 +63,41 @@ class AcoPlot:
 
     def update_plot(self):
         # draw graph with current edges
-        try:
-            weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
-            pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
-            node_colors = ["purple"] * len(self.G.nodes)
-            # edge_colors = ["black"] * len(self.G.edges)
-
+        #try:
             plt.cla()  # delete previous plotted draw
 
-            nx.draw(self.G, self.pos, node_color=node_colors, with_labels=False)
+            min_weight = min([data['weight'] for (u, v, data) in self.G.edges(data=True)])
+            max_weight = max([data['weight'] for (u, v, data) in self.G.edges(data=True)])
+
+            node_colors = ["purple"] * len(self.G.nodes)
+
+            # Definiere die Farbskala für die Pheremonausprägung
+            norm = mcolors.Normalize(vmin=min([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]),
+                                     vmax=max([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]))
+
+            # Zeichne die Knoten
+            nx.draw_networkx_nodes(self.G, pos=self.pos, node_color=node_colors)
+
+            # Zeichne die Kanten
+            for (u, v, data) in self.G.edges(data=True):
+                # Berechne die Kantendicke basierend auf dem Gewicht
+                edge_color = self.cmap(norm(data['pheromone']))
+                width = 1 + (data['weight'] - min_weight) / (max_weight - min_weight)
+                nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=[(u, v)], width=width, edge_color=edge_color, connectionstyle="arc3,rad=0.07")
+
+
+            #weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
+            #pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
+
             nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
                                     labels={n: n for n in self.G.nodes()})
-            nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
-            nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
+            #nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
+            #nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
 
             self.fig.canvas.draw()
-            #plt.draw()
-        except: #window is already closed and thread tries to update plot
-            pass
+
+        #except: #window is already closed and thread tries to update plot
+        #    pass
 
     def add_edge(self, tail, head, weight):
         global G, pos
