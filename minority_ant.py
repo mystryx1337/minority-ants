@@ -1,8 +1,5 @@
 import routing_ant
 
 class Minority_Ant(routing_ant.Routing_Ant):
-    def step(self):
-        super().step()
-    #    while not self.stop_event.is_set():
-    #        # print(self.G)
-    #        time.sleep(2)
+    def probability_for_node(self,target_node):
+        super().probability_for_node()
