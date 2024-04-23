@@ -4,11 +4,13 @@ import random
 import networkx as nx
 from typing import List, Tuple
 
+import minority_ant
+
 '''
 Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization/blob/master/aco_routing/aco.py
 '''
 
-class Routing():
+class AntColonyRunner():
     G: nx.DiGraph
     thread: threading.Thread
 
@@ -33,7 +35,6 @@ class Routing():
     # Search ants
     #search_ants: List[Ant] = field(default_factory=list)
 
-
     def __init__(self, G, plot):
         self.G = G
         self.thread = threading.Thread(target=self.run)
@@ -47,12 +48,10 @@ class Routing():
         self.stop_event.set()
 
     def run(self):
-        time.sleep(1)
+        ant = minority_ant.Minority_Ant(self.G,"S")
+        time.sleep(2)
         while not self.stop_event.is_set():
-            weight = self.G["A"]["B"]["weight"]
-            pheromone = self.G["A"]["B"]["pheromone"]
-
-            self.G["A"]["B"].update({'weight': weight, 'pheromone': pheromone + 0.1})
+            ant.step()
 
             self.plot.update_plot()
             time.sleep(2)

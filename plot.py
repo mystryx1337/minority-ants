@@ -3,7 +3,7 @@ import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
 from matplotlib.widgets import Button, TextBox
-import aco_minority_ants as ma
+import colony
 
 
 class Edge:
@@ -51,15 +51,15 @@ class AcoPlot:
         plt.sca(self.ax)
 
         #start ant colony (threaded)
-        self.ants = ma.Minority_Ants(G, self)
-        self.ants.start()
+        self.colony = colony.AntColonyRunner(G, self)
+        self.colony.start()
 
         #draw initial graph
         self.update_plot()
 
         #keep the graph-window
         plt.show()
-        self.ants.stop()
+        self.colony.stop()
 
     def update_plot(self):
         # draw graph with current edges
