@@ -2,7 +2,7 @@ import networkx as nx
 import plot
 
 
-def add_edges_from_outgoing_node(G, outgoing_node, target_nodes, edge_weights=None, pheromones=None):
+def add_edges_from_outgoing_node(G, outgoing_node, target_nodes, edge_weights=None, edge_pheromones=None, node_value=0):
     """
     Add edges from an outgoing node to a list of target nodes with optional edge weights.
 
@@ -17,12 +17,16 @@ def add_edges_from_outgoing_node(G, outgoing_node, target_nodes, edge_weights=No
 
     for i, target_node in enumerate(target_nodes):
         weight = 1
-        pheromone = 0.0
         if edge_weights is not None:
             weight = edge_weights[i]
-        if pheromones is not None:
-            pheromone = pheromones[i]
+
+        pheromone = 0.0
+        if edge_pheromones is not None:
+            pheromone = edge_pheromones[i]
+
         G.add_edge(outgoing_node, target_node, weight=weight, pheromone=pheromone)
+
+    nx.set_node_attributes(G, {outgoing_node: {'value': node_value}})
 
 
 # Press the green button in the gutter to run the script.
@@ -39,11 +43,11 @@ if __name__ == '__main__':
     add_edges_from_outgoing_node(G, "G", ["D","E","H","J","K"])
     add_edges_from_outgoing_node(G, "H", ["D","E","G","I","J","K","L"])
     add_edges_from_outgoing_node(G, "I", ["F","H","K","L"])
-    add_edges_from_outgoing_node(G, "J", ["G","H","K"], pheromones=[0.5,0.8,1.0])
+    add_edges_from_outgoing_node(G, "J", ["G","H","K"], edge_pheromones=[0.5, 0.8, 1.0])
     add_edges_from_outgoing_node(G, "K", ["G","H","I","J","L"])
     add_edges_from_outgoing_node(G, "L", ["H","I","K","Z"])
     add_edges_from_outgoing_node(G, "S", ["A"])
     add_edges_from_outgoing_node(G, "X", ["D"])
-    add_edges_from_outgoing_node(G, "Z", ["L"])
+    add_edges_from_outgoing_node(G, "Z", ["L"], node_value=1)
 
     AcoPlotObj = plot.AcoPlot(G)

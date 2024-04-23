@@ -21,7 +21,9 @@ class AcoPlot:
         self.G = G
         self.colony = colony.AntColonyRunner(G, self)
 
-        self.cmap = mpl.colormaps['cool']  # colormap  https://matplotlib.org/stable/users/explain/colors/colormaps.html
+        # colormaps  https://matplotlib.org/stable/users/explain/colors/colormaps.html
+        self.cmap_cool = mpl.colormaps['cool']
+        self.cmap_winter = mpl.colormaps['winter']
 
         #area for buttons
         self.pos = nx.spring_layout(self.G)  # positions for all nodes
@@ -66,24 +68,30 @@ class AcoPlot:
     def update_plot(self):
         # draw graph with current edges
         try:
-            plt.cla()  # delete previous plotted draw
-
             min_weight = min([data['weight'] for (u, v, data) in self.G.edges(data=True)])
             max_weight = max([data['weight'] for (u, v, data) in self.G.edges(data=True)])
 
-            node_colors = ["purple"] * len(self.G.nodes)
+            #node_colors = ["purple"] * len(self.G.nodes)
 
-            # Definiere die Farbskala für die Pheremonausprägung
-            norm = mcolors.Normalize(vmin=min([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]),
+            # Definiere die Farbskala für die Pheromonausprägung
+            edge_norm = mcolors.Normalize(vmin=min([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]),
                                      vmax=max([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]))
 
+            # Definiere die Farbskala für die Pheromonausprägung
+            node_norm = mcolors.Normalize(vmin=min([data['value'] for (u, data) in self.G.nodes(data=True)]),
+                                     vmax=max([data['value'] for (u, data) in self.G.nodes(data=True)]))
+
+            plt.cla()  # delete previous plotted draw
+
             # Zeichne die Knoten
-            nx.draw_networkx_nodes(self.G, pos=self.pos, node_color=node_colors)
+            for (u, data) in self.G.nodes(data=True):
+                node_color = self.cmap_winter(node_norm(data['value']))
+                nx.draw_networkx_nodes(self.G, pos=self.pos, nodelist=[u], node_color=node_color)
 
             # Zeichne die Kanten
             for (u, v, data) in self.G.edges(data=True):
                 # Berechne die Kantendicke basierend auf dem Gewicht
-                edge_color = self.cmap(norm(data['pheromone']))
+                edge_color = self.cmap_cool(edge_norm(data['pheromone']))
                 width = 1 + (data['weight'] - min_weight) / (max_weight - min_weight)
                 nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=[(u, v)], width=width, edge_color=edge_color, connectionstyle="arc3,rad=0.07")
 
