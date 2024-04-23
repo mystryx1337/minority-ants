@@ -1,6 +1,7 @@
 import networkx as nx
 import plot
 
+
 def add_edges_from_outgoing_node(G, outgoing_node, target_nodes, edge_weights=None, pheromones=None):
     """
     Add edges from an outgoing node to a list of target nodes with optional edge weights.
@@ -44,6 +45,5 @@ if __name__ == '__main__':
     add_edges_from_outgoing_node(G, "S", ["A"])
     add_edges_from_outgoing_node(G, "X", ["D"])
     add_edges_from_outgoing_node(G, "Z", ["L"])
-
 
     AcoPlotObj = plot.AcoPlot(G)
