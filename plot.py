@@ -71,15 +71,17 @@ class AcoPlot:
             min_weight = min([data['weight'] for (u, v, data) in self.G.edges(data=True)])
             max_weight = max([data['weight'] for (u, v, data) in self.G.edges(data=True)])
 
-            #node_colors = ["purple"] * len(self.G.nodes)
+            min_pheromone = min([data['pheromone'] for (u, v, data) in self.G.edges(data=True)])
+            max_pheromone = max([data['pheromone'] for (u, v, data) in self.G.edges(data=True)])
+
+            min_value = min([data['value'] for (u, data) in self.G.nodes(data=True)])
+            max_value = max([data['value'] for (u, data) in self.G.nodes(data=True)])
 
             # Definiere die Farbskala für die Pheromonausprägung
-            edge_norm = mcolors.Normalize(vmin=min([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]),
-                                     vmax=max([data['pheromone'] for (u, v, data) in self.G.edges(data=True)]))
+            edge_norm = mcolors.Normalize(vmin=min_pheromone, vmax=max_pheromone)
 
             # Definiere die Farbskala für die Pheromonausprägung
-            node_norm = mcolors.Normalize(vmin=min([data['value'] for (u, data) in self.G.nodes(data=True)]),
-                                     vmax=max([data['value'] for (u, data) in self.G.nodes(data=True)]))
+            node_norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
 
             plt.cla()  # delete previous plotted draw
 
