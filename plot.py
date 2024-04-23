@@ -63,7 +63,7 @@ class AcoPlot:
 
     def update_plot(self):
         # draw graph with current edges
-        #try:
+        try:
             plt.cla()  # delete previous plotted draw
 
             min_weight = min([data['weight'] for (u, v, data) in self.G.edges(data=True)])
@@ -96,8 +96,8 @@ class AcoPlot:
 
             self.fig.canvas.draw()
 
-        #except: #window is already closed and thread tries to update plot
-        #    pass
+        except: #window is already closed and thread tries to update plot
+            pass
 
     def add_edge(self, tail, head, weight):
         global G, pos
