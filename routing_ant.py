@@ -10,11 +10,12 @@ class Routing_Ant:
 
     def step(self):
         possible_edges = self.G.edges([self.current_node], data=True)
-        print(possible_edges[0])
+        for current_node, possible_target, data in possible_edges:
+            print(possible_target)
+            print(data)
 
-        #possible_target = possible_edges[0][1]
-        #weight = self.G[self.current_node][possible_target]["weight"]
-        #pheromone = self.G[self.current_node][possible_target]["pheromone"]
+            weight = data["weight"]
+            pheromone = data["pheromone"]
 
         #self.G[self.current_node][possible_target].update({'weight': weight, 'pheromone': pheromone + 0.5})
 
