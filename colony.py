@@ -13,15 +13,19 @@ Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization
 class AntColonyRunner():
     G: nx.DiGraph
     thread: threading.Thread
+    ants: List = []
 
     # Maximum number of steps an ant is allowed is to take in order to reach the destination
+    #TODO
     ant_max_steps: int
 
     # Number of cycles/waves of search ants to be deployed
+    #TODO
     num_iterations: int
 
     # Indicates if the search ants should spawn at random nodes in the graph
     ant_random_spawn: bool = True
+    #TODO
 
     # Evaporation rate (rho)
     evaporation_rate: float = 0.1
@@ -33,13 +37,15 @@ class AntColonyRunner():
     beta: float = 0.3
 
     # Search ants
-    #search_ants: List[Ant] = field(default_factory=list)
+    number_of_ants: int = 1
 
     def __init__(self, G, plot):
         self.G = G
         self.thread = threading.Thread(target=self.run)
         self.stop_event = threading.Event()
         self.plot = plot
+        for i in range(0,self.number_of_ants):
+            self.ants.append(minority_ant.Minority_Ant(self.G,"S", alpha=self.alpha, beta=self.beta))
 
     def start(self):
         self.thread.start()
@@ -47,11 +53,16 @@ class AntColonyRunner():
     def stop(self):
         self.stop_event.set()
 
+    def evaporation(self):
+        for u, v, data in self.G.edges(data=True):
+            self.G[u][v]['pheromone'] *= (1-self.evaporation_rate)
+
     def run(self):
-        ant = minority_ant.Minority_Ant(self.G,"S")
         time.sleep(2)
         while not self.stop_event.is_set():
-            ant.step()
+            self.evaporation()
+            for ant in self.ants:
+                ant.run()
 
             self.plot.update_plot()
             time.sleep(2)
