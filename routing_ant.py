@@ -3,6 +3,7 @@ import random
 
 class Routing_Ant:
     G: nx.DiGraph
+    start_node: str
     current_node: str
 
     alpha: float    #how much influence trail has
@@ -10,12 +11,17 @@ class Routing_Ant:
 
     success: bool   #does the ant put pheromones on its way
 
-    def __init__(self, G, start_node, alpha=1, beta=1):
+    max_steps: int  #how many steps can the ant do before giving up
+    steps: int
+
+    def __init__(self, G, start_node, alpha=1, beta=1, max_steps=20):
         self.G = G
+        self.start_node = start_node
         self.current_node = start_node
         self.alpha = alpha
         self.beta = beta
         self.success = False
+        self.max_steps = max_steps
 
     def probability_for_node(self,target_node):
         data = self.G[self.current_node][target_node]
@@ -54,8 +60,10 @@ class Routing_Ant:
         self.current_node = new_node
 
     def run(self):
-        #TODO: Do steps, till it is back
-        pass
+        self.steps = 0
 
-
+        #Do steps, till it is successful and back
+        while self.current_node != self.start_node and not self.success and self.steps < self.max_steps:
+            self.step()
+            self.step += 1
 

@@ -19,6 +19,7 @@ class AcoPlot:
 
     def __init__(self, G):
         self.G = G
+        self.colony = colony.AntColonyRunner(G, self)
 
         self.cmap = mpl.colormaps['cool']  # colormap  https://matplotlib.org/stable/users/explain/colors/colormaps.html
 
@@ -28,31 +29,32 @@ class AcoPlot:
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
 
         #buttons and input-fields
-        ax_tail = self.fig.add_axes([0.25, 0.05, 0.1, 0.075])
-        textbox_tail = TextBox(ax_tail, 'Start')
-
-        ax_head = self.fig.add_axes([0.4, 0.05, 0.1, 0.075])
-        textbox_head = TextBox(ax_head, 'Ende')
-
-        ax_weight = self.fig.add_axes([0.55, 0.05, 0.1, 0.075])
-        textbox_weight = TextBox(ax_weight, 'Weight')
-
         add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
         add_edge_button = Button(add_edge_ax, label='Add')
         add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text,
                                                                     textbox_weight.text))  # Füge den Callback hinzu
 
-        delete_edge_ax = self.fig.add_axes([0.7, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.075])
+        textbox_tail = TextBox(ax_tail, 'Start ')
+
+        ax_head = self.fig.add_axes([0.35, 0.05, 0.05, 0.075])
+        textbox_head = TextBox(ax_head, 'Ende ')
+
+        ax_weight = self.fig.add_axes([0.45, 0.05, 0.05, 0.075])
+        textbox_weight = TextBox(ax_weight, 'Weight ')
+
+        delete_edge_ax = self.fig.add_axes([0.55, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
         delete_edge_button = Button(delete_edge_ax, label='Remove')
         delete_edge_button.on_clicked(
             lambda event: self.delete_edge(textbox_tail.text, textbox_head.text))  # Füge den Callback hinzu
 
+        delete_edge_ax = self.fig.add_axes([0.75, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        delete_edge_button = Button(delete_edge_ax, label='Run Colony')
+        delete_edge_button.on_clicked(
+            lambda event: self.colony.start())  # Füge den Callback hinzu
+
         #set focus to plot area
         plt.sca(self.ax)
-
-        #start ant colony (threaded)
-        self.colony = colony.AntColonyRunner(G, self)
-        self.colony.start()
 
         #draw initial graph
         self.update_plot()
