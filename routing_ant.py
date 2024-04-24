@@ -85,4 +85,3 @@ class Routing_Ant:
         #Do steps, till it is successful and back
         while self.current_node != self.start_node and not self.success and len(self.path) < self.max_steps:
             self._step()
-

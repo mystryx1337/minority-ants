@@ -5,6 +5,7 @@ import networkx as nx
 from typing import List
 
 import minority_ant
+import routing_ant
 
 '''
 Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization/blob/master/aco_routing/aco.py
@@ -13,7 +14,7 @@ Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization
 class AntColonyRunner():
     G: nx.DiGraph
     thread: threading.Thread
-    ants: List = []
+    ants: List = [routing_ant.Routing_Ant]
     iteration: int
 
     # Maximum number of steps an ant is allowed is to take in order to reach the destination
