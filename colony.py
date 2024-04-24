@@ -14,14 +14,14 @@ Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization
 class AntColonyRunner():
     G: nx.DiGraph
     thread: threading.Thread
-    ants: List = [routing_ant.Routing_Ant]
+    ants: List[routing_ant.Routing_Ant] = []
     iteration: int
 
     # Maximum number of steps an ant is allowed is to take in order to reach the destination
     ant_max_steps: int = 20
 
     # Number of cycles/waves of search ants to be deployed
-    num_iterations: int = 10
+    max_iterations: int = 10
 
     # Indicates if the search ants should spawn at random nodes in the graph
     ant_random_spawn: bool = False
@@ -43,15 +43,10 @@ class AntColonyRunner():
 
     def __init__(self, G, plot):
         self.G = G
-        self.thread = threading.Thread(target=self.run)
         self.stop_event = threading.Event()
         self.plot = plot
 
-        if self.ant_random_spawn:
-            self.ant_spawn_node = random.choice(list(G.nodes()))
-
-        for i in range(0,self.number_of_ants):
-            self.ants.append(minority_ant.Minority_Ant(self.G,self.ant_spawn_node, alpha=self.alpha, beta=self.beta, max_steps=self.ant_max_steps))
+        self.thread = threading.Thread(target=self.run)
 
     def start(self):
         self.thread.start()
@@ -64,9 +59,15 @@ class AntColonyRunner():
             self.G[u][v]['pheromone'] *= (1-self.evaporation_rate)
 
     def run(self):
+        # spawn ants
+        for i in range(0,self.number_of_ants):
+            if self.ant_random_spawn:
+                self.ant_spawn_node = random.choice(list(self.G.nodes()))
+            self.ants.append(routing_ant.Routing_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta, max_steps=self.ant_max_steps))
+
         time.sleep(2)
         self.iteration = 0
-        while not self.stop_event.is_set() and self.num_iterations < self.iteration:
+        while not self.stop_event.is_set() and self.iteration < self.max_iterations:
             #TODO: Show on Plot, which iteration we are in
 
             self.evaporation()

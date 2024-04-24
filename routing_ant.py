@@ -10,10 +10,10 @@ class Routing_Ant:
     alpha: float            # how much influence trail has
     beta: float             # how much influence attractiveness has
 
-    success: bool           # does the ant put pheromones on its way
+    success: bool = False   # does the ant put pheromones on its way
 
     max_steps: int          # how many steps can the ant do before giving up
-    path: List[str]         # Path taken by the ant so far
+    path: List[str] = []    # Path taken by the ant so far
     path_cost: float = 0.0  # Cost of the path taken by the ant so far
 
     def __init__(self, G: nx.DiGraph, start_node: str, alpha=1, beta=1, max_steps=20):
@@ -27,7 +27,6 @@ class Routing_Ant:
         # Spawn
         self.current_node = start_node
         self.path.append(start_node)
-        self.success = False
 
     def _probability_for_node(self, target_node: str) -> float:
         data = self.G[self.current_node][target_node]
@@ -80,8 +79,9 @@ class Routing_Ant:
             self._increase_pheromone(new_node)
 
         self.current_node = new_node
+        print("step")
 
     def run(self):
         #Do steps, till it is successful and back
-        while self.current_node != self.start_node and not self.success and len(self.path) < self.max_steps:
+        while (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
             self._step()
