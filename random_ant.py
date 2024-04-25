@@ -58,8 +58,13 @@ class Random_Ant:
             self.success = True
 
     def _increase_pheromone(self, new_node):
-        current_pheromones = self.G[self.current_node][new_node]['pheromone']
-        self.G[self.current_node][new_node].update({'pheromone': current_pheromones + 1})
+        # Check if both nodes and the edge between them exist
+        if new_node in self.G[self.current_node]:
+            current_pheromones = self.G[self.current_node][new_node]['pheromone']
+            self.G[self.current_node][new_node].update({'pheromone': current_pheromones + 1})
+        else:
+            # Error when the node or edge does not exist
+            print(f"No such edge: {self.current_node} -> {new_node}")
 
     def _step(self):
         new_node = self._pick_a_new_node()

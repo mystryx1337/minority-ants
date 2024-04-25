@@ -50,9 +50,9 @@ class AcoPlot:
         delete_edge_button.on_clicked(
             lambda event: self.delete_edge(textbox_tail.text, textbox_head.text))  # Füge den Callback hinzu
 
-        delete_edge_ax = self.fig.add_axes([0.75, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
-        delete_edge_button = Button(delete_edge_ax, label='Run Colony')
-        delete_edge_button.on_clicked(
+        start_colony_ax = self.fig.add_axes([0.75, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        start_colony_button = Button(start_colony_ax, label='Run Colony')
+        start_colony_button.on_clicked(
             lambda event: self.colony.start())  # Füge den Callback hinzu
 
         #set focus to plot area
@@ -98,13 +98,13 @@ class AcoPlot:
                 nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=[(u, v)], width=width, edge_color=edge_color, connectionstyle="arc3,rad=0.07")
 
 
-            #weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
-            #pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
+            weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
+            pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
 
             nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
                                     labels={n: n for n in self.G.nodes()})
-            #nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
-            #nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
+            nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
+            nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
 
             self.fig.canvas.draw()
 
