@@ -30,11 +30,6 @@ class AcoPlot:
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
 
         #buttons and input-fields
-        add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
-        add_edge_button = Button(add_edge_ax, label='Add')
-        add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text,
-                                                                    textbox_weight.text))  # Füge den Callback hinzu
-
         ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.075])
         textbox_tail = TextBox(ax_tail, 'Start ')
 
@@ -43,6 +38,11 @@ class AcoPlot:
 
         ax_weight = self.fig.add_axes([0.45, 0.05, 0.05, 0.075])
         textbox_weight = TextBox(ax_weight, 'Weight ')
+
+        add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
+        add_edge_button = Button(add_edge_ax, label='Add')
+        add_edge_button.on_clicked(lambda event: self.add_edge(textbox_tail.text, textbox_head.text,
+                                                               textbox_weight.text))  # Füge den Callback hinzu
 
         delete_edge_ax = self.fig.add_axes([0.55, 0.05, 0.1, 0.075])  # Position und Größe des Knopfes
         delete_edge_button = Button(delete_edge_ax, label='Remove')
@@ -123,24 +123,36 @@ class AcoPlot:
         prev_pos = self.node_trace[-1]
         current_pos = self.pos[self.node[0]]
         self.ax.plot([prev_pos[0], current_pos[0]], [prev_pos[1], current_pos[1]], color='red', linestyle='-',
-                    linewidth=2)
+                     linewidth=2)
 
         # Update trace of visited nodes
         self.node_trace.append(self.pos[self.node[0]])
 
-    def add_edge(self, tail, head, weight):
+    def add_edge(self, tail, head, weight, tail_value=None, head_value=None):
         global G, pos
 
         try:
             weight = float(weight)
         except ValueError:
-            weight = 1.0
+            weight = 1.0  # Set default weight if conversion fails
 
-        if not self.G.has_node(tail) or not self.G.has_node(head):
-            self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
-            self.pos = nx.spring_layout(self.G)  # Recalculate layout
+        # Add or update nodes with the specified or default 'value'
+        if not self.G.has_node(tail):
+            self.G.add_node(tail, value=tail_value if tail_value is not None else 0)  # Set a default or specified value
         else:
-            self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
+            if tail_value is not None:
+                self.G.nodes[tail]['value'] = tail_value  # Update the value if specified
+
+        if not self.G.has_node(head):
+            self.G.add_node(head, value=head_value if head_value is not None else 0)  # Set a default or specified value
+        else:
+            if head_value is not None:
+                self.G.nodes[head]['value'] = head_value  # Update the value if specified
+
+        # Add the edge with weight and pheromone
+        self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
+        self.pos = nx.spring_layout(self.G)
+
         self.update_plot('')
 
     def delete_edge(self, tail, head):
