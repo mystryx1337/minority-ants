@@ -121,27 +121,23 @@ class AcoPlot:
             edge_pheromone_labels.values())
 
         if self.status['ants_running']:
-            # Move to a new node
-            current_node = self.node[0]
-            neighbors = list(self.G.neighbors(current_node))
-            if neighbors:
-                self.node[0] = random.choice(neighbors)
+            # Draw all ants as red dots
+            ant_positions = [ant.current_node for ant in self.colony.ants]
+            current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_color='red',
+                                                          node_size=700, ax=self.ax)
+            artists.append(current_node_artists)
 
-            # Draw the current node in red
-            current_node_artist = nx.draw_networkx_nodes(self.G, self.pos, nodelist=[self.node[0]], node_color='red',
-                                                         node_size=700, ax=self.ax)
-            artists.append(current_node_artist)
-
-            # Show trail of the red node
-            prev_pos = self.node_trace[-1]
-            current_pos = self.pos[self.node[0]]
-            path_line = self.ax.plot([prev_pos[0], current_pos[0]], [prev_pos[1], current_pos[1]], color='red',
-                                     linestyle='-',
-                                     linewidth=2)
-            artists.extend(path_line)
-
-            # Update trace of visited nodes
-            self.node_trace.append(self.pos[self.node[0]])
+            # Draw paths for each ant
+            for ant in self.colony.ants:
+                if len(ant.path) > 1:  # Check if there are at least two nodes in the path to form a line
+                    # Extract positions for each node in the path
+                    path_coords = [(self.pos[ant.path[i]], self.pos[ant.path[i + 1]]) for i in range(len(ant.path) - 1)]
+                    # Draw lines between each pair of successive nodes
+                    for coords in path_coords:
+                        path_line = self.ax.plot([coords[0][0], coords[1][0]], [coords[0][1], coords[1][1]],
+                                                 color='red',
+                                                 linestyle='-', linewidth=2)
+                        artists.extend(path_line)
 
         return artists
 
