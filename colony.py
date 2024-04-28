@@ -75,7 +75,10 @@ class AntColonyRunner():
             for ant in self.ants:
                 ant.run()
 
-            self.plot.update_plot()
+            if not self.plot.status['ants_running']:
+                self.plot.status['ants_running'] = True
+
+            # self.plot.update_plot('', status) Not required when us funcanimation
             time.sleep(2)
 
         self.stop()

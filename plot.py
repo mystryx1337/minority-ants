@@ -23,11 +23,26 @@ class AcoPlot:
         self.cmap_cool = mpl.colormaps['cool']
         self.cmap_winter = mpl.colormaps['winter']
 
+        # Status of the animation
+        self.status = {'ants_running': False}
+
         #area for buttons
         self.pos = nx.spring_layout(self.G)  # positions for all nodes
         self.current_node = list(self.G.nodes())[0] if self.G.nodes() else None
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
+
+        # Compute minimum and maximum values for normalization
+        self.min_weight, self.max_weight = min(data['weight'] for _, _, data in G.edges(data=True)), max(
+            data['weight'] for _, _, data in G.edges(data=True))
+        self.min_pheromone, self.max_pheromone = min(data['pheromone'] for _, _, data in G.edges(data=True)), max(
+            data['pheromone'] for _, _, data in G.edges(data=True))
+        self.min_value, self.max_value = min(data['value'] for _, data in G.nodes(data=True)), max(
+            data['value'] for _, data in G.nodes(data=True))
+
+        # Define normalization and color mapping
+        self.node_norm = mcolors.Normalize(vmin=self.min_value, vmax=self.max_value)
+        self.edge_norm = mcolors.Normalize(vmin=self.min_pheromone, vmax=self.max_pheromone)
 
         #buttons and input-fields
         ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.075])
@@ -60,73 +75,75 @@ class AcoPlot:
         self.node = ["A"]  # Start node
         self.node_trace = [self.pos[self.node[0]]]  # Initialize trace list with starting node position
 
-        ani = animation.FuncAnimation(self.fig, self.update_plot, frames=30, fargs=(),
-                                      interval=1000, blit=False, repeat=True)
+
+        # Change Frame for less flickering
+        ani = animation.FuncAnimation(self.fig, self.update_plot, frames=200,
+                                      interval=50, blit=True, repeat=True, fargs=())
 
         # keep the graph-window
-        self.ax = plt.gca()
+        # self.ax = plt.gca()
         self.ax.margins(0.08)
         plt.axis("off")
         plt.show()
-        self.colony.stop()
+        # self.colony.stop()
 
     def update_plot(self, frame):
-        min_weight = min([data['weight'] for (u, v, data) in self.G.edges(data=True)])
-        max_weight = max([data['weight'] for (u, v, data) in self.G.edges(data=True)])
+        self.ax.clear()
 
-        min_pheromone = min([data['pheromone'] for (u, v, data) in self.G.edges(data=True)])
-        max_pheromone = max([data['pheromone'] for (u, v, data) in self.G.edges(data=True)])
+        # Draw nodes with updated properties
+        node_colors = [self.cmap_winter(self.node_norm(data['value'])) for _, data in self.G.nodes(data=True)]
+        nodes = nx.draw_networkx_nodes(self.G, pos=self.pos, nodelist=list(self.G.nodes()), node_color=node_colors,
+                                       ax=self.ax)
 
-        min_value = min([data['value'] for (u, data) in self.G.nodes(data=True)])
-        max_value = max([data['value'] for (u, data) in self.G.nodes(data=True)])
+        # Draw edges with updated properties
+        edges = self.G.edges(data=True)
+        edge_colors = [self.cmap_cool(self.edge_norm(data['pheromone'])) for _, _, data in edges]
+        widths = [1 + (data['weight'] - self.min_weight) / (self.max_weight - self.min_weight) for _, _, data in edges]
+        edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths, edge_color=edge_colors,
+                                       connectionstyle="arc3,rad=0.07", ax=self.ax)
 
-        # Definiere die Farbskala für die Pheromonausprägung
-        edge_norm = mcolors.Normalize(vmin=min_pheromone, vmax=max_pheromone)
+        # Node labels
+        node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
+                                              labels={n: n for n in self.G.nodes()}, ax=self.ax)
 
-        # Definiere die Farbskala für die Pheromonausprägung
-        node_norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
-
-        plt.cla()  # delete previous plotted draw
-
-        # Zeichne die Knoten
-        for (u, data) in self.G.nodes(data=True):
-            node_color = self.cmap_winter(node_norm(data['value']))
-            nx.draw_networkx_nodes(self.G, pos=self.pos, nodelist=[u], node_color=node_color)
-
-        # Zeichne die Kanten
-        for (u, v, data) in self.G.edges(data=True):
-            # Berechne die Kantendicke basierend auf dem Gewicht
-            edge_color = self.cmap_cool(edge_norm(data['pheromone']))
-            width = 1 + (data['weight'] - min_weight) / (max_weight - min_weight)
-            nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=[(u, v)], width=width, edge_color=edge_color,
-                                   connectionstyle="arc3,rad=0.07")
-
-
-        # Move to a new node
-        current_node = self.node[0]
-        neighbors = list(self.G.neighbors(current_node))
-        if neighbors:
-            self.node[0] = random.choice(neighbors)
-
-        # Draw the current node in red
-        nx.draw_networkx_nodes(self.G, self.pos, nodelist=[self.node[0]], node_color='red', node_size=700, ax=self.ax)
-
+        # Edge labels for weight
         weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
+        edge_weight_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red',
+                                                          label_pos=0.1, ax=self.ax)
+
+        # Edge labels for pheromone
         pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
+        edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
+                                                             font_color='blue', label_pos=0.3, ax=self.ax)
 
-        nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
-                                labels={n: n for n in self.G.nodes()})
-        nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red', label_pos=0.1)
-        nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels, font_color='blue', label_pos=0.3)
+        # Collect all artists that need to be returned for blitting to work correctly
+        artists = [nodes] + list(edges) + list(node_labels.values()) + list(edge_weight_labels.values()) + list(
+            edge_pheromone_labels.values())
 
-        # Show trail of the red note
-        prev_pos = self.node_trace[-1]
-        current_pos = self.pos[self.node[0]]
-        self.ax.plot([prev_pos[0], current_pos[0]], [prev_pos[1], current_pos[1]], color='red', linestyle='-',
-                     linewidth=2)
+        if self.status['ants_running']:
+            # Move to a new node
+            current_node = self.node[0]
+            neighbors = list(self.G.neighbors(current_node))
+            if neighbors:
+                self.node[0] = random.choice(neighbors)
 
-        # Update trace of visited nodes
-        self.node_trace.append(self.pos[self.node[0]])
+            # Draw the current node in red
+            current_node_artist = nx.draw_networkx_nodes(self.G, self.pos, nodelist=[self.node[0]], node_color='red',
+                                                         node_size=700, ax=self.ax)
+            artists.append(current_node_artist)
+
+            # Show trail of the red node
+            prev_pos = self.node_trace[-1]
+            current_pos = self.pos[self.node[0]]
+            path_line = self.ax.plot([prev_pos[0], current_pos[0]], [prev_pos[1], current_pos[1]], color='red',
+                                     linestyle='-',
+                                     linewidth=2)
+            artists.extend(path_line)
+
+            # Update trace of visited nodes
+            self.node_trace.append(self.pos[self.node[0]])
+
+        return artists
 
     def add_edge(self, tail, head, weight, tail_value=None, head_value=None):
         global G, pos
@@ -153,8 +170,6 @@ class AcoPlot:
         self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
         self.pos = nx.spring_layout(self.G)
 
-        self.update_plot('')
-
     def delete_edge(self, tail, head):
         # Entfernen der Kante zum Graphen
         try:
@@ -169,5 +184,3 @@ class AcoPlot:
                 self.pos = nx.spring_layout(self.G)  # Recalculate layout
         except nx.NetworkXError:  # Kante existiert nicht
             pass
-
-        self.update_plot('')
