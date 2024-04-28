@@ -60,25 +60,33 @@ class AntColonyRunner():
 
     def run(self):
         # spawn ants
-        for i in range(0,self.number_of_ants):
+        for i in range(0, self.number_of_ants):
             if self.ant_random_spawn:
                 self.ant_spawn_node = random.choice(list(self.G.nodes()))
-            self.ants.append(random_ant.Random_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta, max_steps=self.ant_max_steps))
+            self.ants.append(random_ant.Random_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
+                                                   max_steps=self.ant_max_steps))
 
         time.sleep(2)
         self.iteration = 0
+        active_ants = self.number_of_ants
+
         while not self.stop_event.is_set() and self.iteration < self.max_iterations:
-            #TODO: Show on Plot, which iteration we are in
 
             self.evaporation()
 
             for ant in self.ants:
-                ant.run()
+                print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
+                if not ant.step():  # Each ant performs one step
+                    active_ants -= 1  # If the ant is finished, reduce the count
+                    print(active_ants)
 
             if not self.plot.status['ants_running']:
                 self.plot.status['ants_running'] = True
 
-            # self.plot.update_plot('', status) Not required when us funcanimation
+            if active_ants <= 0:
+                break  # Exit if all ants are done
+
             time.sleep(2)
+            self.iteration += 1
 
         self.stop()
