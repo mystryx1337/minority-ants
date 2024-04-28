@@ -66,20 +66,21 @@ class Random_Ant:
             # Error when the node or edge does not exist
             print(f"No such edge: {self.current_node} -> {new_node}")
 
-    def _step(self):
-        new_node = self._pick_a_new_node()
-        self.path.append(new_node)
+    def step(self):
+        if (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
+            new_node = self._pick_a_new_node()
+            self.path.append(new_node)
+            self._check_success()
 
-        self._check_success()
+            # If on a Path for Success:
+            if self.success:
+                self._increase_pheromone(new_node)
 
-        #If on a Path for Success:
-        if self.success:
-            self._increase_pheromone(new_node)
+            self.current_node = new_node
+            return True
+        return False
 
-        self.current_node = new_node
-        print("step")
-
-    def run(self):
-        #Do steps, till it is successful and back
-        while (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
-            self._step()
+    # def run(self):
+    #     #Do steps, till it is successful and back
+    #     # while (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
+    #     self._step()
