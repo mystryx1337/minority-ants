@@ -45,7 +45,7 @@ if __name__ == '__main__':
     add_edges_from_outgoing_node(G, "I", ["F","H","K","L"])
     add_edges_from_outgoing_node(G, "J", ["G","H","K"], edge_pheromones=[0.5, 0.8, 1.0])
     add_edges_from_outgoing_node(G, "K", ["G","H","I","J","L"])
-    add_edges_from_outgoing_node(G, "L", ["H","I","K","Z"])
+    add_edges_from_outgoing_node(G, "L", ["H","I","K","Z"], edge_pheromones=[0.0, 0.0, 0.0, 1.0])
     add_edges_from_outgoing_node(G, "S", ["A"])
     add_edges_from_outgoing_node(G, "X", ["D"])
     add_edges_from_outgoing_node(G, "Z", ["L"], node_value=1)

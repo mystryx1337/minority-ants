@@ -112,7 +112,7 @@ class AcoPlot:
                                                           label_pos=0.1, ax=self.ax)
 
         # Edge labels for pheromone
-        pheromone_labels = {(tail, head): f"{data['pheromone']}" for tail, head, data in self.G.edges(data=True)}
+        pheromone_labels = {(tail, head): f"{round(data['pheromone'])}" for tail, head, data in self.G.edges(data=True)}
         edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
                                                              font_color='blue', label_pos=0.3, ax=self.ax)
 
