@@ -1,0 +1,69 @@
+{
+  "nodes": {
+    "A": {
+      "edges": ["B","D","E","S"]
+    },
+    "B": {
+      "edges": ["A","C","D","E","F"]
+    },
+    "C": {
+      "edges": ["B","E","F"],
+      "weights": [3,3,3]
+    },
+    "D": {
+      "edges": ["A","B","E","G","H","X"]
+    },
+    "E": {
+      "edges": ["A","B","C","D","F","G","H"]
+    },
+    "F": {
+      "edges": ["B","C","E","I"]
+    },
+    "G": {
+      "edges": ["D","E","H","J","K"]
+    },
+    "H": {
+      "edges": ["D","E","G","I","J","K","L"]
+    },
+    "I": {
+      "edges": ["F","H","K","L"]
+    },
+    "J": {
+      "edges": ["G","H","K"],
+      "pheromones": [0.5, 0.8, 1.0]
+    },
+    "K": {
+      "edges": ["G","H","I","J","L"]
+    },
+    "L": {
+      "edges": ["H","I","K","Z"],
+      "pheromones": [0.0, 0.0, 0.0, 1.0]
+    },
+    "S": {
+      "edges": ["A"]
+    },
+    "X": {
+      "edges": ["D"]
+    },
+    "Z": {
+      "edges": ["L"],
+      "value": 1
+    }
+  },
+  "ants": [
+    {
+      "class": "routing",
+      "max_steps": 20,
+      "max_iterations": 15,
+      "random_spawn": false,
+      "spawn_node": "S",
+      "evaporation_rate": 0.1,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 2,
+      "put_pheromones_always": false,
+      "stop_on_success": true
+    }
+  ]
+}

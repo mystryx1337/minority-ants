@@ -13,7 +13,7 @@ Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization
 '''
 
 
-class AntColonyRunner():
+class AntColonyRunner:
     G: nx.DiGraph
     ants: List[random_ant.Random_Ant] = []
     iteration: int
@@ -43,7 +43,7 @@ class AntColonyRunner():
     random_chance: float = 0.05
 
     # Search ants
-    number_of_ants: int = 2
+    concurrent_ants: int = 2
 
     # type of ant: random | routing | minority
     ant_class: str = "routing"
@@ -90,14 +90,14 @@ class AntColonyRunner():
     def _run(self):
         # spawn ants
         self.ants.clear()
-        for i in range(0, self.number_of_ants):
+        for i in range(0, self.concurrent_ants):
             if self.ant_random_spawn:
                 self.ant_spawn_node = random.choice(list(self.G.nodes()))
             self.ants.append(self.spawn_ant(self.ant_class))
 
         time.sleep(2)
         self.iteration = 0
-        active_ants = self.number_of_ants
+        active_ants = self.concurrent_ants
 
         while not self.stop_event.is_set() and self.iteration <= self.max_iterations:
 
