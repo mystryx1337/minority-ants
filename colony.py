@@ -56,11 +56,12 @@ class AntColonyRunner():
 
     def __init__(self, G, plot):
         self.G = G
-        self.stop_event = threading.Event()
         self.plot = plot
 
     def start(self):
+        print("Thread started")
         self.thread = threading.Thread(target=self._run)
+        self.stop_event = threading.Event()
         self.thread.start()
 
     def stop(self):
@@ -88,6 +89,7 @@ class AntColonyRunner():
 
     def _run(self):
         # spawn ants
+        self.ants.clear()
         for i in range(0, self.number_of_ants):
             if self.ant_random_spawn:
                 self.ant_spawn_node = random.choice(list(self.G.nodes()))

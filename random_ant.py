@@ -11,7 +11,7 @@ class Random_Ant:
     alpha: float  # how much influence trail has
     beta: float  # how much influence attractiveness has
 
-    success: bool = False  # does the ant put pheromones on its way
+    success: bool  # does the ant put pheromones on its way
 
     max_steps: int  # how many steps can the ant do before giving up
     path: List[str] = []  # Path taken by the ant so far
@@ -32,6 +32,7 @@ class Random_Ant:
         self.current_node = start_node
         self.path = []
         self.path.append(start_node)
+        self.success = False
 
     def _value_for_node(self, target_node: str) -> float:
         data = self.G[self.current_node][target_node]
