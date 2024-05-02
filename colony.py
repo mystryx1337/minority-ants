@@ -43,10 +43,16 @@ class AntColonyRunner():
     random_chance: float = 0.05
 
     # Search ants
-    number_of_ants: int = 1
+    number_of_ants: int = 2
 
     # type of ant: random | routing | minority
     ant_class: str = "routing"
+
+    # if the ant puts pheromones on its way or just backwards once on success
+    put_pheromones_always: bool = False
+
+    # if the ant dies at first success node
+    stop_on_success: bool = True
 
     def __init__(self, G, plot):
         self.G = G
@@ -58,29 +64,34 @@ class AntColonyRunner():
         self.thread.start()
 
     def stop(self):
+        self.plot.status['ants_running'] = False
         self.stop_event.set()
 
     def evaporation(self):
         for u, v, data in self.G.edges(data=True):
             self.G[u][v]['pheromone'] *= (1 - self.evaporation_rate)
 
-    def spawn_ant(self):
-        if self.ant_class == "random":
+    def spawn_ant(self, ant_class):
+        if ant_class == "random":
             return random_ant.Random_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
                                          max_steps=self.ant_max_steps)
-        if self.ant_class == "routing":
+        if ant_class == "routing":
             return routing_ant.Routing_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
-                                           max_steps=self.ant_max_steps, random_chance=self.random_chance)
-        if self.ant_class == "minority":
+                                           max_steps=self.ant_max_steps, random_chance=self.random_chance,
+                                           put_pheromones_always=self.put_pheromones_always,
+                                           stop_on_success=self.stop_on_success)
+        if ant_class == "minority":
             return minority_ant.Minority_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
-                                             max_steps=self.ant_max_steps, random_chance=self.random_chance)
+                                             max_steps=self.ant_max_steps, random_chance=self.random_chance,
+                                             put_pheromones_always=self.put_pheromones_always,
+                                             stop_on_success=self.stop_on_success)
 
     def _run(self):
         # spawn ants
         for i in range(0, self.number_of_ants):
             if self.ant_random_spawn:
                 self.ant_spawn_node = random.choice(list(self.G.nodes()))
-            self.ants.append(self.spawn_ant())
+            self.ants.append(self.spawn_ant(self.ant_class))
 
         time.sleep(2)
         self.iteration = 0
@@ -96,8 +107,7 @@ class AntColonyRunner():
                     active_ants -= 1  # If the ant is finished, reduce the count
                     print(active_ants)
 
-            if not self.plot.status['ants_running']:
-                self.plot.status['ants_running'] = True
+            self.plot.status['ants_running'] = True
 
             if active_ants <= 0:
                 break  # Exit if all ants are done

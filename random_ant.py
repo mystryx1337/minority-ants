@@ -17,7 +17,7 @@ class Random_Ant:
     path: List[str] = []  # Path taken by the ant so far
     path_cost: float = 0.0  # Cost of the path taken by the ant so far
 
-    def __init__(self, G: nx.DiGraph, start_node: str, alpha=1, beta=1, max_steps=20, random_chance=0.05):
+    def __init__(self, G: nx.DiGraph, start_node: str, alpha=1, beta=1, max_steps=20, random_chance=0.05, stop_on_success=False, put_pheromones_always=True):
         # set Parameters
         self.G = G
         self.alpha = alpha
@@ -25,9 +25,12 @@ class Random_Ant:
         self.max_steps = max_steps
         self.start_node = start_node
         self.random_chance = random_chance
+        self.stop_on_success = stop_on_success
+        self.put_pheromones_always = put_pheromones_always
 
         # Spawn
         self.current_node = start_node
+        self.path = []
         self.path.append(start_node)
 
     def _value_for_node(self, target_node: str) -> float:
@@ -90,6 +93,8 @@ class Random_Ant:
             # If on a Path for Success:
             if self.success:
                 self._increase_pheromone(new_node)
+                if self.stop_on_success:
+                    return False
 
             self.current_node = new_node
             return True

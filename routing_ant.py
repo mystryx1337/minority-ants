@@ -3,17 +3,6 @@ import random_ant
 import numpy as np
 
 class Routing_Ant(random_ant.Random_Ant):
-    #def _get_all_possible_nodes_value(self) -> tuple[np.ndarray[np.dtype[float], np.dtype[float]], np.ndarray[np.dtype[str], np.dtype[str]]]:
-    #    possible_edges = self.G.edges([self.current_node], data=True)
-    #    target_nodes = np.array([])
-    #    node_values = np.array([])
-    #    for current_node, possible_target, data in possible_edges:
-    #        target_nodes = np.append(target_nodes, possible_target)
-    #
-    #        node_value = self._value_for_node(possible_target)
-    #        node_values = np.append(node_values, node_value)
-    #    return node_values, target_nodes
-
     def _get_all_unvisited_nodes_value(self) -> tuple[np.ndarray[np.dtype[float], np.dtype[float]], np.ndarray[np.dtype[str], np.dtype[str]]]:
         possible_edges = self.G.edges([self.current_node], data=True)
         target_nodes = np.array([])
@@ -43,7 +32,7 @@ class Routing_Ant(random_ant.Random_Ant):
 
     def _increase_pheromone(self, new_node):
         # when value node arrived: mark current path
-        if self._check_success():
+        if self._check_success() and not self.put_pheromones_always:
             print("put pheromones!")
             for i, current_node in enumerate(self.path):
                 if i < len(self.path) - 1:
