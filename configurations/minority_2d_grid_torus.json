@@ -2,10 +2,10 @@
   "nodes": {
     "macro": {
       "type": "2d_grid_torus",
-      "x": 5,
-      "y": 8
+      "x": 4,
+      "y": 4
     },
-    "AX": {
+    "M": {
       "value": 1
     }
   },
@@ -13,14 +13,14 @@
     {
       "class": "minority",
       "max_steps": 20,
-      "max_iterations": 15,
+      "max_iterations": 10,
       "random_spawn": false,
-      "spawn_node": "AA",
+      "spawn_node": "A",
       "evaporation_rate": 0.1,
       "alpha": 0.7,
       "beta": 0.3,
       "random_chance": 0.05,
-      "concurrent_ants": 6,
+      "concurrent_ants": 5,
       "put_pheromones_always": false,
       "stop_on_success": true
     }

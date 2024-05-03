@@ -87,16 +87,22 @@ class Random_Ant:
 
     def step(self) -> int:
         if (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
+            # Pick a new node
             new_node = self._pick_a_new_node()
+            
+            # If already on a Path for Success:
+            if self.success and self.put_pheromones_always:
+                self._increase_pheromone(new_node)
+            
+            # step to that node
             self.path.append(new_node)
-            self._check_success()
-
-            # If on a Path for Success:
-            if self.success:
+            self.current_node = new_node
+                
+            # check, if it is a success node
+            if self._check_success() and not self.put_pheromones_always:
                 self._increase_pheromone(new_node)
                 if self.stop_on_success:
                     return False
 
-            self.current_node = new_node
             return True
         return False
