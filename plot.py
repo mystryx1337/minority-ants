@@ -128,28 +128,28 @@ class AcoPlot:
 
     def update_plot(self, frame):
         # Compute minimum and maximum values for normalization
-        self.min_weight, self.max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
+        min_weight, max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
             data['weight'] for _, _, data in self.G.edges(data=True))
-        self.min_pheromone, self.max_pheromone = min(data['pheromone'] for _, _, data in self.G.edges(data=True)), max(
+        min_pheromone, max_pheromone = min(data['pheromone'] for _, _, data in self.G.edges(data=True)), max(
             data['pheromone'] for _, _, data in self.G.edges(data=True))
-        self.min_value, self.max_value = min(data['value'] for _, data in self.G.nodes(data=True)), max(
+        min_value, max_value = min(data['value'] for _, data in self.G.nodes(data=True)), max(
             data['value'] for _, data in self.G.nodes(data=True))
 
         # Define normalization and color mapping
-        self.node_norm = mcolors.Normalize(vmin=self.min_value, vmax=self.max_value)
-        self.edge_norm = mcolors.Normalize(vmin=self.min_pheromone, vmax=self.max_pheromone)
+        node_norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
+        edge_norm = mcolors.Normalize(vmin=min_pheromone, vmax=max_pheromone)
         
         self.ax.clear()
 
         # Draw nodes with updated properties
-        node_colors = [self.cmap_winter(self.node_norm(data['value'])) for _, data in self.G.nodes(data=True)]
+        node_colors = [self.cmap_winter(node_norm(data['value'])) for _, data in self.G.nodes(data=True)]
         nodes = nx.draw_networkx_nodes(self.G, pos=self.pos, nodelist=list(self.G.nodes()), node_color=node_colors,
                                        ax=self.ax)
 
         # Draw edges with updated properties
         edges = self.G.edges(data=True)
-        edge_colors = [self.cmap_cool(self.edge_norm(data['pheromone'])) for _, _, data in edges]
-        widths = [1 + (data['weight'] - self.min_weight) / (self.max_weight - self.min_weight) for _, _, data in edges]
+        edge_colors = [self.cmap_cool(edge_norm(data['pheromone'])) for _, _, data in edges]
+        widths = [1 + (data['weight'] - min_weight) / (max_weight - min_weight) for _, _, data in edges]
         edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths, edge_color=edge_colors,
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
 
