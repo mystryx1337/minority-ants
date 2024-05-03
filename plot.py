@@ -32,18 +32,6 @@ class AcoPlot:
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
 
-        # Compute minimum and maximum values for normalization
-        self.min_weight, self.max_weight = min(data['weight'] for _, _, data in G.edges(data=True)), max(
-            data['weight'] for _, _, data in G.edges(data=True))
-        self.min_pheromone, self.max_pheromone = min(data['pheromone'] for _, _, data in G.edges(data=True)), max(
-            data['pheromone'] for _, _, data in G.edges(data=True))
-        self.min_value, self.max_value = min(data['value'] for _, data in G.nodes(data=True)), max(
-            data['value'] for _, data in G.nodes(data=True))
-
-        # Define normalization and color mapping
-        self.node_norm = mcolors.Normalize(vmin=self.min_value, vmax=self.max_value)
-        self.edge_norm = mcolors.Normalize(vmin=self.min_pheromone, vmax=self.max_pheromone)
-
         #buttons and input-fields
         ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.075])
         textbox_tail = TextBox(ax_tail, 'Start ')
@@ -87,6 +75,18 @@ class AcoPlot:
         plt.show()
 
     def update_plot(self, frame):
+        # Compute minimum and maximum values for normalization
+        self.min_weight, self.max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
+            data['weight'] for _, _, data in self.G.edges(data=True))
+        self.min_pheromone, self.max_pheromone = min(data['pheromone'] for _, _, data in self.G.edges(data=True)), max(
+            data['pheromone'] for _, _, data in self.G.edges(data=True))
+        self.min_value, self.max_value = min(data['value'] for _, data in self.G.nodes(data=True)), max(
+            data['value'] for _, data in self.G.nodes(data=True))
+
+        # Define normalization and color mapping
+        self.node_norm = mcolors.Normalize(vmin=self.min_value, vmax=self.max_value)
+        self.edge_norm = mcolors.Normalize(vmin=self.min_pheromone, vmax=self.max_pheromone)
+        
         self.ax.clear()
 
         # Draw nodes with updated properties
@@ -111,7 +111,7 @@ class AcoPlot:
                                                           label_pos=0.1, ax=self.ax)
 
         # Edge labels for pheromone
-        pheromone_labels = {(tail, head): f"{round(data['pheromone'])}" for tail, head, data in self.G.edges(data=True)}
+        pheromone_labels = {(tail, head): f"{round(data['pheromone'],1)}" for tail, head, data in self.G.edges(data=True)}
         edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
                                                              font_color='blue', label_pos=0.3, ax=self.ax)
 
@@ -119,7 +119,7 @@ class AcoPlot:
         artists = [nodes] + list(edges) + list(node_labels.values()) + list(edge_weight_labels.values()) + list(
             edge_pheromone_labels.values())
 
-        if self.status['ants_running']:
+        if len(self.colony.ants) > 0:
             # Draw all ants as red dots
             ant_positions = [ant.current_node for ant in self.colony.ants]
             current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_color='red',

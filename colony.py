@@ -86,7 +86,6 @@ class AntColonyRunner:
         self.thread.start()
 
     def stop(self):
-        self.plot.status['ants_running'] = False
         self.stop_event.set()
 
     def evaporation(self, rate: float):
@@ -109,33 +108,28 @@ class AntColonyRunner:
                                              stop_on_success=wave.stop_on_success)
 
     def _run(self):
+        time.sleep(1)
         for wave in self.waves:
-            # spawn ants
-            self.ants.clear()
-            for i in range(0, wave.concurrent_ants):
-                if wave.ant_random_spawn:
-                    wave.ant_spawn_node = random.choice(list(self.G.nodes()))
-                self.ants.append(self.spawn_ant(wave))
-
-            self.iteration = 0
-
-            time.sleep(2)
-
-            while not self.stop_event.is_set() and self.iteration <= wave.max_iterations:
-
+            for iteration in range(wave.max_iterations):
+                # spawn ants
+                self.ants.clear()
+                for i in range(0, wave.concurrent_ants):
+                    if wave.ant_random_spawn:
+                        wave.ant_spawn_node = random.choice(list(self.G.nodes()))
+                    self.ants.append(self.spawn_ant(wave))
+    
                 self.evaporation(wave.evaporation_rate)
 
-                for i, ant in enumerate(self.ants):
-                    print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
-                    if not ant.step():  # Each ant performs one step
-                        self.ants.pop(i)
-
-                self.plot.status['ants_running'] = True
-
-                if len(self.ants) <= 0:
-                    break  # Exit if all ants are done
-
-                time.sleep(1)
-                self.iteration += 1
+                for steps in range(wave.ant_max_steps):
+                    if self.stop_event.is_set():
+                        self.stop()
+                        
+                    for i, ant in enumerate(self.ants):
+                        print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
+                        if not ant.step():  # Each ant performs one step
+                            self.ants.pop(i)
+                    
+                    if len(self.ants) > 0:
+                        time.sleep(1)
 
         self.stop()
