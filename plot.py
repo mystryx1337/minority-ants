@@ -115,13 +115,21 @@ class AcoPlot:
 
         f.close()
 
-        for node in data['nodes']:
-            target_nodes: list[str] = data['nodes'][node]['edges']
-            edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
-            pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][node] else None
-            node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
-            self.add_edges_from_outgoing_node(node, target_nodes, edge_weights=edge_weights, edge_pheromones=pheromones,
-                                         node_value=node_value)
+        if 'macro' in data['nodes']:
+            if data['nodes']['macro'] == 'fully_linked_graph':
+                pass
+            if data['nodes']['macro'] == '2d_grid_torus':
+                pass
+            if data['nodes']['macro'] == 'small_world':
+                pass
+        else:
+            for node in data['nodes']:
+                target_nodes: list[str] = data['nodes'][node]['edges']
+                edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
+                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][node] else None
+                node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
+                self.add_edges_from_outgoing_node(node, target_nodes, edge_weights=edge_weights, edge_pheromones=pheromones,
+                                             node_value=node_value)
 
         self.ants_config = data['ants']
 
