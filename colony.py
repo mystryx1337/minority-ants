@@ -118,7 +118,6 @@ class AntColonyRunner:
                 self.ants.append(self.spawn_ant(wave))
 
             self.iteration = 0
-            active_ants = wave.concurrent_ants
 
             time.sleep(2)
 
@@ -126,15 +125,14 @@ class AntColonyRunner:
 
                 self.evaporation(wave.evaporation_rate)
 
-                for ant in self.ants:
+                for i, ant in enumerate(self.ants):
                     print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
                     if not ant.step():  # Each ant performs one step
-                        active_ants -= 1  # If the ant is finished, reduce the count
-                        print(active_ants)
+                        self.ants.pop(i)
 
                 self.plot.status['ants_running'] = True
 
-                if active_ants <= 0:
+                if len(self.ants) <= 0:
                     break  # Exit if all ants are done
 
                 time.sleep(1)
