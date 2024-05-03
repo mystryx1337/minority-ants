@@ -12,9 +12,9 @@ class AcoPlot:
     G: nx.DiGraph
     pos: dict
 
-    def __init__(self, G):
+    def __init__(self, G, ants):
         self.G = G
-        self.colony = colony.AntColonyRunner(G, self)
+        self.colony = colony.AntColonyRunner(G, self, ants)
 
         mpl.rcParams['toolbar'] = 'None'
 

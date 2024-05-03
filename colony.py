@@ -13,11 +13,7 @@ Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization
 '''
 
 
-class AntColonyRunner:
-    G: nx.DiGraph
-    ants: List[random_ant.Random_Ant] = []
-    iteration: int
-
+class WaveConfig:
     # Maximum number of steps an ant is allowed is to take in order to reach the destination
     ant_max_steps: int = 20
 
@@ -54,9 +50,34 @@ class AntColonyRunner:
     # if the ant dies at first success node
     stop_on_success: bool = True
 
-    def __init__(self, G, plot):
+    def __init__(self, wave):
+        self.ant_class = wave['class'] if 'class' in wave else 'routing'
+        self.ant_max_steps = wave['max_steps'] if 'max_steps' in wave else 20
+        self.max_iterations = wave['max_iterations'] if 'max_iterations' in wave else 15
+        self.ant_random_spawn = wave['random_spawn'] if 'random_spawn' in wave else False
+        self.ant_spawn_node = wave['spawn_node'] if 'spawn_node' in wave else "S"
+        self.evaporation_rate = wave['evaporation_rate'] if 'evaporation_rate' in wave else 0.1
+        self.alpha = wave['alpha'] if 'alpha' in wave else 0.7
+        self.beta = wave['beta'] if 'beta' in wave else 0.3
+        self.random_chance = wave['random_chance'] if 'random_chance' in wave else 0.05
+        self.concurrent_ants = wave['concurrent_ants'] if 'concurrent_ants' in wave else 2
+        self.put_pheromones_always = wave['put_pheromones_always'] if 'put_pheromones_always' in wave else False
+        self.stop_on_success = wave['stop_on_success'] if 'stop_on_success' in wave else True
+
+
+class AntColonyRunner:
+    G: nx.DiGraph
+    ants: List[random_ant.Random_Ant] = []
+    iteration: int
+    waves: List[WaveConfig]
+
+    def __init__(self, G, plot, ants_config):
         self.G = G
         self.plot = plot
+
+        self.waves = []
+        for wave in ants_config:
+            self.waves.append(WaveConfig(wave))
 
     def start(self):
         print("Thread started")
@@ -68,53 +89,55 @@ class AntColonyRunner:
         self.plot.status['ants_running'] = False
         self.stop_event.set()
 
-    def evaporation(self):
+    def evaporation(self, rate: float):
         for u, v, data in self.G.edges(data=True):
-            self.G[u][v]['pheromone'] *= (1 - self.evaporation_rate)
+            self.G[u][v]['pheromone'] *= (1 - rate)
 
-    def spawn_ant(self, ant_class):
-        if ant_class == "random":
-            return random_ant.Random_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
-                                         max_steps=self.ant_max_steps)
-        if ant_class == "routing":
-            return routing_ant.Routing_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
-                                           max_steps=self.ant_max_steps, random_chance=self.random_chance,
-                                           put_pheromones_always=self.put_pheromones_always,
-                                           stop_on_success=self.stop_on_success)
-        if ant_class == "minority":
-            return minority_ant.Minority_Ant(self.G, self.ant_spawn_node, alpha=self.alpha, beta=self.beta,
-                                             max_steps=self.ant_max_steps, random_chance=self.random_chance,
-                                             put_pheromones_always=self.put_pheromones_always,
-                                             stop_on_success=self.stop_on_success)
+    def spawn_ant(self, wave):
+        if wave.ant_class == "random":
+            return random_ant.Random_Ant(self.G, wave.ant_spawn_node, alpha=wave.alpha, beta=wave.beta,
+                                         max_steps=wave.ant_max_steps)
+        if wave.ant_class == "routing":
+            return routing_ant.Routing_Ant(self.G, wave.ant_spawn_node, alpha=wave.alpha, beta=wave.beta,
+                                           max_steps=wave.ant_max_steps, random_chance=wave.random_chance,
+                                           put_pheromones_always=wave.put_pheromones_always,
+                                           stop_on_success=wave.stop_on_success)
+        if wave.ant_class == "minority":
+            return minority_ant.Minority_Ant(self.G, wave.ant_spawn_node, alpha=wave.alpha, beta=wave.beta,
+                                             max_steps=wave.ant_max_steps, random_chance=wave.random_chance,
+                                             put_pheromones_always=wave.put_pheromones_always,
+                                             stop_on_success=wave.stop_on_success)
 
     def _run(self):
-        # spawn ants
-        self.ants.clear()
-        for i in range(0, self.concurrent_ants):
-            if self.ant_random_spawn:
-                self.ant_spawn_node = random.choice(list(self.G.nodes()))
-            self.ants.append(self.spawn_ant(self.ant_class))
+        for wave in self.waves:
+            # spawn ants
+            self.ants.clear()
+            for i in range(0, wave.concurrent_ants):
+                if wave.ant_random_spawn:
+                    wave.ant_spawn_node = random.choice(list(self.G.nodes()))
+                self.ants.append(self.spawn_ant(wave))
 
-        time.sleep(2)
-        self.iteration = 0
-        active_ants = self.concurrent_ants
+            self.iteration = 0
+            active_ants = wave.concurrent_ants
 
-        while not self.stop_event.is_set() and self.iteration <= self.max_iterations:
+            time.sleep(2)
 
-            self.evaporation()
+            while not self.stop_event.is_set() and self.iteration <= wave.max_iterations:
 
-            for ant in self.ants:
-                print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
-                if not ant.step():  # Each ant performs one step
-                    active_ants -= 1  # If the ant is finished, reduce the count
-                    print(active_ants)
+                self.evaporation(wave.evaporation_rate)
 
-            self.plot.status['ants_running'] = True
+                for ant in self.ants:
+                    print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
+                    if not ant.step():  # Each ant performs one step
+                        active_ants -= 1  # If the ant is finished, reduce the count
+                        print(active_ants)
 
-            if active_ants <= 0:
-                break  # Exit if all ants are done
+                self.plot.status['ants_running'] = True
 
-            time.sleep(1)
-            self.iteration += 1
+                if active_ants <= 0:
+                    break  # Exit if all ants are done
+
+                time.sleep(1)
+                self.iteration += 1
 
         self.stop()
