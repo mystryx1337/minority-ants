@@ -12,9 +12,9 @@ class AcoPlot:
     G: nx.DiGraph
     pos: dict
 
-    def __init__(self, G, ants):
+    def __init__(self, G, ants_config):
         self.G = G
-        self.colony = colony.AntColonyRunner(G, self, ants)
+        self.colony = colony.AntColonyRunner(G, self, ants_config)
 
         mpl.rcParams['toolbar'] = 'None'
 
@@ -85,7 +85,6 @@ class AcoPlot:
         self.ax.margins(0.08)
         plt.axis("off")
         plt.show()
-        # self.colony.stop()
 
     def update_plot(self, frame):
         self.ax.clear()
@@ -149,6 +148,14 @@ class AcoPlot:
         except ValueError:
             weight = 1.0  # Set default weight if conversion fails
 
+        # Change node value
+        if tail == '' and head != '':
+            self.change_node_value(head, weight)
+            return
+        if tail != '' and head == '':
+            self.change_node_value(tail, weight)
+            return
+
         # Add or update nodes with the specified or default 'value'
         if not self.G.has_node(tail):
             self.G.add_node(tail, value=tail_value if tail_value is not None else 0)  # Set a default or specified value
@@ -165,6 +172,12 @@ class AcoPlot:
         # Add the edge with weight and pheromone
         self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
         self.pos = nx.spring_layout(self.G)
+
+    def change_node_value(self, node, value):
+        try:
+            nx.set_node_attributes(self.G, {node: {'value': value}})
+        except nx.NetworkXError:  # Knoten existiert nicht
+            pass
 
     def delete_edge(self, tail, head):
         # Entfernen der Kante zum Graphen
