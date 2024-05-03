@@ -6,18 +6,22 @@ import networkx as nx
 from matplotlib.widgets import Button, TextBox
 import random
 import colony
+import json
 
 
 class AcoPlot:
     G: nx.DiGraph
     pos: dict
+    ants_config: dict
+    colony: colony.AntColonyRunner
 
-    def __init__(self, G, ants_config):
-        self.G = G
-        self.colony = colony.AntColonyRunner(G, self, ants_config)
+    def init_config(self):
+        self.load_config_from_json()
+        self.colony = colony.AntColonyRunner(self)
 
+    def __init__(self):
+        self.init_config()
         mpl.rcParams['toolbar'] = 'None'
-
 
         # colormaps  https://matplotlib.org/stable/users/explain/colors/colormaps.html
         self.cmap_cool = mpl.colormaps['cool']
@@ -73,6 +77,54 @@ class AcoPlot:
         self.ax.margins(0.08)
         plt.axis("off")
         plt.show()
+
+    def add_edges_from_outgoing_node(self, outgoing_node, target_nodes, edge_weights=None, edge_pheromones=None,
+                                     node_value=0):
+        """
+        Add edges from an outgoing node to a list of target nodes with optional edge weights.
+
+        Parameters:
+        - G: NetworkX graph object
+        - outgoing_node: The node from which edges originate
+        - target_nodes: List of nodes to which edges should be added
+        - edge_weights: Optional list of edge weights corresponding to the edges being added
+        """
+        if len(target_nodes) == 0:
+            return
+
+        for i, target_node in enumerate(target_nodes):
+            weight = 1
+            if edge_weights is not None:
+                weight = edge_weights[i]
+
+            pheromone = 0.0
+            if edge_pheromones is not None:
+                pheromone = edge_pheromones[i]
+
+            self.G.add_edge(outgoing_node, target_node, weight=weight, pheromone=pheromone)
+
+        nx.set_node_attributes(self.G, {outgoing_node: {'value': node_value}})
+
+    def load_config_from_json(self):
+        self.G = nx.DiGraph()
+
+        # Opening JSON file
+        f = open('configurations/test.json')
+
+        data: dict = json.load(f)
+
+        f.close()
+
+        for node in data['nodes']:
+            target_nodes: list[str] = data['nodes'][node]['edges']
+            edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
+            pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][node] else None
+            node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
+            self.add_edges_from_outgoing_node(node, target_nodes, edge_weights=edge_weights, edge_pheromones=pheromones,
+                                         node_value=node_value)
+
+        self.ants_config = data['ants']
+
 
     def update_plot(self, frame):
         # Compute minimum and maximum values for normalization

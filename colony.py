@@ -71,12 +71,12 @@ class AntColonyRunner:
     iteration: int
     waves: List[WaveConfig]
 
-    def __init__(self, G, plot, ants_config):
-        self.G = G
+    def __init__(self, plot):
         self.plot = plot
+        self.G = plot.G
 
         self.waves = []
-        for wave in ants_config:
+        for wave in plot.ants_config:
             self.waves.append(WaveConfig(wave))
 
     def start(self):
