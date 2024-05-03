@@ -4,20 +4,19 @@ import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
 from matplotlib.widgets import Button, TextBox
-import random
-import colony
-import json
+from colony import AntColonyRunner
+from graph_tools import GraphTools
 
 
 class AcoPlot:
     G: nx.DiGraph
     pos: dict
     ants_config: dict
-    colony: colony.AntColonyRunner
+    colony: AntColonyRunner
 
     def init_config(self):
-        self.load_config_from_json()
-        self.colony = colony.AntColonyRunner(self)
+        self.G, self.ants_config = GraphTools.load_config_from_json()
+        self.colony = AntColonyRunner(self)
 
     def __init__(self):
         self.init_config()
@@ -67,7 +66,6 @@ class AcoPlot:
         self.node = ["A"]  # Start node
         self.node_trace = [self.pos[self.node[0]]]  # Initialize trace list with starting node position
 
-
         # Change Frame for less flickering
         ani = animation.FuncAnimation(self.fig, self.update_plot, frames=200,
                                       interval=50, blit=True, repeat=True, fargs=())
@@ -77,62 +75,6 @@ class AcoPlot:
         self.ax.margins(0.08)
         plt.axis("off")
         plt.show()
-
-    def add_edges_from_outgoing_node(self, outgoing_node, target_nodes, edge_weights=None, edge_pheromones=None,
-                                     node_value=0):
-        """
-        Add edges from an outgoing node to a list of target nodes with optional edge weights.
-
-        Parameters:
-        - G: NetworkX graph object
-        - outgoing_node: The node from which edges originate
-        - target_nodes: List of nodes to which edges should be added
-        - edge_weights: Optional list of edge weights corresponding to the edges being added
-        """
-        if len(target_nodes) == 0:
-            return
-
-        for i, target_node in enumerate(target_nodes):
-            weight = 1
-            if edge_weights is not None:
-                weight = edge_weights[i]
-
-            pheromone = 0.0
-            if edge_pheromones is not None:
-                pheromone = edge_pheromones[i]
-
-            self.G.add_edge(outgoing_node, target_node, weight=weight, pheromone=pheromone)
-
-        nx.set_node_attributes(self.G, {outgoing_node: {'value': node_value}})
-
-    def load_config_from_json(self):
-        self.G = nx.DiGraph()
-
-        # Opening JSON file
-        f = open('configurations/test.json')
-
-        data: dict = json.load(f)
-
-        f.close()
-
-        if 'macro' in data['nodes']:
-            if data['nodes']['macro'] == 'fully_linked_graph':
-                pass
-            if data['nodes']['macro'] == '2d_grid_torus':
-                pass
-            if data['nodes']['macro'] == 'small_world':
-                pass
-        else:
-            for node in data['nodes']:
-                target_nodes: list[str] = data['nodes'][node]['edges']
-                edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
-                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][node] else None
-                node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
-                self.add_edges_from_outgoing_node(node, target_nodes, edge_weights=edge_weights, edge_pheromones=pheromones,
-                                             node_value=node_value)
-
-        self.ants_config = data['ants']
-
 
     def update_plot(self, frame):
         # Compute minimum and maximum values for normalization
@@ -146,7 +88,7 @@ class AcoPlot:
         # Define normalization and color mapping
         node_norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
         edge_norm = mcolors.Normalize(vmin=min_pheromone, vmax=max_pheromone)
-        
+
         self.ax.clear()
 
         # Draw nodes with updated properties
@@ -171,7 +113,8 @@ class AcoPlot:
                                                           label_pos=0.1, ax=self.ax)
 
         # Edge labels for pheromone
-        pheromone_labels = {(tail, head): f"{round(data['pheromone'],1)}" for tail, head, data in self.G.edges(data=True)}
+        pheromone_labels = {(tail, head): f"{round(data['pheromone'], 1)}" for tail, head, data in
+                            self.G.edges(data=True)}
         edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
                                                              font_color='blue', label_pos=0.3, ax=self.ax)
 
@@ -201,55 +144,9 @@ class AcoPlot:
         return artists
 
     def add_edge(self, tail, head, weight, tail_value=None, head_value=None):
-        global G, pos
-
-        try:
-            weight = float(weight)
-        except ValueError:
-            weight = 1.0  # Set default weight if conversion fails
-
-        # Change node value
-        if tail == '' and head != '':
-            self.change_node_value(head, weight)
-            return
-        if tail != '' and head == '':
-            self.change_node_value(tail, weight)
-            return
-
-        # Add or update nodes with the specified or default 'value'
-        if not self.G.has_node(tail):
-            self.G.add_node(tail, value=tail_value if tail_value is not None else 0)  # Set a default or specified value
-        else:
-            if tail_value is not None:
-                self.G.nodes[tail]['value'] = tail_value  # Update the value if specified
-
-        if not self.G.has_node(head):
-            self.G.add_node(head, value=head_value if head_value is not None else 0)  # Set a default or specified value
-        else:
-            if head_value is not None:
-                self.G.nodes[head]['value'] = head_value  # Update the value if specified
-
-        # Add the edge with weight and pheromone
-        self.G.add_edge(tail, head, weight=weight, pheromone=0.0)
+        GraphTools.add_edge(self.G, tail, head, weight, tail_value, head_value)
         self.pos = nx.spring_layout(self.G)
 
-    def change_node_value(self, node, value):
-        try:
-            nx.set_node_attributes(self.G, {node: {'value': value}})
-        except nx.NetworkXError:  # Knoten existiert nicht
-            pass
-
     def delete_edge(self, tail, head):
-        # Entfernen der Kante zum Graphen
-        try:
-            self.G.remove_edge(tail, head)
-
-            # Lösche Knoten, falls keine Kante mehr dazu existiert
-            if self.G.degree[tail] == 0:
-                self.G.remove_node(tail)
-                self.pos = nx.spring_layout(self.G)  # Recalculate layout
-            if self.G.degree[head] == 0:
-                self.G.remove_node(head)
-                self.pos = nx.spring_layout(self.G)  # Recalculate layout
-        except nx.NetworkXError:  # Kante existiert nicht
-            pass
+        GraphTools.delete_edge(self.G, tail, head)
+        self.pos = nx.spring_layout(self.G)  # Recalculate layout
