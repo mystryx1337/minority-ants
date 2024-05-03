@@ -1,7 +1,7 @@
 import json
 import string
-
 import networkx as nx
+import numpy as np
 
 
 class GraphTools:
@@ -10,34 +10,46 @@ class GraphTools:
         G = nx.DiGraph()
 
         # Opening JSON file
-        f = open('configurations/test.json')
+        f = open('configurations/minority_fully_linked_graph.json')
 
         data: dict = json.load(f)
 
         f.close()
 
         if 'macro' in data['nodes']:
-            if data['nodes']['macro'] == 'fully_linked_graph':
-                nodes = GraphTools.generate_nodes(data['nodes']['number'])
+            if data['nodes']['macro']['type'] == 'fully_linked_graph':
+                nodes = GraphTools.generate_nodes(data['nodes']['macro']['x'])
                 for node in nodes:
                     exclusive_nodes = nodes.copy()
                     exclusive_nodes.remove(node)
                     GraphTools.add_edges_from_outgoing_node(G, node, exclusive_nodes)
-            if data['nodes']['macro'] == '2d_grid_torus':
+            if data['nodes']['macro']['type'] == '2d_grid_torus':
+                x: int = data['nodes']['macro']['x']
+                y: int = data['nodes']['macro']['y']
+                nodes = GraphTools.generate_nodes(x * y)
+                nodes_2d = np.array(nodes).reshape(x, y)
+                for i in range(x):
+                    for j in range(y):
+                        node = nodes_2d[i, j]
+                        neighborhood_nodes = [
+                            nodes_2d[(i - 1) % x, j],
+                            nodes_2d[(i + 1) % x, j],
+                            nodes_2d[i, (j + 1) % y],
+                            nodes_2d[i, (j - 1) % y]]
+                        GraphTools.add_edges_from_outgoing_node(G, node, neighborhood_nodes)
+            if data['nodes']['macro']['type'] == 'small_world':
                 pass
-            if data['nodes']['macro'] == 'small_world':
-                pass
-        else:
-            for node in data['nodes']:
-                target_nodes: list[str] = data['nodes'][node]['edges']
+            
+        for node in data['nodes']:
+            if node != 'macro':
+                target_nodes: list[str] = data['nodes'][node]['edges'] if 'edges' in data['nodes'][node] else []
                 edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
-                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][
-                    node] else None
+                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][node] else None
                 node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
                 GraphTools.add_edges_from_outgoing_node(G, node, target_nodes, edge_weights=edge_weights,
                                                         edge_pheromones=pheromones, node_value=node_value)
 
-        return G, data['ants']
+        return G, data['ants'], data['plot']
 
     @staticmethod
     def generate_nodes(n: int):
@@ -60,19 +72,17 @@ class GraphTools:
         - target_nodes: List of nodes to which edges should be added
         - edge_weights: Optional list of edge weights corresponding to the edges being added
         """
-        if len(target_nodes) == 0:
-            return
-
-        for i, target_node in enumerate(target_nodes):
-            weight = 1
-            if edge_weights is not None:
-                weight = edge_weights[i]
-
-            pheromone = 0.0
-            if edge_pheromones is not None:
-                pheromone = edge_pheromones[i]
-
-            G.add_edge(outgoing_node, target_node, weight=weight, pheromone=pheromone)
+        if len(target_nodes) > 0:
+            for i, target_node in enumerate(target_nodes):
+                weight = 1
+                if edge_weights is not None:
+                    weight = edge_weights[i]
+    
+                pheromone = 0.0
+                if edge_pheromones is not None:
+                    pheromone = edge_pheromones[i]
+    
+                G.add_edge(outgoing_node, target_node, weight=weight, pheromone=pheromone)
 
         nx.set_node_attributes(G, {outgoing_node: {'value': node_value}})
 

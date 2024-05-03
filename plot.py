@@ -14,9 +14,13 @@ class AcoPlot:
     ants_config: dict
     colony: AntColonyRunner
 
+    show_edge_parameters: bool = True
+
     def init_config(self):
-        self.G, self.ants_config = GraphTools.load_config_from_json()
+        self.G, self.ants_config, self.plot_config = GraphTools.load_config_from_json()
         self.colony = AntColonyRunner(self)
+
+        self.show_edge_parameters = self.plot_config['show_edge_parameters'] if 'show_edge_parameters' in self.plot_config else True
 
     def __init__(self):
         self.init_config()
@@ -63,9 +67,6 @@ class AcoPlot:
         # set focus to plot area
         plt.sca(self.ax)
 
-        self.node = ["A"]  # Start node
-        self.node_trace = [self.pos[self.node[0]]]  # Initialize trace list with starting node position
-
         # Change Frame for less flickering
         ani = animation.FuncAnimation(self.fig, self.update_plot, frames=200,
                                       interval=50, blit=True, repeat=True, fargs=())
@@ -99,7 +100,7 @@ class AcoPlot:
         # Draw edges with updated properties
         edges = self.G.edges(data=True)
         edge_colors = [self.cmap_cool(edge_norm(data['pheromone'])) for _, _, data in edges]
-        widths = [1 + (data['weight'] - min_weight) / (max_weight - min_weight) for _, _, data in edges]
+        widths = [1 + (data['weight'] - min_weight) / (max_weight - min_weight + 1) for _, _, data in edges]
         edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths, edge_color=edge_colors,
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
 
@@ -107,20 +108,23 @@ class AcoPlot:
         node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
                                               labels={n: n for n in self.G.nodes()}, ax=self.ax)
 
-        # Edge labels for weight
-        weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
-        edge_weight_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels, font_color='red',
-                                                          label_pos=0.1, ax=self.ax)
+        if self.show_edge_parameters:
+            # Edge labels for weight
+            weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
+            edge_weight_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels,
+                                                              font_color='red', label_pos=0.1, ax=self.ax)
 
-        # Edge labels for pheromone
-        pheromone_labels = {(tail, head): f"{round(data['pheromone'], 1)}" for tail, head, data in
-                            self.G.edges(data=True)}
-        edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
-                                                             font_color='blue', label_pos=0.3, ax=self.ax)
+            # Edge labels for pheromone
+            pheromone_labels = {(tail, head): f"{round(data['pheromone'], 1)}" for tail, head, data in
+                                self.G.edges(data=True)}
+            edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
+                                                                 font_color='blue', label_pos=0.3, ax=self.ax)
 
-        # Collect all artists that need to be returned for blitting to work correctly
-        artists = [nodes] + list(edges) + list(node_labels.values()) + list(edge_weight_labels.values()) + list(
-            edge_pheromone_labels.values())
+            # Collect all artists that need to be returned for blitting to work correctly
+            artists = [nodes] + list(edges) + list(node_labels.values()) + list(edge_weight_labels.values()) + list(
+                edge_pheromone_labels.values())
+        else:
+            artists = [nodes] + list(edges) + list(node_labels.values())
 
         if len(self.colony.ants) > 0:
             # Draw all ants as red dots
