@@ -2,7 +2,6 @@ import threading
 import time
 import random
 import networkx as nx
-from typing import List
 
 import minority_ant
 import random_ant
@@ -67,9 +66,13 @@ class WaveConfig:
 
 class AntColonyRunner:
     G: nx.DiGraph
-    ants: List[random_ant.Random_Ant] = []
+    
+    ants: list[random_ant.Random_Ant] = []
     iteration: int
-    waves: List[WaveConfig]
+    waves: list[WaveConfig]
+    
+    thread: threading.Thread
+    stop_event: threading.Event
 
     def __init__(self, plot):
         self.plot = plot
@@ -80,7 +83,6 @@ class AntColonyRunner:
             self.waves.append(WaveConfig(wave))
 
     def start(self):
-        print("Thread started")
         self.thread = threading.Thread(target=self._run)
         self.stop_event = threading.Event()
         self.thread.start()
