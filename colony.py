@@ -121,10 +121,10 @@ class AntColonyRunner:
                         
                     for i, ant in enumerate(self.ants):
                         print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
-                        if not ant.step():  # Each ant performs one step
+                        if not ant.step():       # Each ant performs one step and dies if not
                             self.ants.pop(i)
                     
                     if len(self.ants) > 0:
-                        time.sleep(1)
+                        time.sleep(0.5)
 
         self.stop()

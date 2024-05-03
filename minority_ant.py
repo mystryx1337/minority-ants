@@ -10,15 +10,16 @@ class Minority_Ant(routing_ant.Routing_Ant):
     def _pick_a_new_node(self) -> str:
         # random by chance
         if random.random() < self.random_chance:
-            return super(routing_ant.Routing_Ant,self)._pick_a_new_node()
+            return super(routing_ant.Routing_Ant, self)._pick_a_new_node()
 
         # pheromone sensitive behaviour, if pheromones on its way
         node_values, target_nodes = self._get_all_unvisited_nodes_value()
+        if len(target_nodes) == 1:
+            return target_nodes[0]
         sum_node_values = np.sum(node_values)
-        if(sum_node_values > 0):
-            node_probabilities = (node_values / sum_node_values)
-            node_probabilities = 1 - node_probabilities
+        if sum_node_values > 0:
+            node_probabilities = 1 - (node_values / sum_node_values)
             return random.choices(target_nodes, weights=node_probabilities, k=1)[0]
 
         # random otherwise
-        return super(routing_ant.Routing_Ant,self)._pick_a_new_node()
+        return super(routing_ant.Routing_Ant, self)._pick_a_new_node()
