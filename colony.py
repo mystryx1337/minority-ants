@@ -96,18 +96,11 @@ class AntColonyRunner:
 
     def spawn_ant(self, wave):
         if wave.ant_class == "random":
-            return random_ant.Random_Ant(self.G, wave.ant_spawn_node, alpha=wave.alpha, beta=wave.beta,
-                                         max_steps=wave.ant_max_steps)
+            return random_ant.Random_Ant(self.G, wave)
         if wave.ant_class == "routing":
-            return routing_ant.Routing_Ant(self.G, wave.ant_spawn_node, alpha=wave.alpha, beta=wave.beta,
-                                           max_steps=wave.ant_max_steps, random_chance=wave.random_chance,
-                                           put_pheromones_always=wave.put_pheromones_always,
-                                           stop_on_success=wave.stop_on_success)
+            return routing_ant.Routing_Ant(self.G, wave)
         if wave.ant_class == "minority":
-            return minority_ant.Minority_Ant(self.G, wave.ant_spawn_node, alpha=wave.alpha, beta=wave.beta,
-                                             max_steps=wave.ant_max_steps, random_chance=wave.random_chance,
-                                             put_pheromones_always=wave.put_pheromones_always,
-                                             stop_on_success=wave.stop_on_success)
+            return minority_ant.Minority_Ant(self.G, wave)
 
     def _run(self):
         time.sleep(1)

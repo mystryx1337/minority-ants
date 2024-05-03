@@ -17,21 +17,21 @@ class Random_Ant:
     path: List[str] = []  # Path taken by the ant so far
     path_cost: float = 0.0  # Cost of the path taken by the ant so far
 
-    def __init__(self, G: nx.DiGraph, start_node: str, alpha=1, beta=1, max_steps=20, random_chance=0.05, stop_on_success=False, put_pheromones_always=True):
+    def __init__(self, G: nx.DiGraph, wave):
         # set Parameters
         self.G = G
-        self.alpha = alpha
-        self.beta = beta
-        self.max_steps = max_steps
-        self.start_node = start_node
-        self.random_chance = random_chance
-        self.stop_on_success = stop_on_success
-        self.put_pheromones_always = put_pheromones_always
+        self.alpha = wave.alpha
+        self.beta = wave.beta
+        self.max_steps = wave.ant_max_steps
+        self.start_node = wave.ant_spawn_node
+        self.random_chance = wave.random_chance
+        self.stop_on_success = wave.stop_on_success
+        self.put_pheromones_always = wave.put_pheromones_always
 
         # Spawn
-        self.current_node = start_node
+        self.current_node = wave.ant_spawn_node
         self.path = []
-        self.path.append(start_node)
+        self.path.append(wave.ant_spawn_node)
         self.success = False
 
     def _value_for_node(self, target_node: str) -> float:
