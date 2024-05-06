@@ -15,12 +15,14 @@ class AcoPlot:
     colony: AntColonyRunner
 
     show_edge_parameters: bool = True
+    show_ant_animation: bool = True
 
     def init_config(self):
         self.G, self.ants_config, self.plot_config = GraphTools.load_config_from_json()
         self.colony = AntColonyRunner(self)
 
         self.show_edge_parameters = self.plot_config['show_edge_parameters'] if 'show_edge_parameters' in self.plot_config else True
+        self.show_ant_animation = self.plot_config['show_ant_animation'] if 'show_ant_animation' in self.plot_config else True
 
     def __init__(self):
         self.init_config()
@@ -126,7 +128,7 @@ class AcoPlot:
         else:
             artists = [nodes] + list(edges) + list(node_labels.values())
 
-        if len(self.colony.ants) > 0:
+        if len(self.colony.ants) > 0 and self.show_ant_animation:
             # Draw all ants as red dots
             ant_positions = [ant.current_node for ant in self.colony.ants]
             current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_color='red',

@@ -49,6 +49,14 @@ class WaveConfig:
     # if the ant dies at first success node
     stop_on_success: bool = True
 
+    # Minority Ant: If weekest trace should be selected only from traces edges
+    prioritize_pheromone_routes: bool = False
+
+    # Sleep times for diferent loops
+    step_sleep: float = 0.5
+    iteration_sleep: float = 0.5
+    wave_sleep: float = 0.5
+
     def __init__(self, wave):
         self.ant_class = wave['class'] if 'class' in wave else 'routing'
         self.ant_max_steps = wave['max_steps'] if 'max_steps' in wave else 20
@@ -62,6 +70,11 @@ class WaveConfig:
         self.concurrent_ants = wave['concurrent_ants'] if 'concurrent_ants' in wave else 2
         self.put_pheromones_always = wave['put_pheromones_always'] if 'put_pheromones_always' in wave else False
         self.stop_on_success = wave['stop_on_success'] if 'stop_on_success' in wave else True
+        self.prioritize_pheromone_routes = wave['prioritize_pheromone_routes'] if 'prioritize_pheromone_routes' in wave else False
+
+        self.step_sleep = wave['step_sleep'] if 'step_sleep' in wave else 0.5
+        self.iteration_sleep = wave['iteration_sleep'] if 'iteration_sleep' in wave else 0.5
+        self.wave_sleep = wave['wave_sleep'] if 'wave_sleep' in wave else 0.5
 
 
 class AntColonyRunner:
@@ -120,11 +133,15 @@ class AntColonyRunner:
                         self.stop()
                         
                     for i, ant in enumerate(self.ants):
-                        print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
+                        # print(" start " + ant.start_node + " curr " + ant.current_node + " path " + str(ant.path))
                         if not ant.step():       # Each ant performs one step and dies if not
                             self.ants.pop(i)
                     
                     if len(self.ants) > 0:
-                        time.sleep(0.5)
+                        time.sleep(wave.step_sleep)
+
+                time.sleep(wave.iteration_sleep)
+
+            time.sleep(wave.wave_sleep)
 
         self.stop()

@@ -5,7 +5,7 @@
       "x": 4,
       "y": 4
     },
-    "M": {
+    "K": {
       "value": 1
     }
   },
@@ -13,19 +13,24 @@
     {
       "class": "minority",
       "max_steps": 20,
-      "max_iterations": 10,
+      "max_iterations": 40,
       "random_spawn": false,
       "spawn_node": "A",
-      "evaporation_rate": 0.1,
+      "evaporation_rate": 0.03,
       "alpha": 0.7,
       "beta": 0.3,
       "random_chance": 0.05,
-      "concurrent_ants": 5,
+      "concurrent_ants": 8,
       "put_pheromones_always": false,
-      "stop_on_success": true
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.5,
+      "wave_sleep": 0.5
     }
   ],
   "plot": {
-    "show_edge_parameters": false
+    "show_edge_parameters": false,
+    "show_ant_animation": false
   }
 }
