@@ -57,6 +57,9 @@ class WaveConfig:
     iteration_sleep: float = 0.5
     wave_sleep: float = 0.5
 
+    # change graph values for this wave
+    node_value_changes: dict
+
     def __init__(self, wave):
         self.ant_class = wave['class'] if 'class' in wave else 'routing'
         self.ant_max_steps = wave['max_steps'] if 'max_steps' in wave else 20
@@ -75,6 +78,8 @@ class WaveConfig:
         self.step_sleep = wave['step_sleep'] if 'step_sleep' in wave else 0.5
         self.iteration_sleep = wave['iteration_sleep'] if 'iteration_sleep' in wave else 0.5
         self.wave_sleep = wave['wave_sleep'] if 'wave_sleep' in wave else 0.5
+
+        self.node_value_changes = wave['node_value_changes'] if 'node_value_changes' in wave else {}
 
 
 class AntColonyRunner:
@@ -115,9 +120,15 @@ class AntColonyRunner:
         if wave.ant_class == "minority":
             return minority_ant.Minority_Ant(self.G, wave)
 
+    def _change_graph_values(self, wave):
+        for change in wave.node_value_changes:
+            nx.set_node_attributes(self.G, {change: {'value': wave.node_value_changes[change]}})
+
     def _run(self):
         time.sleep(1)
         for wave in self.waves:
+            self._change_graph_values(wave)
+
             for iteration in range(wave.max_iterations):
                 # spawn ants
                 self.ants.clear()

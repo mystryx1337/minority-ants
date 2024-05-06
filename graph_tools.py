@@ -10,7 +10,7 @@ class GraphTools:
         G = nx.DiGraph()
 
         # Opening JSON file
-        f = open('configurations/minority_2d_grid_torus.json')
+        f = open('configurations/minority_traffic_graph.json')
 
         data: dict = json.load(f)
 
@@ -48,6 +48,12 @@ class GraphTools:
                 node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
                 GraphTools.add_edges_from_outgoing_node(G, node, target_nodes, edge_weights=edge_weights,
                                                         edge_pheromones=pheromones, node_value=node_value)
+
+        if not 'ants' in data:
+            data['ants'] = {}
+
+        if not 'plot' in data:
+            data['plot'] = {}
 
         return G, data['ants'], data['plot']
 

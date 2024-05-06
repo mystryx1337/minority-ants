@@ -1,0 +1,100 @@
+{
+  "nodes": {
+    "Stuttgart": {
+      "edges": ["Frankfurt","Nürnberg","München","Zürich"],
+      "weights": [205,212,232,211]
+    },
+    "Frankfurt": {
+      "edges": ["Köln","Dortmund","Bielefeld","Hannover","Leipzig", "Nürnberg", "Stuttgart"],
+      "weights": [190,228,276,354,396,224,205]
+    },
+    "München": {
+      "edges": ["Stuttgart","Zürich","Nürnberg"]
+    },
+    "Nürnberg": {
+      "edges": ["München","Stuttgart","Frankfurt","Leipzig","Dresden"]
+    },
+    "Zürich": {
+      "edges": ["Stuttgart","München"]
+    },
+    "Köln": {
+      "edges": ["Dortmund","Frankfurt","Amsterdam"]
+    },
+    "Dortmund": {
+      "edges": ["Köln","Amsterdam","Bielefeld","Frankfurt"]
+    },
+    "Bielefeld": {
+      "edges": ["Amsterdam","Dortmund","Bremen","Hannover","Frankfurt"]
+    },
+    "Hannover": {
+      "edges": ["Bielefeld","Bremen","Hamburg","Berlin", "Leipzig", "Frankfurt"]
+    },
+    "Leipzig": {
+      "edges": ["Hannover","Berlin","Frankfurt", "Dresden", "Nürnberg"]
+    },
+    "Dresden": {
+      "edges": ["Leipzig","Berlin","Nürnberg"]
+    },
+    "Berlin": {
+      "edges": ["Hamburg","Hannover","Leipzig","Dresden"]
+    },
+    "Hamburg": {
+      "edges": ["Bremen","Hannover", "Berlin"]
+    },
+    "Bremen": {
+      "edges": ["Amsterdam", "Bielefeld", "Hannover", "Hamburg"]
+    },
+    "Amsterdam": {
+      "edges": ["Bremen", "Bielefeld", "Dortmund", "Köln"]
+    }
+  },
+  "ants": [
+    {
+      "class": "routing",
+      "max_steps": 20,
+      "max_iterations": 15,
+      "random_spawn": false,
+      "spawn_node": "Zürich",
+      "evaporation_rate": 0.1,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 2,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.5,
+      "wave_sleep": 0.5,
+      "node_value_changes": {
+        "Hamburg": 1
+      }
+    },
+    {
+      "class": "routing",
+      "max_steps": 20,
+      "max_iterations": 15,
+      "random_spawn": false,
+      "spawn_node": "München",
+      "evaporation_rate": 0.1,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 2,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.5,
+      "wave_sleep": 0.5,
+      "node_value_changes": {
+        "Hamburg": 0,
+        "Amsterdam": 1
+      }
+    }
+  ],
+  "plot": {
+    "show_edge_parameters": false,
+    "show_ant_animation": false
+  }
+}

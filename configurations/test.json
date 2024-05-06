@@ -1,51 +1,52 @@
 {
   "nodes": {
-    "A": {
-      "edges": ["B","D","E","S"]
+    "Stuttgart": {
+      "edges": ["Frankfurt","Nürnberg","München","Zürich"],
+      "weights": [205,212,232,211]
     },
-    "B": {
-      "edges": ["A","C","D","E","F"]
+    "Frankfurt": {
+      "edges": ["Köln","Dortmund","Bielefeld","Hannover","Leipzig","Dresden", "Nürnberg", "Stuttgart"]
     },
-    "C": {
-      "edges": ["B","E","F"],
+    "München": {
+      "edges": ["Stuttgart","E","F"],
       "weights": [3,3,3]
     },
-    "D": {
+    "Nürnberg": {
       "edges": ["A","B","E","G","H","X"]
     },
-    "E": {
+    "Zürich": {
       "edges": ["A","B","C","D","F","G","H"]
     },
-    "F": {
+    "Köln": {
       "edges": ["B","C","E","I"]
     },
-    "G": {
+    "Dortmund": {
       "edges": ["D","E","H","J","K"]
     },
-    "H": {
+    "Bielefeld": {
       "edges": ["D","E","G","I","J","K","L"]
     },
-    "I": {
+    "Hannover": {
       "edges": ["F","H","K","L"]
     },
-    "J": {
+    "Leipzig": {
       "edges": ["G","H","K"],
       "pheromones": [0.5, 0.8, 1.0]
     },
-    "K": {
+    "Dresden": {
       "edges": ["G","H","I","J","L"]
     },
-    "L": {
+    "Berlin": {
       "edges": ["H","I","K","Z"],
       "pheromones": [0.0, 0.0, 0.0, 1.0]
     },
-    "S": {
+    "Hamburg": {
       "edges": ["A"]
     },
-    "X": {
+    "Bremen": {
       "edges": ["D"]
     },
-    "Z": {
+    "Amsterdam": {
       "edges": ["L"],
       "value": 1
     }
