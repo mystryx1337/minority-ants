@@ -9,43 +9,56 @@
       "weights": [190,228,276,354,396,224,205]
     },
     "München": {
-      "edges": ["Stuttgart","Zürich","Nürnberg"]
+      "edges": ["Stuttgart","Zürich","Nürnberg"],
+      "weights": [232,312, 169]
     },
     "Nürnberg": {
-      "edges": ["München","Stuttgart","Frankfurt","Leipzig","Dresden"]
+      "edges": ["München","Stuttgart","Frankfurt","Leipzig","Dresden"],
+      "weights": [169,212,224,285,316]
     },
     "Zürich": {
-      "edges": ["Stuttgart","München"]
+      "edges": ["Stuttgart","München"],
+      "weights": [211,312]
     },
     "Köln": {
-      "edges": ["Dortmund","Frankfurt","Amsterdam"]
+      "edges": ["Dortmund","Frankfurt","Amsterdam"],
+      "weights": [96,190,262]
     },
     "Dortmund": {
-      "edges": ["Köln","Amsterdam","Bielefeld","Frankfurt"]
+      "edges": ["Köln","Amsterdam","Bielefeld","Frankfurt"],
+      "weights": [96,241,114,228]
     },
     "Bielefeld": {
-      "edges": ["Amsterdam","Dortmund","Bremen","Hannover","Frankfurt"]
+      "edges": ["Amsterdam","Dortmund","Bremen","Hannover","Frankfurt"],
+      "weights": [295,114,189,108,276]
     },
     "Hannover": {
-      "edges": ["Bielefeld","Bremen","Hamburg","Berlin", "Leipzig", "Frankfurt"]
+      "edges": ["Bielefeld","Bremen","Hamburg","Berlin", "Leipzig", "Frankfurt"],
+      "weights": [108,127,155,290,266,353]
     },
     "Leipzig": {
-      "edges": ["Hannover","Berlin","Frankfurt", "Dresden", "Nürnberg"]
+      "edges": ["Hannover","Berlin","Frankfurt", "Dresden", "Nürnberg"],
+      "weights": [266,192,396,113,285]
     },
     "Dresden": {
-      "edges": ["Leipzig","Berlin","Nürnberg"]
+      "edges": ["Leipzig","Berlin","Nürnberg"],
+      "weights": [113,193,316]
     },
     "Berlin": {
-      "edges": ["Hamburg","Hannover","Leipzig","Dresden"]
+      "edges": ["Hamburg","Hannover","Leipzig","Dresden"],
+      "weights": [292,286,190,193]
     },
     "Hamburg": {
-      "edges": ["Bremen","Hannover", "Berlin"]
+      "edges": ["Bremen","Hannover", "Berlin"],
+      "weights": [126,155,292]
     },
     "Bremen": {
-      "edges": ["Amsterdam", "Bielefeld", "Hannover", "Hamburg"]
+      "edges": ["Amsterdam", "Bielefeld", "Hannover", "Hamburg"],
+      "weights": [353,189,127,126]
     },
     "Amsterdam": {
-      "edges": ["Bremen", "Bielefeld", "Dortmund", "Köln"]
+      "edges": ["Bremen", "Bielefeld", "Dortmund", "Köln"],
+      "weights": [353,295,241,262]
     }
   },
   "ants": [
@@ -95,6 +108,7 @@
   ],
   "plot": {
     "show_edge_parameters": false,
-    "show_ant_animation": false
+    "show_ant_animation": false,
+    "node_label_color": "grey"
   }
 }

@@ -80,6 +80,9 @@ class GraphTools:
         """
         if len(target_nodes) > 0:
             for i, target_node in enumerate(target_nodes):
+                if not G.has_node(target_node):
+                    nx.set_node_attributes(G, {target_node: {'value': 0}})
+
                 weight = 1
                 if edge_weights is not None:
                     weight = edge_weights[i]

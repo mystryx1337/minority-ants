@@ -13,9 +13,14 @@ class AcoPlot:
     pos: dict
     ants_config: dict
     colony: AntColonyRunner
+    plot_config: dict
 
     show_edge_parameters: bool = True
     show_ant_animation: bool = True
+    node_label_color: str = 'white'
+    edge_weight_label_color: str = 'red'
+    edge_pheromone_label_color: str = 'blue'
+    ant_animation_color: str = 'red'
 
     def init_config(self):
         self.G, self.ants_config, self.plot_config = GraphTools.load_config_from_json()
@@ -23,6 +28,10 @@ class AcoPlot:
 
         self.show_edge_parameters = self.plot_config['show_edge_parameters'] if 'show_edge_parameters' in self.plot_config else True
         self.show_ant_animation = self.plot_config['show_ant_animation'] if 'show_ant_animation' in self.plot_config else True
+        self.node_label_color = self.plot_config['node_label_color'] if 'node_label_color' in self.plot_config else 'white'
+        self.edge_weight_label_color = self.plot_config['edge_weight_label_color'] if 'edge_weight_label_color' in self.plot_config else 'red'
+        self.edge_pheromone_label_color = self.plot_config['edge_pheromone_label_color'] if 'edge_pheromone_label_color' in self.plot_config else 'blue'
+        self.ant_animation_color = self.plot_config['ant_animation_color'] if 'ant_animation_color' in self.plot_config else 'red'
 
     def __init__(self):
         self.init_config()
@@ -107,20 +116,22 @@ class AcoPlot:
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
 
         # Node labels
-        node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color="white",
+        node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color=self.node_label_color,
                                               labels={n: n for n in self.G.nodes()}, ax=self.ax)
 
         if self.show_edge_parameters:
             # Edge labels for weight
             weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
             edge_weight_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels,
-                                                              font_color='red', label_pos=0.1, ax=self.ax)
+                                                              font_color=self.edge_weight_label_color,
+                                                              label_pos=0.1, ax=self.ax)
 
             # Edge labels for pheromone
             pheromone_labels = {(tail, head): f"{round(data['pheromone'], 1)}" for tail, head, data in
                                 self.G.edges(data=True)}
             edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
-                                                                 font_color='blue', label_pos=0.3, ax=self.ax)
+                                                                 font_color=self.edge_pheromone_label_color,
+                                                                 label_pos=0.3, ax=self.ax)
 
             # Collect all artists that need to be returned for blitting to work correctly
             artists = [nodes] + list(edges) + list(node_labels.values()) + list(edge_weight_labels.values()) + list(
@@ -131,8 +142,8 @@ class AcoPlot:
         if len(self.colony.ants) > 0 and self.show_ant_animation:
             # Draw all ants as red dots
             ant_positions = [ant.current_node for ant in self.colony.ants]
-            current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_color='red',
-                                                          node_size=700, ax=self.ax)
+            current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_size=700,
+                                                          node_color=self.ant_animation_color, ax=self.ax)
             artists.append(current_node_artists)
 
             # Draw paths for each ant
@@ -143,7 +154,7 @@ class AcoPlot:
                     # Draw lines between each pair of successive nodes
                     for coords in path_coords:
                         path_line = self.ax.plot([coords[0][0], coords[1][0]], [coords[0][1], coords[1][1]],
-                                                 color='red',
+                                                 color=self.ant_animation_color,
                                                  linestyle='-', linewidth=2)
                         artists.extend(path_line)
 
