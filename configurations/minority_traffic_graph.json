@@ -63,7 +63,7 @@
   },
   "ants": [
     {
-      "class": "routing",
+      "class": "minority",
       "max_steps": 20,
       "max_iterations": 15,
       "random_spawn": false,
@@ -71,8 +71,8 @@
       "evaporation_rate": 0.1,
       "alpha": 0.7,
       "beta": 0.3,
-      "random_chance": 0.05,
-      "concurrent_ants": 2,
+      "random_chance": 0.10,
+      "concurrent_ants": 5,
       "put_pheromones_always": false,
       "stop_on_success": true,
       "prioritize_pheromone_routes": true,
@@ -84,7 +84,7 @@
       }
     },
     {
-      "class": "routing",
+      "class": "minority",
       "max_steps": 20,
       "max_iterations": 15,
       "random_spawn": false,
@@ -92,8 +92,8 @@
       "evaporation_rate": 0.1,
       "alpha": 0.7,
       "beta": 0.3,
-      "random_chance": 0.05,
-      "concurrent_ants": 2,
+      "random_chance": 0.10,
+      "concurrent_ants": 5,
       "put_pheromones_always": false,
       "stop_on_success": true,
       "prioritize_pheromone_routes": true,

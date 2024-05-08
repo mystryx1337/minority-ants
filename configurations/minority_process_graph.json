@@ -1,0 +1,105 @@
+{
+  "nodes": {
+    "Kind (u12) ist erkrankt": {
+      "edges": ["Kind-Krank-Meldung mit Attest am ersten Tag"]
+    },
+    "Kind-Krank-Meldung mit Attest am ersten Tag": {
+      "edges": ["Meldung weiterleiten_"]
+    },
+    "Meldung weiterleiten_": {
+      "edges": ["Wiedervorlage 3 Tage"]
+    },
+    "Wiedervorlage 3 Tage": {
+      "edges": ["Attest prüfen"]
+    },
+    "Attest prüfen": {
+      "edges": ["Mitarbeiter zurück", "Mitarbeiter nicht zurück"]
+    },
+    "Mitarbeiter zurück": {
+      "edges": ["Gesundmeldung erfassen"]
+    },
+    "Mitarbeiter nicht zurück": {
+      "edges": ["Krankheit dauert noch an"]
+    },
+    "Krankheit dauert noch an": {
+      "edges": ["Attest eingegangen","Attest nicht eingegangen"]
+    },
+    "Attest eingegangen": {
+      "edges": ["Wie viele Tage bereits Kind-krank?"]
+    },
+    "Wie viele Tage bereits Kind-krank?": {
+      "edges": ["Kind-krank-Tage überschritten", "Kind-krank-Tage nicht überschritten"]
+    },
+    "Kind-krank-Tage nicht überschritten": {
+      "edges": ["Entgelt wird nicht gekürzt"]
+    },
+    "Entgelt wird nicht gekürzt": {
+      "value": 1
+    },
+    "Kind-krank-Tage überschritten": {
+      "edges": ["Mitarbiter wieder am Arbeitsplatz", "Mitarbiter nicht wieder am Arbeitsplatz"]
+    },
+    "Mitarbiter wieder am Arbeitsplatz": {
+      "edges": ["Gesundmeldung erfassen"]
+    },
+    "Gesundmeldung erfassen": {
+      "edges": ["Meldung weiterleiten"]
+    },
+    "Meldung weiterleiten": {
+      "edges": ["Gesundheitsmeldung erfassen"]
+    },
+    "Gesundheitsmeldung erfassen": {
+      "edges": ["Entgelt wird nicht gekürzt"]
+    },
+    "Mitarbiter nicht wieder am Arbeitsplatz": {
+      "edges": ["Entgeltmeldung erfassen"]
+    },
+    "Entgeltmeldung erfassen": {
+      "edges": ["Entgelt wird gekürzt"]
+    },
+    "Entgelt wird gekürzt": {
+      "value": 1
+    },
+    "Attest nicht eingegangen": {
+      "edges": ["Attest einfordern"]
+    },
+    "Attest einfordern": {
+      "edges": ["Attest inzwischen eingegangen", "Attest immer noch nicht eingegangen"]
+    },
+    "Attest inzwischen eingegangen": {
+      "edges": ["Wie viele Tage bereits Kind-krank?"]
+    },
+    "Attest immer noch nicht eingegangen": {
+      "edges": ["Entgeltkürzung androhen"]
+    },
+    "Entgeltkürzung androhen": {
+      "edges": ["Attest inzwischen eingegangen","Entgelt wird gekürzt"]
+    }
+  },
+  "ants": [
+    {
+      "class": "minority",
+      "max_steps": 20,
+      "max_iterations": 40,
+      "random_spawn": false,
+      "spawn_node": "Kind (u12) ist erkrankt",
+      "evaporation_rate": 0.1,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 6,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": false,
+      "step_sleep": 0.8,
+      "iteration_sleep": 0.2,
+      "wave_sleep": 0.5
+    }
+  ],
+  "plot": {
+    "show_edge_parameters": false,
+    "show_ant_animation": true,
+    "node_label_color": "grey",
+    "node_label_size": 8
+  }
+}

@@ -18,6 +18,7 @@ class AcoPlot:
     show_edge_parameters: bool = True
     show_ant_animation: bool = True
     node_label_color: str = 'white'
+    node_label_size: int = 12
     edge_weight_label_color: str = 'red'
     edge_pheromone_label_color: str = 'blue'
     ant_animation_color: str = 'red'
@@ -29,6 +30,7 @@ class AcoPlot:
         self.show_edge_parameters = self.plot_config['show_edge_parameters'] if 'show_edge_parameters' in self.plot_config else True
         self.show_ant_animation = self.plot_config['show_ant_animation'] if 'show_ant_animation' in self.plot_config else True
         self.node_label_color = self.plot_config['node_label_color'] if 'node_label_color' in self.plot_config else 'white'
+        self.node_label_size = self.plot_config['node_label_size'] if 'node_label_size' in self.plot_config else 12
         self.edge_weight_label_color = self.plot_config['edge_weight_label_color'] if 'edge_weight_label_color' in self.plot_config else 'red'
         self.edge_pheromone_label_color = self.plot_config['edge_pheromone_label_color'] if 'edge_pheromone_label_color' in self.plot_config else 'blue'
         self.ant_animation_color = self.plot_config['ant_animation_color'] if 'ant_animation_color' in self.plot_config else 'red'
@@ -88,6 +90,8 @@ class AcoPlot:
         plt.axis("off")
         plt.show()
 
+        self.colony.stop()
+
     def update_plot(self, frame):
         # Compute minimum and maximum values for normalization
         min_weight, max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
@@ -116,8 +120,8 @@ class AcoPlot:
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
 
         # Node labels
-        node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=12, font_color=self.node_label_color,
-                                              labels={n: n for n in self.G.nodes()}, ax=self.ax)
+        node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=self.node_label_size, ax=self.ax,
+                                              font_color=self.node_label_color, labels={n: n for n in self.G.nodes()})
 
         if self.show_edge_parameters:
             # Edge labels for weight

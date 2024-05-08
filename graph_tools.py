@@ -10,7 +10,7 @@ class GraphTools:
         G = nx.DiGraph()
 
         # Opening JSON file
-        f = open('configurations/minority_traffic_graph.json')
+        f = open('configurations/minority_process_graph.json')
 
         data: dict = json.load(f)
 
