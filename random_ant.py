@@ -41,7 +41,7 @@ class Random_Ant:
         tau = data["pheromone"]     # pheromones
         eta = data["weight"]        # edge cost
 
-        return ((tau ** alpha) * (eta ** beta))
+        return (tau ** alpha) / (eta ** beta)
 
     def _pick_a_new_node(self) -> str:
         #try to use a new path
