@@ -10,7 +10,7 @@ class GraphTools:
         G = nx.DiGraph()
 
         # Opening JSON file
-        f = open('configurations/minority_process_graph.json')
+        f = open('configurations/minority_2d_grid_torus.json')
 
         data: dict = json.load(f)
 
@@ -26,6 +26,7 @@ class GraphTools:
             if data['nodes']['macro']['type'] == '2d_grid_torus':
                 x: int = data['nodes']['macro']['x']
                 y: int = data['nodes']['macro']['y']
+                pos: dict = {}
                 nodes = GraphTools.generate_nodes(x * y)
                 nodes_2d = np.array(nodes).reshape(x, y)
                 for i in range(x):
@@ -37,6 +38,7 @@ class GraphTools:
                             nodes_2d[i, (j + 1) % y],
                             nodes_2d[i, (j - 1) % y]]
                         GraphTools.add_edges_from_outgoing_node(G, node, neighborhood_nodes)
+                        pos[node] = np.array([i*100, j*100])
             if data['nodes']['macro']['type'] == 'small_world':
                 pass
             
@@ -49,13 +51,16 @@ class GraphTools:
                 GraphTools.add_edges_from_outgoing_node(G, node, target_nodes, edge_weights=edge_weights,
                                                         edge_pheromones=pheromones, node_value=node_value)
 
+        if data['nodes']['macro']['type'] != '2d_grid_torus':
+            pos = nx.spring_layout(G)  # positions for all nodes
+
         if not 'ants' in data:
             data['ants'] = {}
 
         if not 'plot' in data:
             data['plot'] = {}
 
-        return G, data['ants'], data['plot']
+        return G, data['ants'], data['plot'], pos
 
     @staticmethod
     def generate_nodes(n: int):
@@ -96,7 +101,10 @@ class GraphTools:
         nx.set_node_attributes(G, {outgoing_node: {'value': node_value}})
 
     @staticmethod
-    def add_edge(G, tail, head, weight, tail_value=None, head_value=None):
+    def add_edge(G, tail, head, weight, tail_value=None, head_value=None, pos=None) -> dict:
+        if pos is None:
+            pos = []
+
         try:
             weight = float(weight)
         except ValueError:
@@ -105,10 +113,10 @@ class GraphTools:
         # Change node value
         if tail == '' and head != '':
             GraphTools.change_node_value(G, head, weight)
-            return
+            return pos
         if tail != '' and head == '':
             GraphTools.change_node_value(G, tail, weight)
-            return
+            return pos
 
         # Add or update nodes with the specified or default 'value'
         if not G.has_node(tail):
@@ -125,6 +133,7 @@ class GraphTools:
 
         # Add the edge with weight and pheromone
         G.add_edge(tail, head, weight=weight, pheromone=0.0)
+        return nx.spring_layout(G)
 
     @staticmethod
     def change_node_value(G, node, value):
@@ -134,7 +143,7 @@ class GraphTools:
             pass
 
     @staticmethod
-    def delete_edge(G, tail, head):
+    def delete_edge(G, tail, head, pos: dict) -> dict:
         # Entfernen der Kante zum Graphen
         try:
             G.remove_edge(tail, head)
@@ -142,7 +151,11 @@ class GraphTools:
             # Lösche Knoten, falls keine Kante mehr dazu existiert
             if G.degree[tail] == 0:
                 G.remove_node(tail)
+                pos.pop(tail)
             if G.degree[head] == 0:
                 G.remove_node(head)
+                pos.pop(head)
         except nx.NetworkXError:  # Kante existiert nicht
             pass
+
+        return pos

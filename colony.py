@@ -155,4 +155,5 @@ class AntColonyRunner:
 
             time.sleep(wave.wave_sleep)
 
+        print("Run finished")
         self.stop()

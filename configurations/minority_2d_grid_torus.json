@@ -2,35 +2,36 @@
   "nodes": {
     "macro": {
       "type": "2d_grid_torus",
-      "x": 4,
-      "y": 4
+      "x": 9,
+      "y": 9
     },
-    "K": {
+    "CI": {
       "value": 1
     }
   },
   "ants": [
     {
       "class": "minority",
-      "max_steps": 20,
-      "max_iterations": 40,
+      "max_steps": 35,
+      "max_iterations": 100,
       "random_spawn": false,
-      "spawn_node": "A",
-      "evaporation_rate": 0.03,
+      "spawn_node": "AU",
+      "evaporation_rate": 0.05,
       "alpha": 0.7,
       "beta": 0.3,
-      "random_chance": 0.05,
-      "concurrent_ants": 8,
+      "random_chance": 0.09,
+      "concurrent_ants": 30,
       "put_pheromones_always": false,
       "stop_on_success": true,
       "prioritize_pheromone_routes": true,
       "step_sleep": 0.0,
-      "iteration_sleep": 0.5,
+      "iteration_sleep": 0.05,
       "wave_sleep": 0.5
     }
   ],
   "plot": {
     "show_edge_parameters": false,
-    "show_ant_animation": false
+    "show_ant_animation": false,
+    "cmap_edges": "Purples"
   }
 }

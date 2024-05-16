@@ -24,7 +24,7 @@ class AcoPlot:
     ant_animation_color: str = 'red'
 
     def init_config(self):
-        self.G, self.ants_config, self.plot_config = GraphTools.load_config_from_json()
+        self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_config_from_json()
         self.colony = AntColonyRunner(self)
 
         self.show_edge_parameters = self.plot_config['show_edge_parameters'] if 'show_edge_parameters' in self.plot_config else True
@@ -35,19 +35,18 @@ class AcoPlot:
         self.edge_pheromone_label_color = self.plot_config['edge_pheromone_label_color'] if 'edge_pheromone_label_color' in self.plot_config else 'blue'
         self.ant_animation_color = self.plot_config['ant_animation_color'] if 'ant_animation_color' in self.plot_config else 'red'
 
+        # colormaps  https://matplotlib.org/stable/users/explain/colors/colormaps.html
+        mpl.rcParams['toolbar'] = 'None'
+        self.cmap_edges = mpl.colormaps[self.plot_config['cmap_edges']] if 'cmap_edges' in self.plot_config else mpl.colormaps['cool']
+        self.cmap_nodes = mpl.colormaps[self.plot_config['cmap_nodes']] if 'cmap_nodes' in self.plot_config else mpl.colormaps['winter']
+
     def __init__(self):
         self.init_config()
-        mpl.rcParams['toolbar'] = 'None'
-
-        # colormaps  https://matplotlib.org/stable/users/explain/colors/colormaps.html
-        self.cmap_cool = mpl.colormaps['cool']
-        self.cmap_winter = mpl.colormaps['winter']
 
         # Status of the animation
         self.status = {'ants_running': False}
 
         #area for buttons
-        self.pos = nx.spring_layout(self.G)  # positions for all nodes
         self.current_node = list(self.G.nodes())[0] if self.G.nodes() else None
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
         plt.subplots_adjust(bottom=0.2)  # Ändere den unteren Rand des Plots, um Platz für den Knopf zu schaffen
@@ -108,13 +107,13 @@ class AcoPlot:
         self.ax.clear()
 
         # Draw nodes with updated properties
-        node_colors = [self.cmap_winter(node_norm(data['value'])) for _, data in self.G.nodes(data=True)]
+        node_colors = [self.cmap_nodes(node_norm(data['value'])) for _, data in self.G.nodes(data=True)]
         nodes = nx.draw_networkx_nodes(self.G, pos=self.pos, nodelist=list(self.G.nodes()), node_color=node_colors,
                                        ax=self.ax)
 
         # Draw edges with updated properties
         edges = self.G.edges(data=True)
-        edge_colors = [self.cmap_cool(edge_norm(data['pheromone'])) for _, _, data in edges]
+        edge_colors = [self.cmap_edges(edge_norm(data['pheromone'])) for _, _, data in edges]
         widths = [1 + (data['weight'] - min_weight) / (max_weight - min_weight + 1) for _, _, data in edges]
         edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths, edge_color=edge_colors,
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
@@ -165,9 +164,7 @@ class AcoPlot:
         return artists
 
     def add_edge(self, tail, head, weight, tail_value=None, head_value=None):
-        GraphTools.add_edge(self.G, tail, head, weight, tail_value, head_value)
-        self.pos = nx.spring_layout(self.G)
+        self.pos = GraphTools.add_edge(self.G, tail, head, weight, tail_value, head_value, self.pos)
 
     def delete_edge(self, tail, head):
-        GraphTools.delete_edge(self.G, tail, head)
-        self.pos = nx.spring_layout(self.G)  # Recalculate layout
+        self.pos = GraphTools.delete_edge(self.G, tail, head, self.pos)  # Recalculate layout
