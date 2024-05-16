@@ -39,7 +39,7 @@ class Routing_Ant(random_ant.Random_Ant):
                 cost += current_weight 
         return cost
 
-    def _increase_pheromone(self, new_node):
+    def _increase_pheromone_on_success(self, new_node):
         # when value node arrived: mark current path
         if self._check_success() and not self.put_pheromones_always:
             cost: int = self._get_cost_of_current_path()
@@ -50,3 +50,10 @@ class Routing_Ant(random_ant.Random_Ant):
 
                     current_pheromones = self.G[current_node][next_node]['pheromone']
                     self.G[current_node][next_node].update({'pheromone': current_pheromones + pheromones_to_put})
+
+    def _increase_pheromone(self, new_node):
+        # when value node arrived: mark current path
+        if self.put_pheromones_always:
+            super()._increase_pheromone_always(new_node)
+        else:
+            self._increase_pheromone_on_success(new_node)

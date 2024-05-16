@@ -124,6 +124,16 @@ class AntColonyRunner:
         for change in wave.node_value_changes:
             nx.set_node_attributes(self.G, {change: {'value': wave.node_value_changes[change]}})
 
+    def _count_pheromoned_edges(self):
+        total_edges: int = len(self.G.edges.keys())
+        pheromoned_edges: int = 0
+        edges = self.G.edges(data=True)
+        for i, o, data in edges:
+            if data['pheromone'] > 0:
+                pheromoned_edges += 1
+
+        return pheromoned_edges
+
     def _run(self):
         time.sleep(1)
         for wave in self.waves:
@@ -152,8 +162,10 @@ class AntColonyRunner:
                         time.sleep(wave.step_sleep)
 
                 time.sleep(wave.iteration_sleep)
+                print(self._count_pheromoned_edges())
 
             time.sleep(wave.wave_sleep)
 
         print("Run finished")
+
         self.stop()

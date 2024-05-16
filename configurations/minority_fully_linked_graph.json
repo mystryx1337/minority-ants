@@ -10,7 +10,7 @@
   },
   "ants": [
     {
-      "class": "routing",
+      "class": "minority",
       "max_steps": 20,
       "max_iterations": 15,
       "random_spawn": false,
