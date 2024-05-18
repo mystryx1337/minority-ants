@@ -44,12 +44,13 @@ class AcoPlot:
     def __init__(self, config_path):
         self.init_config(config_path)
         self.status = {'ants_running': False}
+        self.buttons_visible = True
         self.setup_plot()
 
     def setup_plot(self):
         self.current_node = list(self.G.nodes())[0] if self.G.nodes() else None
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
-        plt.subplots_adjust(bottom=0.2)
+        plt.subplots_adjust(bottom=0.3)
         self.setup_buttons()
         plt.sca(self.ax)
         self.ani = animation.FuncAnimation(self.fig, self.update_plot, frames=200,
@@ -60,31 +61,94 @@ class AcoPlot:
         self.colony.stop()
 
     def setup_buttons(self):
-        ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.075])
+        ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.05])
         self.textbox_tail = TextBox(ax_tail, 'Start ')
 
-        ax_head = self.fig.add_axes([0.35, 0.05, 0.05, 0.075])
+        ax_head = self.fig.add_axes([0.35, 0.05, 0.05, 0.05])
         self.textbox_head = TextBox(ax_head, 'Ende ')
 
-        ax_weight = self.fig.add_axes([0.45, 0.05, 0.05, 0.075])
+        ax_weight = self.fig.add_axes([0.45, 0.05, 0.05, 0.05])
         self.textbox_weight = TextBox(ax_weight, 'Weight ')
 
-        add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.075])
+        add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.05])
         self.add_edge_button = Button(add_edge_ax, label='Add')
         self.add_edge_button.on_clicked(lambda event: self.add_edge(self.textbox_tail.text, self.textbox_head.text,
                                                                     self.textbox_weight.text))
 
-        delete_edge_ax = self.fig.add_axes([0.55, 0.05, 0.1, 0.075])
+        delete_edge_ax = self.fig.add_axes([0.55, 0.05, 0.1, 0.05])
         self.delete_edge_button = Button(delete_edge_ax, label='Remove')
-        self.delete_edge_button.on_clicked(lambda event: self.delete_edge(self.textbox_tail.text, self.textbox_head.text))
+        self.delete_edge_button.on_clicked(
+            lambda event: self.delete_edge(self.textbox_tail.text, self.textbox_head.text))
 
-        start_colony_ax = self.fig.add_axes([0.75, 0.05, 0.1, 0.075])
+        start_colony_ax = self.fig.add_axes([0.7, 0.05, 0.1, 0.05])
         self.start_colony_button = Button(start_colony_ax, label='Run Colony')
         self.start_colony_button.on_clicked(lambda event: self.colony.start())
 
-        load_config_ax = self.fig.add_axes([0.85, 0.05, 0.1, 0.075])
+        load_config_ax = self.fig.add_axes([0.82, 0.05, 0.1, 0.05])
         self.load_config_button = Button(load_config_ax, label='Load Config')
         self.load_config_button.on_clicked(self.on_load_config_clicked)
+
+
+        ax_alpha = self.fig.add_axes([0.25, 0.15, 0.05, 0.05])
+        self.textbox_alpha = TextBox(ax_alpha, 'Alpha', initial=str(self.colony.waves[0].alpha))
+
+        ax_beta = self.fig.add_axes([0.35, 0.15, 0.05, 0.05])
+        self.textbox_beta = TextBox(ax_beta, 'Beta', initial=str(self.colony.waves[0].beta))
+
+        ax_random_chance = self.fig.add_axes([0.45, 0.15, 0.05, 0.05])
+        self.textbox_random_chance = TextBox(ax_random_chance, 'Rand',
+                                             initial=str(self.colony.waves[0].random_chance))
+
+
+        update_params_ax = self.fig.add_axes([0.55, 0.15, 0.1, 0.05])
+        self.update_params_button = Button(update_params_ax, label='Update Params')
+        self.update_params_button.on_clicked(self.update_parameters)
+
+        # Add toggle button for hiding/showing GUI elements
+        toggle_buttons_ax = self.fig.add_axes([0.7, 0.15, 0.1, 0.05])
+        self.toggle_buttons_button = Button(toggle_buttons_ax, label='Hide Buttons')
+        self.toggle_buttons_button.on_clicked(self.toggle_buttons)
+
+    def update_parameters(self, event):
+        try:
+            alpha = float(self.textbox_alpha.text)
+            beta = float(self.textbox_beta.text)
+            random_chance = float(self.textbox_random_chance.text)
+
+            for wave in self.colony.waves:
+                wave.alpha = alpha
+                wave.beta = beta
+                wave.random_chance = random_chance
+
+            print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}')
+        except ValueError:
+            print("Please enter valid numerical values for alpha, beta, and random chance.")
+
+    def toggle_buttons(self, event):
+        self.buttons_visible = not self.buttons_visible
+
+        # Toggle visibility of TextBox widgets
+        self.textbox_tail.ax.set_visible(self.buttons_visible)
+        self.textbox_head.ax.set_visible(self.buttons_visible)
+        self.textbox_weight.ax.set_visible(self.buttons_visible)
+        self.textbox_alpha.ax.set_visible(self.buttons_visible)
+        self.textbox_beta.ax.set_visible(self.buttons_visible)
+        self.textbox_random_chance.ax.set_visible(self.buttons_visible)
+
+        # Toggle visibility of Button widgets
+        self.add_edge_button.ax.set_visible(self.buttons_visible)
+        self.delete_edge_button.ax.set_visible(self.buttons_visible)
+        # self.start_colony_button.ax.set_visible(self.buttons_visible)
+        # self.load_config_button.ax.set_visible(self.buttons_visible)
+        self.update_params_button.ax.set_visible(self.buttons_visible)
+
+        # Update the label of the toggle button
+        if self.buttons_visible:
+            self.toggle_buttons_button.label.set_text('Hide Buttons')
+        else:
+            self.toggle_buttons_button.label.set_text('Show Buttons')
+
+        plt.draw()
 
     def reset(self, config_path):
         self.colony.stop()
