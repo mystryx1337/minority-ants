@@ -95,6 +95,7 @@ class AntColonyRunner:
     def __init__(self, plot):
         self.plot = plot
         self.G = plot.G
+        self.stop_event = threading.Event()
 
         self.waves = []
         for wave in plot.ants_config:

@@ -6,11 +6,11 @@ import numpy as np
 
 class GraphTools:
     @staticmethod
-    def load_config_from_json():
+    def load_config_from_json(path):
         G = nx.DiGraph()
 
         # Opening JSON file
-        f = open('configurations/minority_2d_grid_torus.json')
+        f = open(path)
 
         data: dict = json.load(f)
 
