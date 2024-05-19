@@ -109,6 +109,22 @@ class AcoPlot:
         self.toggle_buttons_button = Button(toggle_buttons_ax, label='Hide Buttons')
         self.toggle_buttons_button.on_clicked(self.toggle_buttons)
 
+        # Add slider for step sleep
+        ax_step_sleep  = self.fig.add_axes([0.75, 0.25, 0.05, 0.03])
+        self.textbox_step_sleep = TextBox(ax_step_sleep, 'Step Sleep', initial=str(self.colony.waves[0].step_sleep))
+        self.textbox_step_sleep.on_submit(self.update_step_sleep)
+
+        # Add slider for iteration sleep
+        ax_iteration_sleep  = self.fig.add_axes([0.55, 0.25, 0.05, 0.03])
+        self.textbox_iteration_sleep = TextBox(ax_iteration_sleep, 'Iteration Sleep',
+                                               initial=str(self.colony.waves[0].iteration_sleep))
+        self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
+
+        # Add slider for wave sleep
+        ax_wave_sleep  = self.fig.add_axes([0.35, 0.25, 0.05, 0.03])
+        self.textbox_wave_sleep = TextBox(ax_wave_sleep, 'Wave Sleep', initial=str(self.colony.waves[0].wave_sleep))
+        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
+
     def update_parameters(self, event):
         try:
             alpha = float(self.textbox_alpha.text)
@@ -123,6 +139,38 @@ class AcoPlot:
             print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}')
         except ValueError:
             print("Please enter valid numerical values for alpha, beta, and random chance.")
+
+    def update_speed(self, val):
+        self.speed_factor = val
+        for wave in self.colony.waves:
+            wave.step_sleep = 0.5 / self.speed_factor
+            wave.iteration_sleep = 0.5 / self.speed_factor
+            wave.wave_sleep = 0.5 / self.speed_factor
+        print(f'Updated speed factor: {self.speed_factor}')
+
+    def update_step_sleep(self, text):
+        try:
+            val = float(text)
+            for wave in self.colony.waves:
+                wave.step_sleep = val
+        except ValueError:
+            print("Please enter a valid number for step sleep.")
+
+    def update_iteration_sleep(self, text):
+        try:
+            val = float(text)
+            for wave in self.colony.waves:
+                wave.iteration_sleep = val
+        except ValueError:
+            print("Please enter a valid number for iteration sleep.")
+
+    def update_wave_sleep(self, text):
+        try:
+            val = float(text)
+            for wave in self.colony.waves:
+                wave.wave_sleep = val
+        except ValueError:
+            print("Please enter a valid number for wave sleep.")
 
     def toggle_buttons(self, event):
         self.buttons_visible = not self.buttons_visible
