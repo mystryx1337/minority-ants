@@ -65,7 +65,7 @@ class WaveConfig:
         self.ant_max_steps = wave['max_steps'] if 'max_steps' in wave else 20
         self.max_iterations = wave['max_iterations'] if 'max_iterations' in wave else 15
         self.ant_random_spawn = wave['random_spawn'] if 'random_spawn' in wave else False
-        self.ant_spawn_node = wave['spawn_node'] if 'spawn_node' in wave else "S"
+        self.ant_spawn_node = wave['spawn_node'] if 'spawn_node' in wave else "AU"
         self.evaporation_rate = wave['evaporation_rate'] if 'evaporation_rate' in wave else 0.1
         self.alpha = wave['alpha'] if 'alpha' in wave else 0.7
         self.beta = wave['beta'] if 'beta' in wave else 0.3

@@ -1,3 +1,4 @@
+import json
 import tkinter as tk
 from tkinter import filedialog
 import matplotlib.pyplot as plt
@@ -80,14 +81,13 @@ class AcoPlot:
         self.delete_edge_button.on_clicked(
             lambda event: self.delete_edge(self.textbox_tail.text, self.textbox_head.text))
 
-        start_colony_ax = self.fig.add_axes([0.7, 0.05, 0.1, 0.05])
-        self.start_colony_button = Button(start_colony_ax, label='Run Colony')
-        self.start_colony_button.on_clicked(lambda event: self.colony.start())
-
         load_config_ax = self.fig.add_axes([0.82, 0.05, 0.1, 0.05])
         self.load_config_button = Button(load_config_ax, label='Load Config')
         self.load_config_button.on_clicked(self.on_load_config_clicked)
 
+        save_config_ax = self.fig.add_axes([0.7, 0.05, 0.1, 0.05])
+        self.save_config_button = Button(save_config_ax, label='Save Config')
+        self.save_config_button.on_clicked(self.save_config)
 
         ax_alpha = self.fig.add_axes([0.25, 0.15, 0.05, 0.05])
         self.textbox_alpha = TextBox(ax_alpha, 'Alpha', initial=str(self.colony.waves[0].alpha))
@@ -104,23 +104,23 @@ class AcoPlot:
         self.update_params_button = Button(update_params_ax, label='Update Params')
         self.update_params_button.on_clicked(self.update_parameters)
 
-        # Add toggle button for hiding/showing GUI elements
         toggle_buttons_ax = self.fig.add_axes([0.7, 0.15, 0.1, 0.05])
         self.toggle_buttons_button = Button(toggle_buttons_ax, label='Hide Buttons')
         self.toggle_buttons_button.on_clicked(self.toggle_buttons)
 
-        # Add slider for step sleep
+        start_colony_ax = self.fig.add_axes([0.82, 0.15, 0.1, 0.05])
+        self.start_colony_button = Button(start_colony_ax, label='Run Colony')
+        self.start_colony_button.on_clicked(lambda event: self.colony.start())
+
         ax_step_sleep  = self.fig.add_axes([0.75, 0.25, 0.05, 0.03])
         self.textbox_step_sleep = TextBox(ax_step_sleep, 'Step Sleep', initial=str(self.colony.waves[0].step_sleep))
         self.textbox_step_sleep.on_submit(self.update_step_sleep)
 
-        # Add slider for iteration sleep
         ax_iteration_sleep  = self.fig.add_axes([0.55, 0.25, 0.05, 0.03])
         self.textbox_iteration_sleep = TextBox(ax_iteration_sleep, 'Iteration Sleep',
                                                initial=str(self.colony.waves[0].iteration_sleep))
         self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
 
-        # Add slider for wave sleep
         ax_wave_sleep  = self.fig.add_axes([0.35, 0.25, 0.05, 0.03])
         self.textbox_wave_sleep = TextBox(ax_wave_sleep, 'Wave Sleep', initial=str(self.colony.waves[0].wave_sleep))
         self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
@@ -203,6 +203,17 @@ class AcoPlot:
         plt.close(self.fig)
         self.init_config(config_path)
         self.setup_plot()
+
+    def save_config(self, event):
+        root = tk.Tk()
+        root.withdraw()
+        file_path = filedialog.asksaveasfilename(defaultextension=".json",
+                                                 filetypes=[("JSON files", "*.json"), ("All files", "*.*")])
+
+        if file_path:
+            with open(file_path, 'w') as f:
+                json.dump(GraphTools.save_config_as_json(self), f, indent=4)
+            print(f"Configuration saved to {file_path}")
 
     def on_load_config_clicked(self, event):
         root = tk.Tk()

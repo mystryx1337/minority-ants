@@ -38,10 +38,10 @@ class GraphTools:
                             nodes_2d[i, (j + 1) % y],
                             nodes_2d[i, (j - 1) % y]]
                         GraphTools.add_edges_from_outgoing_node(G, node, neighborhood_nodes)
-                        pos[node] = np.array([i*100, j*100])
+                        pos[node] = np.array([i * 100, j * 100])
             if data['nodes']['macro']['type'] == 'small_world':
                 pass
-            
+
         for node in data['nodes']:
             if node != 'macro':
                 target_nodes: list[str] = data['nodes'][node]['edges'] if 'edges' in data['nodes'][node] else []
@@ -72,7 +72,50 @@ class GraphTools:
             return double_alphabet[0:n]
 
     @staticmethod
-    def add_edges_from_outgoing_node(G: nx.DiGraph, outgoing_node: str, target_nodes: list[str], edge_weights=None, edge_pheromones=None,
+    def save_config_as_json(self):
+        config_data = {
+            'nodes': {
+                'macro': {
+                    'type': self.plot_config.get('macro_type', '2d_grid_torus'),
+                    'x': self.plot_config.get('macro_x', 9),
+                    'y': self.plot_config.get('macro_y', 9)
+                }
+            },
+            'ants': [
+                {
+                    'alpha': self.colony.waves[0].alpha,
+                    'beta': self.colony.waves[0].beta,
+                    'random_chance': self.colony.waves[0].random_chance,
+                    'step_sleep': self.colony.waves[0].step_sleep,
+                    'iteration_sleep': self.colony.waves[0].iteration_sleep,
+                    'wave_sleep': self.colony.waves[0].wave_sleep,
+                }],
+            'plot': {
+                'show_edge_parameters': self.show_edge_parameters,
+                'show_ant_animation': self.show_ant_animation,
+                'node_label_color': self.node_label_color,
+                'node_label_size': self.node_label_size,
+                'edge_weight_label_color': self.edge_weight_label_color,
+                'edge_pheromone_label_color': self.edge_pheromone_label_color,
+                'ant_animation_color': self.ant_animation_color,
+                'cmap_edges': self.plot_config.get('cmap_edges', 'cool'),
+                'cmap_nodes': self.plot_config.get('cmap_nodes', 'winter')
+            }
+        }
+
+        for node, data in self.G.nodes(data=True):
+            config_data['nodes'][node] = {
+                'value': data.get('value', 0),
+                'edges': list(self.G.successors(node)),
+                'weights': [self.G[node][succ]['weight'] for succ in self.G.successors(node)],
+                'pheromones': [self.G[node][succ]['pheromone'] for succ in self.G.successors(node)]
+            }
+
+        return config_data
+
+    @staticmethod
+    def add_edges_from_outgoing_node(G: nx.DiGraph, outgoing_node: str, target_nodes: list[str], edge_weights=None,
+                                     edge_pheromones=None,
                                      node_value=0):
         """
         Add edges from an outgoing node to a list of target nodes with optional edge weights.
@@ -91,11 +134,11 @@ class GraphTools:
                 weight = 1
                 if edge_weights is not None:
                     weight = edge_weights[i]
-    
+
                 pheromone = 0.0
                 if edge_pheromones is not None:
                     pheromone = edge_pheromones[i]
-    
+
                 G.add_edge(outgoing_node, target_node, weight=weight, pheromone=pheromone)
 
         nx.set_node_attributes(G, {outgoing_node: {'value': node_value}})
