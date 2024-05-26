@@ -6,7 +6,7 @@ from matplotlib import animation
 import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
-from matplotlib.widgets import Button, TextBox
+from matplotlib.widgets import Button, TextBox, CheckButtons
 from colony import AntColonyRunner
 from graph_tools import GraphTools
 
@@ -62,13 +62,37 @@ class AcoPlot:
         self.colony.stop()
 
     def setup_buttons(self):
+        ax_wave_sleep = self.fig.add_axes([0.25, 0.225, 0.05, 0.05])
+        self.textbox_wave_sleep = TextBox(ax_wave_sleep, 'Wave', initial=str(self.colony.waves[0].wave_sleep))
+        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
+
+        ax_iteration_sleep = self.fig.add_axes([0.37, 0.225, 0.05, 0.05])
+        self.textbox_iteration_sleep = TextBox(ax_iteration_sleep, 'Iteration',
+                                               initial=str(self.colony.waves[0].iteration_sleep))
+        self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
+
+        ax_step_sleep = self.fig.add_axes([0.47, 0.225, 0.05, 0.05])
+        self.textbox_step_sleep = TextBox(ax_step_sleep, 'Step', initial=str(self.colony.waves[0].step_sleep))
+        self.textbox_step_sleep.on_submit(self.update_step_sleep)
+
+
+        ax_alpha = self.fig.add_axes([0.25, 0.15, 0.05, 0.05])
+        self.textbox_alpha = TextBox(ax_alpha, 'Alpha', initial=str(self.colony.waves[0].alpha))
+
+        ax_beta = self.fig.add_axes([0.37, 0.15, 0.05, 0.05])
+        self.textbox_beta = TextBox(ax_beta, 'Beta', initial=str(self.colony.waves[0].beta))
+
+        ax_random_chance = self.fig.add_axes([0.47, 0.15, 0.05, 0.05])
+        self.textbox_random_chance = TextBox(ax_random_chance, 'Rand',
+                                             initial=str(self.colony.waves[0].random_chance))
+
         ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.05])
         self.textbox_tail = TextBox(ax_tail, 'Start ')
 
-        ax_head = self.fig.add_axes([0.35, 0.05, 0.05, 0.05])
+        ax_head = self.fig.add_axes([0.37, 0.05, 0.05, 0.05])
         self.textbox_head = TextBox(ax_head, 'Ende ')
 
-        ax_weight = self.fig.add_axes([0.45, 0.05, 0.05, 0.05])
+        ax_weight = self.fig.add_axes([0.47, 0.05, 0.05, 0.05])
         self.textbox_weight = TextBox(ax_weight, 'Weight ')
 
         add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.05])
@@ -89,16 +113,13 @@ class AcoPlot:
         self.save_config_button = Button(save_config_ax, label='Save Config')
         self.save_config_button.on_clicked(self.save_config)
 
-        ax_alpha = self.fig.add_axes([0.25, 0.15, 0.05, 0.05])
-        self.textbox_alpha = TextBox(ax_alpha, 'Alpha', initial=str(self.colony.waves[0].alpha))
+        ax_check_edge = self.fig.add_axes([0.1, 0.225, 0.1, 0.05])
+        self.check_edge = CheckButtons(ax_check_edge, ['Parameter'], [self.show_edge_parameters])
+        self.check_edge.on_clicked(self.update_check_edge)
 
-        ax_beta = self.fig.add_axes([0.35, 0.15, 0.05, 0.05])
-        self.textbox_beta = TextBox(ax_beta, 'Beta', initial=str(self.colony.waves[0].beta))
-
-        ax_random_chance = self.fig.add_axes([0.45, 0.15, 0.05, 0.05])
-        self.textbox_random_chance = TextBox(ax_random_chance, 'Rand',
-                                             initial=str(self.colony.waves[0].random_chance))
-
+        ax_check_ant = self.fig.add_axes([0.1, 0.15, 0.1, 0.05])
+        self.check_ant = CheckButtons(ax_check_ant, ['Animation'], [self.show_ant_animation])
+        self.check_ant.on_clicked(self.update_check_ant)
 
         update_params_ax = self.fig.add_axes([0.55, 0.15, 0.1, 0.05])
         self.update_params_button = Button(update_params_ax, label='Update Params')
@@ -111,19 +132,6 @@ class AcoPlot:
         start_colony_ax = self.fig.add_axes([0.82, 0.15, 0.1, 0.05])
         self.start_colony_button = Button(start_colony_ax, label='Run Colony')
         self.start_colony_button.on_clicked(lambda event: self.colony.start())
-
-        ax_step_sleep  = self.fig.add_axes([0.75, 0.25, 0.05, 0.03])
-        self.textbox_step_sleep = TextBox(ax_step_sleep, 'Step Sleep', initial=str(self.colony.waves[0].step_sleep))
-        self.textbox_step_sleep.on_submit(self.update_step_sleep)
-
-        ax_iteration_sleep  = self.fig.add_axes([0.55, 0.25, 0.05, 0.03])
-        self.textbox_iteration_sleep = TextBox(ax_iteration_sleep, 'Iteration Sleep',
-                                               initial=str(self.colony.waves[0].iteration_sleep))
-        self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
-
-        ax_wave_sleep  = self.fig.add_axes([0.35, 0.25, 0.05, 0.03])
-        self.textbox_wave_sleep = TextBox(ax_wave_sleep, 'Wave Sleep', initial=str(self.colony.waves[0].wave_sleep))
-        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
 
     def update_parameters(self, event):
         try:
@@ -223,6 +231,12 @@ class AcoPlot:
         )
         if file_path:
             self.reset(file_path)
+
+    def update_check_edge(self, label):
+        self.show_edge_parameters = not self.show_edge_parameters
+
+    def update_check_ant(self, label):
+        self.show_ant_animation = not self.show_ant_animation
 
     def update_plot(self, frame):
         min_weight, max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
