@@ -70,6 +70,7 @@ class AcoPlot:
     """
         defines the buttons on the plot
     """
+
     def setup_buttons(self):
         gs = gridspec.GridSpec(7, 7, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
 
