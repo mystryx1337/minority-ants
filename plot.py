@@ -2,7 +2,7 @@ import json
 import tkinter as tk
 from tkinter import filedialog
 import matplotlib.pyplot as plt
-from matplotlib import animation
+from matplotlib import animation, gridspec
 import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
@@ -62,75 +62,106 @@ class AcoPlot:
         self.colony.stop()
 
     def setup_buttons(self):
-        ax_wave_sleep = self.fig.add_axes([0.25, 0.225, 0.05, 0.05])
-        self.textbox_wave_sleep = TextBox(ax_wave_sleep, 'Wave', initial=str(self.colony.waves[0].wave_sleep))
-        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
+        gs = gridspec.GridSpec(7, 6, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
 
-        ax_iteration_sleep = self.fig.add_axes([0.37, 0.225, 0.05, 0.05])
-        self.textbox_iteration_sleep = TextBox(ax_iteration_sleep, 'Iteration',
+        self.check_edge = CheckButtons(plt.subplot(gs[0, 0]), ['Parameter'], [self.show_edge_parameters])
+        self.check_edge.on_clicked(self.update_check_edge)
+
+        self.check_ant = CheckButtons(plt.subplot(gs[0, 1]), ['Animation'], [self.show_ant_animation])
+        self.check_ant.on_clicked(self.update_check_ant)
+
+        self.check_random_spawn = CheckButtons(plt.subplot(gs[0, 2]), ['Random Spawn'],
+                                               [self.colony.waves[0].ant_random_spawn])
+        self.check_random_spawn.on_clicked(self.toggle_random_spawn)
+
+        self.check_put_pheromones_always = CheckButtons(plt.subplot(gs[0, 3]), ['Always Pheromones'],
+                                                        [self.colony.waves[0].put_pheromones_always])
+        self.check_put_pheromones_always.on_clicked(self.toggle_put_pheromones_always)
+
+        self.check_prioritize_pheromone_routes = CheckButtons(plt.subplot(gs[0, 4]), ['Prioritize Pheromones'],
+                                                              [self.colony.waves[0].prioritize_pheromone_routes])
+
+        self.check_stop_on_success = CheckButtons(plt.subplot(gs[0, 5]), ['Stop on Success'],
+                                                  [self.colony.waves[0].stop_on_success])
+        self.check_stop_on_success.on_clicked(self.toggle_stop_on_success)
+
+                        #-------------------------Second Row----------------------------#
+
+        plt.subplot(gs[1, 1]).annotate('Iteration Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_iteration_sleep = TextBox(plt.subplot(gs[1, 1]), '',
                                                initial=str(self.colony.waves[0].iteration_sleep))
         self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
 
-        ax_step_sleep = self.fig.add_axes([0.47, 0.225, 0.05, 0.05])
-        self.textbox_step_sleep = TextBox(ax_step_sleep, 'Step', initial=str(self.colony.waves[0].step_sleep))
+        plt.subplot(gs[1, 2]).annotate('Step Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_step_sleep = TextBox(plt.subplot(gs[1, 2]), '', initial=str(self.colony.waves[0].step_sleep))
         self.textbox_step_sleep.on_submit(self.update_step_sleep)
 
+        plt.subplot(gs[1, 3]).annotate('Wave Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_wave_sleep = TextBox(plt.subplot(gs[1, 3]), '', initial=str(self.colony.waves[0].wave_sleep))
+        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
 
-        ax_alpha = self.fig.add_axes([0.25, 0.15, 0.05, 0.05])
-        self.textbox_alpha = TextBox(ax_alpha, 'Alpha', initial=str(self.colony.waves[0].alpha))
+                        # -------------------------Third Row----------------------------#
 
-        ax_beta = self.fig.add_axes([0.37, 0.15, 0.05, 0.05])
-        self.textbox_beta = TextBox(ax_beta, 'Beta', initial=str(self.colony.waves[0].beta))
+        plt.subplot(gs[2, 1]).annotate('Alpha', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_alpha = TextBox(plt.subplot(gs[2, 1]), '', initial=str(self.colony.waves[0].alpha))
 
-        ax_random_chance = self.fig.add_axes([0.47, 0.15, 0.05, 0.05])
-        self.textbox_random_chance = TextBox(ax_random_chance, 'Rand',
-                                             initial=str(self.colony.waves[0].random_chance))
+        plt.subplot(gs[2, 2]).annotate('Beta', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_beta = TextBox(plt.subplot(gs[2, 2]), '', initial=str(self.colony.waves[0].beta))
 
-        ax_tail = self.fig.add_axes([0.25, 0.05, 0.05, 0.05])
-        self.textbox_tail = TextBox(ax_tail, 'Start ')
+        plt.subplot(gs[2, 3]).annotate('Random Chance', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_random_chance = TextBox(plt.subplot(gs[2, 3]), '', initial=str(self.colony.waves[0].random_chance))
 
-        ax_head = self.fig.add_axes([0.37, 0.05, 0.05, 0.05])
-        self.textbox_head = TextBox(ax_head, 'Ende ')
+        self.update_params_button = Button(plt.subplot(gs[2, 4]), label='Update Params')
+        self.update_params_button.on_clicked(self.update_parameters)
 
-        ax_weight = self.fig.add_axes([0.47, 0.05, 0.05, 0.05])
-        self.textbox_weight = TextBox(ax_weight, 'Weight ')
 
-        add_edge_ax = self.fig.add_axes([0.1, 0.05, 0.1, 0.05])
-        self.add_edge_button = Button(add_edge_ax, label='Add')
-        self.add_edge_button.on_clicked(lambda event: self.add_edge(self.textbox_tail.text, self.textbox_head.text,
-                                                                    self.textbox_weight.text))
+                        # -------------------------Fourth Row----------------------------#
 
-        delete_edge_ax = self.fig.add_axes([0.55, 0.05, 0.1, 0.05])
-        self.delete_edge_button = Button(delete_edge_ax, label='Remove')
+        self.add_edge_button = Button(plt.subplot(gs[3, 0]), label='Add')
+        self.add_edge_button.on_clicked(
+            lambda event: self.add_edge(self.textbox_tail.text, self.textbox_head.text, self.textbox_weight.text))
+
+        plt.subplot(gs[3, 1]).annotate('Start', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_head = TextBox(plt.subplot(gs[3, 1]), '')
+
+        plt.subplot(gs[3, 2]).annotate('End', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_tail = TextBox(plt.subplot(gs[3, 2]), '')
+
+        plt.subplot(gs[3, 3]).annotate('Weight', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_weight = TextBox(plt.subplot(gs[3, 3]), '')
+
+        self.delete_edge_button = Button(plt.subplot(gs[3, 4]), label='Remove')
         self.delete_edge_button.on_clicked(
             lambda event: self.delete_edge(self.textbox_tail.text, self.textbox_head.text))
 
-        load_config_ax = self.fig.add_axes([0.82, 0.05, 0.1, 0.05])
-        self.load_config_button = Button(load_config_ax, label='Load Config')
-        self.load_config_button.on_clicked(self.on_load_config_clicked)
+                        # -------------------------Fith Row----------------------------#
+        plt.subplot(gs[4, 1]).annotate('Evap. Rate', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_evaporation_rate = TextBox(plt.subplot(gs[4, 1]), '',
+                                                initial=str(self.colony.waves[0].evaporation_rate))
 
-        save_config_ax = self.fig.add_axes([0.7, 0.05, 0.1, 0.05])
-        self.save_config_button = Button(save_config_ax, label='Save Config')
+        plt.subplot(gs[4, 2]).annotate('Max. Steps', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_max_steps = TextBox(plt.subplot(gs[4, 2]), '', initial=str(self.colony.waves[0].ant_max_steps))
+
+        plt.subplot(gs[4, 3]).annotate('Max. Iteration', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_max_iterations = TextBox(plt.subplot(gs[4, 3]), '',
+                                              initial=str(self.colony.waves[0].max_iterations))
+
+        plt.subplot(gs[4, 4]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_concurrent_ants = TextBox(plt.subplot(gs[4, 4]), '',
+                                               initial=str(self.colony.waves[0].concurrent_ants))
+
+                        # -------------------------Sixth Row----------------------------#
+
+        self.save_config_button = Button(plt.subplot(gs[5, 1]), label='Save Config')
         self.save_config_button.on_clicked(self.save_config)
 
-        ax_check_edge = self.fig.add_axes([0.1, 0.225, 0.1, 0.05])
-        self.check_edge = CheckButtons(ax_check_edge, ['Parameter'], [self.show_edge_parameters])
-        self.check_edge.on_clicked(self.update_check_edge)
+        self.load_config_button = Button(plt.subplot(gs[5, 2]), label='Load Config')
+        self.load_config_button.on_clicked(self.on_load_config_clicked)
 
-        ax_check_ant = self.fig.add_axes([0.1, 0.15, 0.1, 0.05])
-        self.check_ant = CheckButtons(ax_check_ant, ['Animation'], [self.show_ant_animation])
-        self.check_ant.on_clicked(self.update_check_ant)
+        # self.toggle_buttons_button = Button(plt.subplot(gs[4, 3]), label='Hide Buttons')
+        # self.toggle_buttons_button.on_clicked(self.toggle_buttons)
 
-        update_params_ax = self.fig.add_axes([0.55, 0.15, 0.1, 0.05])
-        self.update_params_button = Button(update_params_ax, label='Update Params')
-        self.update_params_button.on_clicked(self.update_parameters)
-
-        toggle_buttons_ax = self.fig.add_axes([0.7, 0.15, 0.1, 0.05])
-        self.toggle_buttons_button = Button(toggle_buttons_ax, label='Hide Buttons')
-        self.toggle_buttons_button.on_clicked(self.toggle_buttons)
-
-        start_colony_ax = self.fig.add_axes([0.82, 0.15, 0.1, 0.05])
-        self.start_colony_button = Button(start_colony_ax, label='Run Colony')
+        self.start_colony_button = Button(plt.subplot(gs[5, 5]), label='Run Colony')
         self.start_colony_button.on_clicked(lambda event: self.colony.start())
 
     def update_parameters(self, event):
@@ -147,6 +178,21 @@ class AcoPlot:
             print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}')
         except ValueError:
             print("Please enter valid numerical values for alpha, beta, and random chance.")
+
+    def update_ant_class(self, event):
+        self.colony.waves[0].ant_class = event
+
+    def toggle_random_spawn(self, label):
+        self.colony.waves[0].random_spawn = not self.colony.waves[0].random_spawn
+
+    def toggle_put_pheromones_always(self, label):
+        self.colony.waves[0].put_pheromones_always = not self.colony.waves[0].put_pheromones_always
+
+    def toggle_stop_on_success(self, label):
+        self.colony.waves[0].stop_on_success = not self.colony.waves[0].stop_on_success
+
+    def toggle_prioritize_pheromone_routes(self, label):
+        self.colony.waves[0].prioritize_pheromone_routes = not self.colony.waves[0].prioritize_pheromone_routes
 
     def update_speed(self, val):
         self.speed_factor = val
