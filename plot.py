@@ -12,21 +12,27 @@ from graph_tools import GraphTools
 
 
 class AcoPlot:
-    G: nx.DiGraph
-    pos: dict
-    ants_config: dict
-    colony: AntColonyRunner
-    plot_config: dict
+    G: nx.DiGraph  # The Graph
+    pos: dict  # positions for the nodes
+    ants_config: dict  # config for the ants
+    colony: AntColonyRunner  # the colony driver
+    plot_config: dict  # config for the plot
 
-    show_edge_parameters: bool = True
-    show_ant_animation: bool = True
-    node_label_color: str = 'white'
-    node_label_size: int = 12
-    edge_weight_label_color: str = 'red'
-    edge_pheromone_label_color: str = 'blue'
-    ant_animation_color: str = 'red'
+    show_edge_parameters: bool = True  # if parameters (weights, pheromones) on the edge shall be shown, uses a lo of calculation time
+    show_ant_animation: bool = True  # if the steps and paths of the ants shall be shown
+    node_label_color: str = 'white'  # color of the label of the node
+    node_label_size: int = 12  # font size of the node label
+    edge_weight_label_color: str = 'red'  # color for the weight parameter shown for edges
+    edge_pheromone_label_color: str = 'blue'  # color for the pheromone parameter shown for edges
+    ant_animation_color: str = 'red'  # color of the ant paths shown on the graph
 
-    def init_config(self, config_path):
+    def init_config(self, config_path: str):
+        """
+        initializes parameters for the plot
+
+        :param config_path: file path for the config file, that has to be loaded
+        """
+
         self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_config_from_json(config_path)
         self.colony = AntColonyRunner(self)
 
@@ -44,7 +50,6 @@ class AcoPlot:
 
     def __init__(self, config_path):
         self.init_config(config_path)
-        self.status = {'ants_running': False}
         self.buttons_visible = True
         self.setup_plot()
 
@@ -58,9 +63,13 @@ class AcoPlot:
                                            interval=50, blit=True, repeat=True, fargs=())
         self.ax.margins(0.08)
         plt.axis("off")
+
         plt.show()
         self.colony.stop()
 
+    """
+        defines the buttons on the plot
+    """
     def setup_buttons(self):
         gs = gridspec.GridSpec(7, 7, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
 
@@ -285,6 +294,9 @@ class AcoPlot:
         self.show_ant_animation = not self.show_ant_animation
 
     def update_plot(self, frame):
+        """
+        renders the graph
+        """
         min_weight, max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
             data['weight'] for _, _, data in self.G.edges(data=True))
         min_pheromone, max_pheromone = min(data['pheromone'] for _, _, data in self.G.edges(data=True)), max(
@@ -304,11 +316,13 @@ class AcoPlot:
         edges = self.G.edges(data=True)
         edge_colors = [self.cmap_edges(edge_norm(data['pheromone'])) for _, _, data in edges]
         widths = [1 + (data['weight'] - min_weight) / (max_weight - min_weight + 1) for _, _, data in edges]
-        edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths, edge_color=edge_colors,
+        edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths,
+                                       edge_color=edge_colors,
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
 
         node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=self.node_label_size, ax=self.ax,
-                                              font_color=self.node_label_color, labels={n: n for n in self.G.nodes()})
+                                              font_color=self.node_label_color,
+                                              labels={n: n for n in self.G.nodes()})
 
         if self.show_edge_parameters:
             weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
@@ -327,6 +341,7 @@ class AcoPlot:
         else:
             artists = [nodes] + list(edges) + list(node_labels.values())
 
+
         if len(self.colony.ants) > 0 and self.show_ant_animation:
             ant_positions = [ant.current_node for ant in self.colony.ants]
             current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_size=700,
@@ -335,17 +350,42 @@ class AcoPlot:
 
             for ant in self.colony.ants:
                 if len(ant.path) > 1:
-                    path_coords = [(self.pos[ant.path[i]], self.pos[ant.path[i + 1]]) for i in range(len(ant.path) - 1)]
+                    path_coords = [(self.pos[ant.path[i]], self.pos[ant.path[i + 1]]) for i in
+                                   range(len(ant.path) - 1)]
                     for coords in path_coords:
                         path_line = self.ax.plot([coords[0][0], coords[1][0]], [coords[0][1], coords[1][1]],
                                                  color=self.ant_animation_color,
                                                  linestyle='-', linewidth=2)
                         artists.extend(path_line)
 
+        try:
+            if not self.colony.waves[0].ant_random_spawn:
+                current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, ax=self.ax, node_size=700,
+                                                              nodelist=[self.colony.waves[0].ant_spawn_node],
+                                                              node_color=self.ant_animation_color)
+                artists.append(current_node_artists)
+        except:
+            pass
+
         return artists
 
-    def add_edge(self, tail, head, weight, tail_value=None, head_value=None):
+    def add_edge(self, tail: str, head: str, weight: float, tail_value: float = None, head_value: float = None):
+        """
+        Adds an edge to the graph
+
+        :param tail: outgoing node
+        :param head: incoming node
+        :param weight: weight of the edge
+        :param tail_value: a value for the tail node. node values define possible targets for the ants
+        :param head_value: a value for the head node
+        """
         self.pos = GraphTools.add_edge(self.G, tail, head, weight, tail_value, head_value, self.pos)
 
     def delete_edge(self, tail, head):
+        """
+        Deletes an edge from the graph
+
+        :param tail: outgoing node
+        :param head: incoming node
+        """
         self.pos = GraphTools.delete_edge(self.G, tail, head, self.pos)

@@ -5,6 +5,10 @@ import numpy as np
 
 
 class GraphTools:
+    """
+    A collection of graph tools
+    """
+
     @staticmethod
     def load_config_from_json(path):
         G = nx.DiGraph()
@@ -46,7 +50,8 @@ class GraphTools:
             if node != 'macro':
                 target_nodes: list[str] = data['nodes'][node]['edges'] if 'edges' in data['nodes'][node] else []
                 edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
-                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][node] else None
+                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][
+                    node] else None
                 node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
                 GraphTools.add_edges_from_outgoing_node(G, node, target_nodes, edge_weights=edge_weights,
                                                         edge_pheromones=pheromones, node_value=node_value)
@@ -63,7 +68,12 @@ class GraphTools:
         return G, data['ants'], data['plot'], pos
 
     @staticmethod
-    def generate_nodes(n: int):
+    def generate_nodes(n: int) -> list[str]:
+        """
+        Generates node names
+
+        :return: a list[str] of node names
+        """
         alphabet = list(string.ascii_uppercase)
         if n <= 26:
             return alphabet[0:n]
@@ -115,8 +125,7 @@ class GraphTools:
 
     @staticmethod
     def add_edges_from_outgoing_node(G: nx.DiGraph, outgoing_node: str, target_nodes: list[str], edge_weights=None,
-                                     edge_pheromones=None,
-                                     node_value=0):
+                                     edge_pheromones=None, node_value=0):
         """
         Add edges from an outgoing node to a list of target nodes with optional edge weights.
 
@@ -144,7 +153,20 @@ class GraphTools:
         nx.set_node_attributes(G, {outgoing_node: {'value': node_value}})
 
     @staticmethod
-    def add_edge(G, tail, head, weight, tail_value=None, head_value=None, pos=None) -> dict:
+    def add_edge(G: nx.DiGraph, tail: str, head: str, weight: float, tail_value: float = None, head_value: float = None,
+                 pos: dict = None) -> dict:
+        """
+        Adds an edge to the graph
+
+        :param G: the Graph
+        :param tail: outgoing node
+        :param head: incoming node
+        :param weight: weight of the edge
+        :param tail_value: value parameter for the tail node
+        :param head_value: value parameter for the head node
+        :param pos: current positions of the nodes
+        :return: new positions for the nodes
+        """
         if pos is None:
             pos = []
 
