@@ -4,17 +4,21 @@ from typing import List
 
 
 class Random_Ant:
-    G: nx.DiGraph  # the graph, on which the ant is walking
-    start_node: str  # start node on the graph
-    current_node: str  # current node
+    """
+    a basic ant with primitive edge choosing but with a lot of methods for inheriting specialized ant types
+    """
 
-    alpha: float  # how much influence trail has
-    beta: float  # how much influence attractiveness has
+    G: nx.DiGraph           # the graph, on which the ant is walking
+    start_node: str         # start node on the graph
+    current_node: str       # current node
 
-    success: bool  # does the ant put pheromones on its way
+    alpha: float            # how much influence trail has
+    beta: float             # how much influence attractiveness has
 
-    max_steps: int  # how many steps can the ant do before giving up
-    path: List[str] = []  # Path taken by the ant so far
+    success: bool           # does the ant put pheromones on its way
+
+    max_steps: int          # how many steps can the ant do before giving up
+    path: List[str] = []    # Path taken by the ant so far
     path_cost: float = 0.0  # Cost of the path taken by the ant so far
 
     def __init__(self, G: nx.DiGraph, wave):
@@ -35,6 +39,16 @@ class Random_Ant:
         self.success = False
 
     def _value_for_node(self, target_node: str) -> float:
+        """
+        calculates a value for the edge to the node based on pheromones and weight
+
+        Parameters:
+        target_node     target node to find the edge between current node and target node
+
+        Returns:
+        the value
+        """
+
         data = self.G[self.current_node][target_node]
         alpha = self.alpha          # relevance exponent for pheromones
         beta = self.beta            # relevance exponent for edge cost
@@ -44,19 +58,26 @@ class Random_Ant:
         return (tau ** alpha) / (eta ** beta)
 
     def _pick_a_new_node(self) -> str:
-        #try to use a new path
-        unvisited_neighbors = self._get_unvisited_neighbors()
-        if len(unvisited_neighbors) > 0:
-            return random.choices(unvisited_neighbors)[0]
+        """
+        Pick a new node randomly
+
+        :return: a new node as str or the current node as str if trapped
+        """
 
         all_neighbors = self._get_all_neighbors()
         if len(all_neighbors) > 0:
             return random.choices(all_neighbors)[0]
 
-        #Fallback if trapped
+        # Fallback if trapped
         return self.current_node
 
     def _get_all_neighbors(self) -> List[str]:
+        """
+        Finds all neighbors, which are connected to the current node
+
+        :return: all neighbors as List[str]
+        """
+
         possible_edges = self.G.edges([self.current_node], data=True)
         all_neighbors = []
         for current_node, possible_target, data in possible_edges:
@@ -64,6 +85,12 @@ class Random_Ant:
         return all_neighbors
 
     def _get_unvisited_neighbors(self) -> List[str]:
+        """
+        Finds all unvisited neighbors, which are connected to the current node
+
+        :return: all unvisited neighbors as List[str]
+        """
+
         unvisited_neighbors = []
         for node in self._get_all_neighbors():
             if node not in self.path:
@@ -71,12 +98,25 @@ class Random_Ant:
         return unvisited_neighbors
 
     def _check_success(self) -> bool:
+        """
+        Checks, if the ant is on a node with a value > 0
+
+        :return: True or False
+        """
+
         if self.G.nodes[self.current_node]['value'] > 0:
             self.success = True
             return True
         return False
 
     def _increase_pheromone_always(self, new_node):
+        """
+        if the ant shall increase pheromones always, this is a method to put pheromones on th visited edge after every step
+
+        Parameters:
+        new_node    The new node to find the edge between
+        """
+
         # Check if both nodes and the edge between them exist
         if new_node in self.G[self.current_node]:
             current_pheromones = self.G[self.current_node][new_node]['pheromone']
@@ -89,6 +129,12 @@ class Random_Ant:
         self._increase_pheromone_always(new_node)
 
     def step(self) -> int:
+        """
+        Does a step
+
+        :return: True if step was successful or False if there is no new step and the ant wants to die
+        """
+
         if (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
             # Pick a new node
             new_node = self._pick_a_new_node()
