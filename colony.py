@@ -66,7 +66,7 @@ class WaveConfig:
 
     def __init__(self, wave: dict):
         self.ant_class = wave.get('class', 'routing')
-        self.ant_max_steps = wave.get('max_steps', 20)
+        self.ant_max_steps = wave.get('ant_max_steps', 20)
         self.max_iterations = wave.get('max_iterations', 15)
         self.ant_random_spawn = wave.get('random_spawn', False)
         self.ant_spawn_node = wave.get('spawn_node', "AU")
@@ -85,6 +85,26 @@ class WaveConfig:
 
         self.node_value_changes = wave.get('node_value_changes', {})
 
+    def to_dict(self):
+        return {
+            'class': self.ant_class,
+            'ant_max_steps': self.ant_max_steps,
+            'max_iterations': self.max_iterations,
+            'random_spawn': self.ant_random_spawn,
+            'spawn_node': self.ant_spawn_node,
+            'evaporation_rate': self.evaporation_rate,
+            'alpha': self.alpha,
+            'beta': self.beta,
+            'random_chance': self.random_chance,
+            'concurrent_ants': self.concurrent_ants,
+            'put_pheromones_always': self.put_pheromones_always,
+            'stop_on_success': self.stop_on_success,
+            'prioritize_pheromone_routes': self.prioritize_pheromone_routes,
+            'step_sleep': self.step_sleep,
+            'iteration_sleep': self.iteration_sleep,
+            'wave_sleep': self.wave_sleep,
+            'node_value_changes': self.node_value_changes
+        }
 
 class AntColonyRunner:
     """

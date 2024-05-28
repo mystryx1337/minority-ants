@@ -6,7 +6,7 @@ from matplotlib import animation, gridspec
 import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
-from matplotlib.widgets import Button, TextBox, CheckButtons
+from matplotlib.widgets import Button, TextBox, CheckButtons, RadioButtons
 from colony import AntColonyRunner
 from graph_tools import GraphTools
 
@@ -80,22 +80,28 @@ class AcoPlot:
         self.check_ant = CheckButtons(plt.subplot(gs[1, 0]), ['Animation'], [self.show_ant_animation])
         self.check_ant.on_clicked(self.update_check_ant)
 
-        self.check_random_spawn = CheckButtons(plt.subplot(gs[2, 0]), ['Random Spawn'],
-                                               [self.colony.waves[0].ant_random_spawn])
-        self.check_random_spawn.on_clicked(self.toggle_random_spawn)
-
-        self.check_put_pheromones_always = CheckButtons(plt.subplot(gs[3, 0]), ['Always Pheromones'],
+        self.check_put_pheromones_always = CheckButtons(plt.subplot(gs[2, 0]), ['Always Pheromones'],
                                                         [self.colony.waves[0].put_pheromones_always])
         self.check_put_pheromones_always.on_clicked(self.toggle_put_pheromones_always)
 
-        self.check_prioritize_pheromone_routes = CheckButtons(plt.subplot(gs[4, 0]), ['Prioritize Pheromones'],
+        self.check_prioritize_pheromone_routes = CheckButtons(plt.subplot(gs[3, 0]), ['Prioritize Pheromones'],
                                                               [self.colony.waves[0].prioritize_pheromone_routes])
 
-        self.check_stop_on_success = CheckButtons(plt.subplot(gs[5, 0]), ['Stop on Success'],
+        self.check_stop_on_success = CheckButtons(plt.subplot(gs[4, 0]), ['Stop on Success'],
                                                   [self.colony.waves[0].stop_on_success])
         self.check_stop_on_success.on_clicked(self.toggle_stop_on_success)
 
                         #-------------------------Second Row----------------------------#
+
+        self.check_random_spawn = CheckButtons(plt.subplot(gs[0, 2]), ['Random Spawn'],
+                                               [self.colony.waves[0].ant_random_spawn])
+        self.check_random_spawn.on_clicked(self.toggle_random_spawn)
+
+        plt.subplot(gs[1, 2]).annotate('Spawn Node', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_spawn_node = TextBox(plt.subplot(gs[1, 2]), '', initial=str(self.colony.waves[0].ant_spawn_node))
+        self.textbox_spawn_node.on_submit(self.update_spawn_node)
+        if self.colony.waves[0].ant_random_spawn:
+            self.textbox_spawn_node.set_active(False)
 
         plt.subplot(gs[2, 3]).annotate('Iteration Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_iteration_sleep = TextBox(plt.subplot(gs[2, 3]), '',
@@ -150,17 +156,23 @@ class AcoPlot:
                                                 initial=str(self.colony.waves[0].evaporation_rate))
 
         plt.subplot(gs[0, 4]).annotate('Max. Steps', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_max_steps = TextBox(plt.subplot(gs[0, 4]), '', initial=str(self.colony.waves[0].ant_max_steps))
+        self.textbox_ant_max_steps = TextBox(plt.subplot(gs[0, 4]), '', initial=str(self.colony.waves[0].ant_max_steps))
 
         plt.subplot(gs[0, 5]).annotate('Max. Iteration', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_max_iterations = TextBox(plt.subplot(gs[0, 5]), '',
                                               initial=str(self.colony.waves[0].max_iterations))
 
-        plt.subplot(gs[0, 6]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_concurrent_ants = TextBox(plt.subplot(gs[0, 6]), '',
+                        # -------------------------Sixth Row----------------------------#
+        plt.subplot(gs[2, 6]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_concurrent_ants = TextBox(plt.subplot(gs[2, 6]), '',
                                                initial=str(self.colony.waves[0].concurrent_ants))
 
-                        # -------------------------Sixth Row----------------------------#
+        plt.subplot(gs[0:2, 6]).annotate('Ant Class', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        ax_radio = plt.subplot(gs[0:2, 6])
+        ant_classes = ('random', 'routing', 'minority')
+        initial_class_index = ant_classes.index(self.colony.waves[0].ant_class)
+        self.radio_ant_class = RadioButtons(ax_radio, ('random', 'routing', 'minority'), active=initial_class_index)
+        self.radio_ant_class.on_clicked(self.update_ant_class)
 
         self.save_config_button = Button(plt.subplot(gs[5, 6]), label='Save Config')
         self.save_config_button.on_clicked(self.save_config)
@@ -174,26 +186,46 @@ class AcoPlot:
         self.start_colony_button = Button(plt.subplot(gs[3, 4]), label='Run Colony')
         self.start_colony_button.on_clicked(lambda event: self.colony.start())
 
+    def update_spawn_node(self, text):
+        self.colony.waves[0].ant_spawn_node = text
+
+    def update_ant_class(self, label):
+        self.colony.waves[0].ant_class = self.radio_ant_class.value_selected
+
     def update_parameters(self, event):
         try:
             alpha = float(self.textbox_alpha.text)
             beta = float(self.textbox_beta.text)
             random_chance = float(self.textbox_random_chance.text)
+            ant_max_steps = int(self.textbox_ant_max_steps.text)
+            max_iterations = int(self.textbox_max_iterations.text)
+            concurrent_ants = int(self.textbox_concurrent_ants.text)
+            evaporation_rate = float(self.textbox_evaporation_rate.text)
 
             for wave in self.colony.waves:
                 wave.alpha = alpha
                 wave.beta = beta
                 wave.random_chance = random_chance
+                wave.ant_max_steps = ant_max_steps
+                wave.max_iterations = max_iterations
+                wave.concurrent_ants = concurrent_ants
+                wave.evaporation_rate = evaporation_rate
 
-            print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}')
+            print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}, '
+                  f'Max Steps={ant_max_steps}, Max Iterations={max_iterations}, Concurrent Ants={concurrent_ants}, '
+                  f'Evaporation Rate={evaporation_rate}')
         except ValueError:
-            print("Please enter valid numerical values for alpha, beta, and random chance.")
+            print("Please enter valid numerical values for all parameters.")
 
     def update_ant_class(self, event):
         self.colony.waves[0].ant_class = event
 
     def toggle_random_spawn(self, label):
-        self.colony.waves[0].random_spawn = not self.colony.waves[0].random_spawn
+        self.colony.waves[0].ant_random_spawn = not self.colony.waves[0].ant_random_spawn
+        if self.colony.waves[0].ant_random_spawn:
+            self.textbox_spawn_node.set_active(False)  # Disable the text box
+        else:
+            self.textbox_spawn_node.set_active(True)  # Enable the text box
 
     def toggle_put_pheromones_always(self, label):
         self.colony.waves[0].put_pheromones_always = not self.colony.waves[0].put_pheromones_always
@@ -269,6 +301,7 @@ class AcoPlot:
         self.setup_plot()
 
     def save_config(self, event):
+        self.update_parameters('')
         root = tk.Tk()
         root.withdraw()
         file_path = filedialog.asksaveasfilename(defaultextension=".json",

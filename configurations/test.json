@@ -1,70 +1,1742 @@
 {
-  "nodes": {
-    "Stuttgart": {
-      "edges": ["Frankfurt","Nürnberg","München","Zürich"],
-      "weights": [205,212,232,211]
+    "nodes": {
+        "macro": {
+            "type": "2d_grid_torus",
+            "x": 9,
+            "y": 9
+        },
+        "AA": {
+            "value": 0,
+            "edges": [
+                "CU",
+                "AJ",
+                "AB",
+                "AI"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CU": {
+            "value": 0,
+            "edges": [
+                "CL",
+                "AA",
+                "CV",
+                "DC"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AJ": {
+            "value": 0,
+            "edges": [
+                "AA",
+                "AS",
+                "AK",
+                "AR"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AB": {
+            "value": 0,
+            "edges": [
+                "CV",
+                "AK",
+                "AC",
+                "AA"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AI": {
+            "value": 0,
+            "edges": [
+                "DC",
+                "AR",
+                "AA",
+                "AH"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CV": {
+            "value": 0,
+            "edges": [
+                "CM",
+                "AB",
+                "CW",
+                "CU"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AK": {
+            "value": 0,
+            "edges": [
+                "AB",
+                "AT",
+                "AL",
+                "AJ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AC": {
+            "value": 0,
+            "edges": [
+                "CW",
+                "AL",
+                "AD",
+                "AB"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CW": {
+            "value": 0,
+            "edges": [
+                "CN",
+                "AC",
+                "CX",
+                "CV"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AL": {
+            "value": 0,
+            "edges": [
+                "AC",
+                "AU",
+                "AM",
+                "AK"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AD": {
+            "value": 0,
+            "edges": [
+                "CX",
+                "AM",
+                "AE",
+                "AC"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CX": {
+            "value": 0,
+            "edges": [
+                "CO",
+                "AD",
+                "CY",
+                "CW"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AM": {
+            "value": 0,
+            "edges": [
+                "AD",
+                "AV",
+                "AN",
+                "AL"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AE": {
+            "value": 0,
+            "edges": [
+                "CY",
+                "AN",
+                "AF",
+                "AD"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CY": {
+            "value": 0,
+            "edges": [
+                "CP",
+                "AE",
+                "CZ",
+                "CX"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AN": {
+            "value": 0,
+            "edges": [
+                "AE",
+                "AW",
+                "AO",
+                "AM"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AF": {
+            "value": 0,
+            "edges": [
+                "CZ",
+                "AO",
+                "AG",
+                "AE"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CZ": {
+            "value": 0,
+            "edges": [
+                "CQ",
+                "AF",
+                "DA",
+                "CY"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AO": {
+            "value": 0,
+            "edges": [
+                "AF",
+                "AX",
+                "AP",
+                "AN"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AG": {
+            "value": 0,
+            "edges": [
+                "DA",
+                "AP",
+                "AH",
+                "AF"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "DA": {
+            "value": 0,
+            "edges": [
+                "CR",
+                "AG",
+                "DB",
+                "CZ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AP": {
+            "value": 0,
+            "edges": [
+                "AG",
+                "AY",
+                "AQ",
+                "AO"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AH": {
+            "value": 0,
+            "edges": [
+                "DB",
+                "AQ",
+                "AI",
+                "AG"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "DB": {
+            "value": 0,
+            "edges": [
+                "CS",
+                "AH",
+                "DC",
+                "DA"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AQ": {
+            "value": 0,
+            "edges": [
+                "AH",
+                "AZ",
+                "AR",
+                "AP"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "DC": {
+            "value": 0,
+            "edges": [
+                "CT",
+                "AI",
+                "CU",
+                "DB"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AR": {
+            "value": 0,
+            "edges": [
+                "AI",
+                "BA",
+                "AJ",
+                "AQ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AS": {
+            "value": 0,
+            "edges": [
+                "AJ",
+                "BB",
+                "AT",
+                "BA"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AT": {
+            "value": 0,
+            "edges": [
+                "AK",
+                "BC",
+                "AU",
+                "AS"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AU": {
+            "value": 0,
+            "edges": [
+                "AL",
+                "BD",
+                "AV",
+                "AT"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AV": {
+            "value": 0,
+            "edges": [
+                "AM",
+                "BE",
+                "AW",
+                "AU"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AW": {
+            "value": 0,
+            "edges": [
+                "AN",
+                "BF",
+                "AX",
+                "AV"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AX": {
+            "value": 0,
+            "edges": [
+                "AO",
+                "BG",
+                "AY",
+                "AW"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AY": {
+            "value": 0,
+            "edges": [
+                "AP",
+                "BH",
+                "AZ",
+                "AX"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AZ": {
+            "value": 0,
+            "edges": [
+                "AQ",
+                "BI",
+                "BA",
+                "AY"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BA": {
+            "value": 0,
+            "edges": [
+                "AR",
+                "BJ",
+                "AS",
+                "AZ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BB": {
+            "value": 0,
+            "edges": [
+                "AS",
+                "BK",
+                "BC",
+                "BJ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BC": {
+            "value": 0,
+            "edges": [
+                "AT",
+                "BL",
+                "BD",
+                "BB"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BD": {
+            "value": 0,
+            "edges": [
+                "AU",
+                "BM",
+                "BE",
+                "BC"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BE": {
+            "value": 0,
+            "edges": [
+                "AV",
+                "BN",
+                "BF",
+                "BD"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BF": {
+            "value": 0,
+            "edges": [
+                "AW",
+                "BO",
+                "BG",
+                "BE"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BG": {
+            "value": 0,
+            "edges": [
+                "AX",
+                "BP",
+                "BH",
+                "BF"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BH": {
+            "value": 0,
+            "edges": [
+                "AY",
+                "BQ",
+                "BI",
+                "BG"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BI": {
+            "value": 0,
+            "edges": [
+                "AZ",
+                "BR",
+                "BJ",
+                "BH"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BJ": {
+            "value": 0,
+            "edges": [
+                "BA",
+                "BS",
+                "BB",
+                "BI"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BK": {
+            "value": 0,
+            "edges": [
+                "BB",
+                "BT",
+                "BL",
+                "BS"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BL": {
+            "value": 0,
+            "edges": [
+                "BC",
+                "BU",
+                "BM",
+                "BK"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BM": {
+            "value": 0,
+            "edges": [
+                "BD",
+                "BV",
+                "BN",
+                "BL"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BN": {
+            "value": 0,
+            "edges": [
+                "BE",
+                "BW",
+                "BO",
+                "BM"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BO": {
+            "value": 0,
+            "edges": [
+                "BF",
+                "BX",
+                "BP",
+                "BN"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BP": {
+            "value": 0,
+            "edges": [
+                "BG",
+                "BY",
+                "BQ",
+                "BO"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BQ": {
+            "value": 0,
+            "edges": [
+                "BH",
+                "BZ",
+                "BR",
+                "BP"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BR": {
+            "value": 0,
+            "edges": [
+                "BI",
+                "CA",
+                "BS",
+                "BQ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BS": {
+            "value": 0,
+            "edges": [
+                "BJ",
+                "CB",
+                "BK",
+                "BR"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BT": {
+            "value": 0,
+            "edges": [
+                "BK",
+                "CC",
+                "BU",
+                "CB"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BU": {
+            "value": 0,
+            "edges": [
+                "BL",
+                "CD",
+                "BV",
+                "BT"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BV": {
+            "value": 0,
+            "edges": [
+                "BM",
+                "CE",
+                "BW",
+                "BU"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BW": {
+            "value": 0,
+            "edges": [
+                "BN",
+                "CF",
+                "BX",
+                "BV"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BX": {
+            "value": 0,
+            "edges": [
+                "BO",
+                "CG",
+                "BY",
+                "BW"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BY": {
+            "value": 0,
+            "edges": [
+                "BP",
+                "CH",
+                "BZ",
+                "BX"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "BZ": {
+            "value": 0,
+            "edges": [
+                "BQ",
+                "CI",
+                "CA",
+                "BY"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CA": {
+            "value": 0,
+            "edges": [
+                "BR",
+                "CJ",
+                "CB",
+                "BZ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CB": {
+            "value": 0,
+            "edges": [
+                "BS",
+                "CK",
+                "BT",
+                "CA"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CC": {
+            "value": 0,
+            "edges": [
+                "BT",
+                "CL",
+                "CD",
+                "CK"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CD": {
+            "value": 0,
+            "edges": [
+                "BU",
+                "CM",
+                "CE",
+                "CC"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CE": {
+            "value": 0,
+            "edges": [
+                "BV",
+                "CN",
+                "CF",
+                "CD"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CF": {
+            "value": 0,
+            "edges": [
+                "BW",
+                "CO",
+                "CG",
+                "CE"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CG": {
+            "value": 0,
+            "edges": [
+                "BX",
+                "CP",
+                "CH",
+                "CF"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CH": {
+            "value": 0,
+            "edges": [
+                "BY",
+                "CQ",
+                "CI",
+                "CG"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CI": {
+            "value": 0,
+            "edges": [
+                "BZ",
+                "CR",
+                "CJ",
+                "CH"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CJ": {
+            "value": 0,
+            "edges": [
+                "CA",
+                "CS",
+                "CK",
+                "CI"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CK": {
+            "value": 0,
+            "edges": [
+                "CB",
+                "CT",
+                "CC",
+                "CJ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CL": {
+            "value": 0,
+            "edges": [
+                "CC",
+                "CU",
+                "CM",
+                "CT"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CM": {
+            "value": 0,
+            "edges": [
+                "CD",
+                "CV",
+                "CN",
+                "CL"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CN": {
+            "value": 0,
+            "edges": [
+                "CE",
+                "CW",
+                "CO",
+                "CM"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CO": {
+            "value": 0,
+            "edges": [
+                "CF",
+                "CX",
+                "CP",
+                "CN"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CP": {
+            "value": 0,
+            "edges": [
+                "CG",
+                "CY",
+                "CQ",
+                "CO"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CQ": {
+            "value": 0,
+            "edges": [
+                "CH",
+                "CZ",
+                "CR",
+                "CP"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CR": {
+            "value": 0,
+            "edges": [
+                "CI",
+                "DA",
+                "CS",
+                "CQ"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CS": {
+            "value": 0,
+            "edges": [
+                "CJ",
+                "DB",
+                "CT",
+                "CR"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "CT": {
+            "value": 0,
+            "edges": [
+                "CK",
+                "DC",
+                "CL",
+                "CS"
+            ],
+            "weights": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "pheromones": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        }
     },
-    "Frankfurt": {
-      "edges": ["Köln","Dortmund","Bielefeld","Hannover","Leipzig","Dresden", "Nürnberg", "Stuttgart"]
-    },
-    "München": {
-      "edges": ["Stuttgart","E","F"],
-      "weights": [3,3,3]
-    },
-    "Nürnberg": {
-      "edges": ["A","B","E","G","H","X"]
-    },
-    "Zürich": {
-      "edges": ["A","B","C","D","F","G","H"]
-    },
-    "Köln": {
-      "edges": ["B","C","E","I"]
-    },
-    "Dortmund": {
-      "edges": ["D","E","H","J","K"]
-    },
-    "Bielefeld": {
-      "edges": ["D","E","G","I","J","K","L"]
-    },
-    "Hannover": {
-      "edges": ["F","H","K","L"]
-    },
-    "Leipzig": {
-      "edges": ["G","H","K"],
-      "pheromones": [0.5, 0.8, 1.0]
-    },
-    "Dresden": {
-      "edges": ["G","H","I","J","L"]
-    },
-    "Berlin": {
-      "edges": ["H","I","K","Z"],
-      "pheromones": [0.0, 0.0, 0.0, 1.0]
-    },
-    "Hamburg": {
-      "edges": ["A"]
-    },
-    "Bremen": {
-      "edges": ["D"]
-    },
-    "Amsterdam": {
-      "edges": ["L"],
-      "value": 1
+    "ants": [
+        {
+            "class": "routing",
+            "ant_max_steps": 201,
+            "max_iterations": 509,
+            "random_spawn": true,
+            "spawn_node": "AU",
+            "evaporation_rate": 0.9,
+            "alpha": 0.99,
+            "beta": 0.39,
+            "random_chance": 0.09,
+            "concurrent_ants": 29,
+            "put_pheromones_always": false,
+            "stop_on_success": false,
+            "prioritize_pheromone_routes": false,
+            "step_sleep": 0.09,
+            "iteration_sleep": 0.019,
+            "wave_sleep": 0.59,
+            "node_value_changes": {}
+        }
+    ],
+    "plot": {
+        "show_edge_parameters": true,
+        "show_ant_animation": true,
+        "node_label_color": "white",
+        "node_label_size": 12,
+        "edge_weight_label_color": "red",
+        "edge_pheromone_label_color": "blue",
+        "ant_animation_color": "red",
+        "cmap_edges": "Purples",
+        "cmap_nodes": "winter"
     }
-  },
-  "ants": [
-    {
-      "class": "routing",
-      "max_steps": 20,
-      "max_iterations": 15,
-      "random_spawn": false,
-      "spawn_node": "S",
-      "evaporation_rate": 0.1,
-      "alpha": 0.7,
-      "beta": 0.3,
-      "random_chance": 0.05,
-      "concurrent_ants": 2,
-      "put_pheromones_always": false,
-      "stop_on_success": true
-    }
-  ]
 }

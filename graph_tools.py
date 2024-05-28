@@ -14,23 +14,22 @@ class GraphTools:
         G = nx.DiGraph()
 
         # Opening JSON file
-        f = open(path)
+        with open(path, 'r') as f:
+            data = json.load(f)
 
-        data: dict = json.load(f)
-
-        f.close()
-
+        # Macro configuration
         if 'macro' in data['nodes']:
-            if data['nodes']['macro']['type'] == 'fully_linked_graph':
-                nodes = GraphTools.generate_nodes(data['nodes']['macro']['x'])
+            macro_config = data['nodes']['macro']
+            if macro_config['type'] == 'fully_linked_graph':
+                nodes = GraphTools.generate_nodes(macro_config['x'])
                 for node in nodes:
                     exclusive_nodes = nodes.copy()
                     exclusive_nodes.remove(node)
                     GraphTools.add_edges_from_outgoing_node(G, node, exclusive_nodes)
-            if data['nodes']['macro']['type'] == '2d_grid_torus':
-                x: int = data['nodes']['macro']['x']
-                y: int = data['nodes']['macro']['y']
-                pos: dict = {}
+            elif macro_config['type'] == '2d_grid_torus':
+                x = macro_config['x']
+                y = macro_config['y']
+                pos = {}
                 nodes = GraphTools.generate_nodes(x * y)
                 nodes_2d = np.array(nodes).reshape(x, y)
                 for i in range(x):
@@ -43,29 +42,28 @@ class GraphTools:
                             nodes_2d[i, (j - 1) % y]]
                         GraphTools.add_edges_from_outgoing_node(G, node, neighborhood_nodes)
                         pos[node] = np.array([i * 100, j * 100])
-            if data['nodes']['macro']['type'] == 'small_world':
+            elif macro_config['type'] == 'small_world':
+                # Add your small world graph logic here
                 pass
 
-        for node in data['nodes']:
+        # Other nodes configuration
+        for node, node_config in data['nodes'].items():
             if node != 'macro':
-                target_nodes: list[str] = data['nodes'][node]['edges'] if 'edges' in data['nodes'][node] else []
-                edge_weights: list[int] = data['nodes'][node]['weights'] if 'weights' in data['nodes'][node] else None
-                pheromones: list[float] = data['nodes'][node]['pheromones'] if 'pheromones' in data['nodes'][
-                    node] else None
-                node_value: int = data['nodes'][node]['value'] if 'value' in data['nodes'][node] else 0
+                target_nodes = node_config.get('edges', [])
+                edge_weights = node_config.get('weights', None)
+                pheromones = node_config.get('pheromones', None)
+                node_value = node_config.get('value', 0)
                 GraphTools.add_edges_from_outgoing_node(G, node, target_nodes, edge_weights=edge_weights,
                                                         edge_pheromones=pheromones, node_value=node_value)
 
-        if data['nodes']['macro']['type'] != '2d_grid_torus':
-            pos = nx.spring_layout(G)  # positions for all nodes
+        if 'pos' not in locals():
+            pos = nx.spring_layout(G)  # positions for all nodes if not 2d_grid_torus
 
-        if not 'ants' in data:
-            data['ants'] = {}
+        # Ensure default values for ants and plot configurations
+        ants_config = data.get('ants', {})
+        plot_config = data.get('plot', {})
 
-        if not 'plot' in data:
-            data['plot'] = {}
-
-        return G, data['ants'], data['plot'], pos
+        return G, ants_config, plot_config, pos
 
     @staticmethod
     def generate_nodes(n: int) -> list[str]:
@@ -83,6 +81,8 @@ class GraphTools:
 
     @staticmethod
     def save_config_as_json(self):
+        wave_config = self.colony.waves[0].to_dict()
+
         config_data = {
             'nodes': {
                 'macro': {
@@ -92,14 +92,8 @@ class GraphTools:
                 }
             },
             'ants': [
-                {
-                    'alpha': self.colony.waves[0].alpha,
-                    'beta': self.colony.waves[0].beta,
-                    'random_chance': self.colony.waves[0].random_chance,
-                    'step_sleep': self.colony.waves[0].step_sleep,
-                    'iteration_sleep': self.colony.waves[0].iteration_sleep,
-                    'wave_sleep': self.colony.waves[0].wave_sleep,
-                }],
+                wave_config
+            ],
             'plot': {
                 'show_edge_parameters': self.show_edge_parameters,
                 'show_ant_animation': self.show_ant_animation,
