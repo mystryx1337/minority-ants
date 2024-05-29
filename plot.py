@@ -67,11 +67,11 @@ class AcoPlot:
         plt.show()
         self.colony.stop()
 
-    """
-        defines the buttons on the plot
-    """
 
     def setup_buttons(self):
+        """
+        defines the buttons and input fields on the plot
+        """
         gs = gridspec.GridSpec(7, 7, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
 
         self.check_edge = CheckButtons(plt.subplot(gs[0, 0]), ['Parameter'], [self.show_edge_parameters])
@@ -393,7 +393,7 @@ class AcoPlot:
                         artists.extend(path_line)
 
         try:
-            if not self.colony.waves[0].ant_random_spawn:
+            #if not self.colony.waves[0].ant_random_spawn:
                 current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, ax=self.ax, node_size=700,
                                                               nodelist=[self.colony.waves[0].ant_spawn_node],
                                                               node_color=self.ant_animation_color)

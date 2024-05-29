@@ -17,9 +17,9 @@
       "random_spawn": false,
       "spawn_node": "AU",
       "evaporation_rate": 0.05,
-      "alpha": 0.7,
+      "alpha": 1.2,
       "beta": 0.3,
-      "random_chance": 0.09,
+      "random_chance": 0.00,
       "concurrent_ants": 30,
       "put_pheromones_always": false,
       "stop_on_success": true,
@@ -30,7 +30,7 @@
     }
   ],
   "plot": {
-    "show_edge_parameters": false,
+    "show_edge_parameters": true,
     "show_ant_animation": false,
     "cmap_edges": "Purples"
   }

@@ -6,6 +6,7 @@ import networkx as nx
 import minority_ant
 import random_ant
 import routing_ant
+from graph_tools import GraphTools
 
 '''
 Inspiration Source: https://github.com/hasnainroopawalla/Ant-Colony-Optimization/blob/master/aco_routing/aco.py
@@ -64,6 +65,9 @@ class WaveConfig:
     # change graph values for this wave
     node_value_changes: dict
 
+    # remove edges
+    remove_edges: list[list[str]]
+
     def __init__(self, wave: dict):
         self.ant_class = wave.get('class', 'routing')
         self.ant_max_steps = wave.get('ant_max_steps', 20)
@@ -84,6 +88,7 @@ class WaveConfig:
         self.wave_sleep = wave.get('wave_sleep', 0.5)
 
         self.node_value_changes = wave.get('node_value_changes', {})
+        self.remove_edges = wave.get('remove_edges', [])
 
     def to_dict(self):
         return {
@@ -103,8 +108,10 @@ class WaveConfig:
             'step_sleep': self.step_sleep,
             'iteration_sleep': self.iteration_sleep,
             'wave_sleep': self.wave_sleep,
-            'node_value_changes': self.node_value_changes
+            'node_value_changes': self.node_value_changes,
+            'remove_edges': self.remove_edges
         }
+
 
 class AntColonyRunner:
     """
@@ -196,6 +203,16 @@ class AntColonyRunner:
 
         return pheromoned_edges
 
+    def _remove_edges(self, wave):
+        """
+        Removes a list of edges
+
+        :param wave: a wave-object
+        """
+
+        for tail, head in wave.remove_edges:
+            GraphTools.delete_edge(self.G, tail, head, self.plot.pos)
+
     def _run(self):
         """
         controls the steps of the ants, runs iterations of stepping ants and runs waves of iterations
@@ -211,7 +228,9 @@ class AntColonyRunner:
         for wave in self.waves:
             if self.stop_event.is_set():
                 break
+
             self._change_graph_values(wave)
+            self._remove_edges(wave)
 
             '''
             iterations define a number of ants, which can walk at the same time and which behave homogeneous

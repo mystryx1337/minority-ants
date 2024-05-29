@@ -195,14 +195,14 @@ class GraphTools:
         return nx.spring_layout(G)
 
     @staticmethod
-    def change_node_value(G, node, value):
+    def change_node_value(G: nx.DiGraph, node: str, value):
         try:
             nx.set_node_attributes(G, {node: {'value': value}})
         except nx.NetworkXError:  # Knoten existiert nicht
             pass
 
     @staticmethod
-    def delete_edge(G, tail, head, pos: dict) -> dict:
+    def delete_edge(G: nx.DiGraph, tail: str, head: str, pos: dict) -> dict:
         # Entfernen der Kante zum Graphen
         try:
             G.remove_edge(tail, head)

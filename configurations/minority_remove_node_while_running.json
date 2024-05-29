@@ -1,0 +1,137 @@
+{
+  "nodes": {
+    "macro": {
+      "type": "2d_grid_torus",
+      "x": 6,
+      "y": 6
+    },
+    "BC": {
+      "value": 1
+    }
+  },
+  "ants": [
+    {
+      "class": "minority",
+      "max_steps": 35,
+      "max_iterations": 100,
+      "random_spawn": false,
+      "spawn_node": "AI",
+      "evaporation_rate": 0.05,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 30,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.05,
+      "wave_sleep": 60.0
+    },
+    {
+      "class": "minority",
+      "max_steps": 35,
+      "max_iterations": 100,
+      "random_spawn": false,
+      "spawn_node": "AU",
+      "evaporation_rate": 0.05,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 30,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.05,
+      "wave_sleep": 60.0,
+      "remove_edges": [
+        ["BJ","AF"],
+        ["AF","BJ"],
+        ["BI","AE"],
+        ["AE","BI"],
+        ["BH","AD"],
+        ["AD","BH"],
+        ["BG","AC"],
+        ["AC","BG"],
+        ["BF","AB"],
+        ["AB","BF"],
+        ["BE","AA"],
+        ["AA","BE"]
+      ]
+    },
+    {
+      "class": "minority",
+      "max_steps": 35,
+      "max_iterations": 100,
+      "random_spawn": false,
+      "spawn_node": "AU",
+      "evaporation_rate": 0.05,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 30,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.05,
+      "wave_sleep": 60.0,
+      "remove_edges": [
+        ["AF","AA"],
+        ["AA","AF"],
+        ["AL","AG"],
+        ["AG","AL"],
+        ["AR","AM"],
+        ["AM","AR"],
+        ["AX","AS"],
+        ["AS","AX"],
+        ["BD","AY"],
+        ["AY","BD"],
+        ["BJ","BE"],
+        ["BE","BJ"]
+      ]
+    },
+    {
+      "class": "minority",
+      "max_steps": 35,
+      "max_iterations": 100,
+      "random_spawn": false,
+      "spawn_node": "AU",
+      "evaporation_rate": 0.05,
+      "alpha": 0.7,
+      "beta": 0.3,
+      "random_chance": 0.05,
+      "concurrent_ants": 30,
+      "put_pheromones_always": false,
+      "stop_on_success": true,
+      "prioritize_pheromone_routes": true,
+      "step_sleep": 0.0,
+      "iteration_sleep": 0.05,
+      "wave_sleep": 60.0,
+      "remove_edges": [
+        ["AO","AI"],
+        ["AO","AP"],
+        ["AO","AU"],
+        ["AO","AN"],
+        ["AI","AO"],
+        ["AP","AO"],
+        ["AU","AO"],
+        ["AN","AO"],
+        ["AV","AP"],
+        ["AV","AW"],
+        ["AV","BB"],
+        ["AV","AU"],
+        ["AP","AV"],
+        ["AW","AV"],
+        ["BB","AV"],
+        ["AU","AV"]
+      ]
+    }
+  ],
+  "plot": {
+    "show_edge_parameters": true,
+    "show_ant_animation": false,
+    "cmap_edges": "Purples"
+  }
+}
