@@ -46,7 +46,7 @@ class AntColonyRunner:
         """
         stops the current thread
         """
-
+        self.log_callback("Stopped")
         self.stop_event.set()
 
     def evaporation(self, rate: float):

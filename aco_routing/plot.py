@@ -109,45 +109,6 @@ class Plot:
 
         #-------------------------Second Row----------------------------#
 
-        self.check_random_spawn = CheckButtons(plt.subplot(gs[0, 2]), ['Random Spawn'],
-                                               [self.colony.waves[0].ant_random_spawn])
-        self.check_random_spawn.on_clicked(self.toggle_random_spawn)
-
-        plt.subplot(gs[1, 2]).annotate('Spawn Node', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_spawn_node = TextBox(plt.subplot(gs[1, 2]), '', initial=str(self.colony.waves[0].ant_spawn_node))
-        self.textbox_spawn_node.on_submit(self.update_spawn_node)
-        if self.colony.waves[0].ant_random_spawn:
-            self.textbox_spawn_node.set_active(False)
-
-        plt.subplot(gs[2, 3]).annotate('Iteration Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_iteration_sleep = TextBox(plt.subplot(gs[2, 3]), '',
-                                               initial=str(self.colony.waves[0].iteration_sleep))
-        self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
-
-        plt.subplot(gs[2, 4]).annotate('Step Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_step_sleep = TextBox(plt.subplot(gs[2, 4]), '', initial=str(self.colony.waves[0].step_sleep))
-        self.textbox_step_sleep.on_submit(self.update_step_sleep)
-
-        plt.subplot(gs[2, 5]).annotate('Wave Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_wave_sleep = TextBox(plt.subplot(gs[2, 5]), '', initial=str(self.colony.waves[0].wave_sleep))
-        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
-
-        # -------------------------Third Row----------------------------#
-
-        plt.subplot(gs[1, 3]).annotate('Alpha', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_alpha = TextBox(plt.subplot(gs[1, 3]), '', initial=str(self.colony.waves[0].alpha))
-
-        plt.subplot(gs[1, 4]).annotate('Beta', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_beta = TextBox(plt.subplot(gs[1, 4]), '', initial=str(self.colony.waves[0].beta))
-
-        plt.subplot(gs[1, 5]).annotate('Random Chance', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_random_chance = TextBox(plt.subplot(gs[1, 5]), '', initial=str(self.colony.waves[0].random_chance))
-
-        self.update_params_button = Button(plt.subplot(gs[3, 3]), label='Update Params')
-        self.update_params_button.on_clicked(self.update_parameters)
-
-        # -------------------------Fourth Row----------------------------#
-
         self.add_edge_button = Button(plt.subplot(gs[3, 1]), label='Add')
         self.add_edge_button.on_clicked(
             lambda event: self.add_edge(self.textbox_tail.text, self.textbox_head.text, self.textbox_weight.text))
@@ -165,19 +126,65 @@ class Plot:
         self.delete_edge_button.on_clicked(
             lambda event: self.delete_edge(self.textbox_tail.text, self.textbox_head.text))
 
-        # -------------------------Fith Row----------------------------#
-        plt.subplot(gs[0, 3]).annotate('Evap. Rate', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_evaporation_rate = TextBox(plt.subplot(gs[0, 3]), '',
-                                                initial=str(self.colony.waves[0].evaporation_rate))
+        # -------------------------Third Row----------------------------#
+        self.check_random_spawn = CheckButtons(plt.subplot(gs[0, 2]), ['Random Spawn'],
+                                               [self.colony.waves[0].ant_random_spawn])
+        self.check_random_spawn.on_clicked(self.toggle_random_spawn)
 
-        plt.subplot(gs[0, 4]).annotate('Max. Steps', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_ant_max_steps = TextBox(plt.subplot(gs[0, 4]), '', initial=str(self.colony.waves[0].ant_max_steps))
+        plt.subplot(gs[1, 2]).annotate('Spawn Node', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_spawn_node = TextBox(plt.subplot(gs[1, 2]), '', initial=str(self.colony.waves[0].ant_spawn_node))
+        self.textbox_spawn_node.on_submit(self.update_spawn_node)
+        if self.colony.waves[0].ant_random_spawn:
+            self.textbox_spawn_node.set_active(False)
 
-        plt.subplot(gs[0, 5]).annotate('Max. Iteration', (0.5, 1.05), xycoords='axes fraction', ha='center')
-        self.textbox_max_iterations = TextBox(plt.subplot(gs[0, 5]), '',
-                                              initial=str(self.colony.waves[0].max_iterations))
+        # -------------------------Fourth Row----------------------------#
+        plt.subplot(gs[0, 3]).annotate('Iteration Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_iteration_sleep = TextBox(plt.subplot(gs[0, 3]), '',
+                                               initial=str(self.colony.waves[0].iteration_sleep))
+        self.textbox_iteration_sleep.on_submit(self.update_iteration_sleep)
+
+        plt.subplot(gs[1, 3]).annotate('Step Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_step_sleep = TextBox(plt.subplot(gs[1, 3]), '', initial=str(self.colony.waves[0].step_sleep))
+        self.textbox_step_sleep.on_submit(self.update_step_sleep)
+
+        plt.subplot(gs[2, 3]).annotate('Wave Sleep', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_wave_sleep = TextBox(plt.subplot(gs[2, 3]), '', initial=str(self.colony.waves[0].wave_sleep))
+        self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
+
+        self.load_config_button = Button(plt.subplot(gs[3, 3]), label='Load Config')
+        self.load_config_button.on_clicked(self.on_load_config_clicked)
+
+        # -------------------------Fourth Row----------------------------#
+
+        plt.subplot(gs[0, 4]).annotate('Alpha', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_alpha = TextBox(plt.subplot(gs[0, 4]), '', initial=str(self.colony.waves[0].alpha))
+
+        plt.subplot(gs[1, 4]).annotate('Beta', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_beta = TextBox(plt.subplot(gs[1, 4]), '', initial=str(self.colony.waves[0].beta))
+
+        plt.subplot(gs[2, 4]).annotate('Random Chance', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_random_chance = TextBox(plt.subplot(gs[2, 4]), '', initial=str(self.colony.waves[0].random_chance))
+
+        self.save_config_button = Button(plt.subplot(gs[3, 4]), label='Save Config')
+        self.save_config_button.on_clicked(self.save_config)
 
         # -------------------------Sixth Row----------------------------#
+        plt.subplot(gs[0, 5]).annotate('Evap. Rate', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_evaporation_rate = TextBox(plt.subplot(gs[0, 5]), '',
+                                                initial=str(self.colony.waves[0].evaporation_rate))
+
+        plt.subplot(gs[1, 5]).annotate('Max. Steps', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_ant_max_steps = TextBox(plt.subplot(gs[1, 5]), '', initial=str(self.colony.waves[0].ant_max_steps))
+
+        plt.subplot(gs[2, 5]).annotate('Max. Iteration', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        self.textbox_max_iterations = TextBox(plt.subplot(gs[2, 5]), '',
+                                              initial=str(self.colony.waves[0].max_iterations))
+
+        self.update_params_button = Button(plt.subplot(gs[3, 5]), label='Update Params')
+        self.update_params_button.on_clicked(self.update_parameters)
+
+
+        # -------------------------Seventh Row----------------------------#
         plt.subplot(gs[2, 6]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_concurrent_ants = TextBox(plt.subplot(gs[2, 6]), '',
                                                initial=str(self.colony.waves[0].concurrent_ants))
@@ -189,17 +196,17 @@ class Plot:
         self.radio_ant_class = RadioButtons(ax_radio, ('random', 'routing', 'minority'), active=initial_class_index)
         self.radio_ant_class.on_clicked(self.update_ant_class)
 
-        self.save_config_button = Button(plt.subplot(gs[5, 6]), label='Save Config')
-        self.save_config_button.on_clicked(self.save_config)
+        self.start_colony_button = Button(plt.subplot(gs[3, 6]), label='Run Colony')
+        self.start_colony_button.on_clicked(self.run_colony)
 
-        self.load_config_button = Button(plt.subplot(gs[5, 5]), label='Load Config')
-        self.load_config_button.on_clicked(self.on_load_config_clicked)
+        self.stop_colony_button = Button(plt.subplot(gs[4, 6]), label='Stop Colony')
+        self.stop_colony_button.on_clicked(self.stop_colony)
+        self.stop_colony_button.ax.set_visible(False)
 
         # self.toggle_buttons_button = Button(plt.subplot(gs[4, 3]), label='Hide Buttons')
         # self.toggle_buttons_button.on_clicked(self.toggle_buttons)
 
-        self.start_colony_button = Button(plt.subplot(gs[3, 4]), label='Run Colony')
-        self.start_colony_button.on_clicked(self.run_colony)
+        # -------------------------Seventh Row----------------------------#
 
         # Add a TextBox for displaying print messages (non-editable)
         plt.subplot(gs[6, 0:7]).annotate('Logs', (0.5, 1.05), xycoords='axes fraction', ha='center')
@@ -224,8 +231,24 @@ class Plot:
         :param label: The label of Button (unused) but required
         :return: None
         """
+        self.start_colony_button.ax.set_visible(False)
+        self.stop_colony_button.ax.set_visible(True)
         self.update_parameters('')
         self.colony.start()
+
+    def stop_colony(self, label):
+        """
+        Stops the colony
+
+        :param label: The label of Button (unused) but required
+        :return: None
+        """
+        self.stop_colony_button.ax.set_visible(False)
+        self.start_colony_button.ax.set_visible(True)
+        self.update_parameters('')
+        self.colony.stop()
+
+
 
     def print_message(self, msg):
         """
@@ -297,9 +320,11 @@ class Plot:
 
         self.colony.waves[0].ant_random_spawn = not self.colony.waves[0].ant_random_spawn
         if self.colony.waves[0].ant_random_spawn:
-            self.textbox_spawn_node.set_active(False)  # Disable the text box
+            self.textbox_spawn_node.set_active(False)
+            self.textbox_spawn_node.ax.set_visible(False)
         else:
-            self.textbox_spawn_node.set_active(True)  # Enable the text box
+            self.textbox_spawn_node.set_active(True)
+            self.textbox_spawn_node.ax.set_visible(True)
 
     def toggle_put_pheromones_always(self, label):
         """
