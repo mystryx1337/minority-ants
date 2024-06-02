@@ -5,4 +5,4 @@ if __name__ == '__main__':
     """
     Starts the Software with a default configuration
     """
-    AcoPlotObj = plot.AcoPlot('configurations/minority_remove_node_while_running.json')
+    AcoPlotObj = plot.Plot('configurations/minority_remove_node_while_running.json')

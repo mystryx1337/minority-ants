@@ -4,7 +4,7 @@ import random
 import networkx as nx
 
 
-class Minority_Ant(routing_ant.Routing_Ant):
+class MinorityAnt(routing_ant.RoutingAnt):
     """
     The minority ant: chooses with bigger probability an edge with lesser pheromones
     """
@@ -24,7 +24,7 @@ class Minority_Ant(routing_ant.Routing_Ant):
         """
         # random by chance
         if random.random() < self.random_chance:
-            return super(routing_ant.Routing_Ant, self)._pick_a_new_node()
+            return super(routing_ant.RoutingAnt, self)._pick_a_new_node()
 
         # pheromone sensitive behaviour, if pheromones on its way
         edge_values, target_nodes = self._get_all_unvisited_nodes_value()
@@ -49,4 +49,4 @@ class Minority_Ant(routing_ant.Routing_Ant):
                 return target_nodes[0]
 
         # random otherwise
-        return super(routing_ant.Routing_Ant, self)._pick_a_new_node()
+        return super(routing_ant.RoutingAnt, self)._pick_a_new_node()

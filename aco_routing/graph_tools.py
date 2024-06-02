@@ -11,13 +11,19 @@ class GraphTools:
 
     @staticmethod
     def load_config_from_json(path):
+        """
+        Load the configuration from a JSON file and construct the graph accordingly.
+
+        :param path: The file path to the JSON configuration file.
+        :return: A tuple containing the constructed graph, ants configuration, plot configuration, and node positions.
+        """
+
         G = nx.DiGraph()
 
         # Opening JSON file
         with open(path, 'r') as f:
             data = json.load(f)
 
-        # Macro configuration
         if 'macro' in data['nodes']:
             macro_config = data['nodes']['macro']
             if macro_config['type'] == 'fully_linked_graph':
@@ -81,6 +87,13 @@ class GraphTools:
 
     @staticmethod
     def save_config_as_json(self):
+        """
+        Generate the configuration data for the wave and plot, formatted for JSON serialization.
+
+        :param self: The instance of the class containing the configuration data.
+        :return: A dictionary containing the full configuration data for the wave and plot.
+        :rtype: dict
+        """
         wave_config = self.colony.waves[0].to_dict()
 
         config_data = {
@@ -198,23 +211,23 @@ class GraphTools:
     def change_node_value(G: nx.DiGraph, node: str, value):
         try:
             nx.set_node_attributes(G, {node: {'value': value}})
-        except nx.NetworkXError:  # Knoten existiert nicht
+        except nx.NetworkXError:  # Node doesn't exist
             pass
 
     @staticmethod
     def delete_edge(G: nx.DiGraph, tail: str, head: str, pos: dict) -> dict:
-        # Entfernen der Kante zum Graphen
+        # Removes the edges of a graph
         try:
             G.remove_edge(tail, head)
 
-            # Lösche Knoten, falls keine Kante mehr dazu existiert
+            # Removes the node if no edges are connected to it
             if G.degree[tail] == 0:
                 G.remove_node(tail)
                 pos.pop(tail)
             if G.degree[head] == 0:
                 G.remove_node(head)
                 pos.pop(head)
-        except nx.NetworkXError:  # Kante existiert nicht
+        except nx.NetworkXError:  # Edge doesn't exist
             pass
 
         return pos

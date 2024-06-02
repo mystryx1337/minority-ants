@@ -7,18 +7,18 @@ import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
 from matplotlib.widgets import Button, TextBox, CheckButtons, RadioButtons
-from colony import AntColonyRunner
+from aco_routing.ant_colony_runner import AntColonyRunner
 from graph_tools import GraphTools
 
 
-class AcoPlot:
+class Plot:
     G: nx.DiGraph  # The Graph
     pos: dict  # positions for the nodes
     ants_config: dict  # config for the ants
     colony: AntColonyRunner  # the colony driver
     plot_config: dict  # config for the plot
 
-    show_edge_parameters: bool = True  # if parameters (weights, pheromones) on the edge shall be shown, uses a lo of calculation time
+    show_edge_parameters: bool = True  # if parameters (weights, pheromones) on the edge shall be shown, uses a lot of calculation time
     show_ant_animation: bool = True  # if the steps and paths of the ants shall be shown
     node_label_color: str = 'white'  # color of the label of the node
     node_label_size: int = 12  # font size of the node label
@@ -54,6 +54,22 @@ class AcoPlot:
         self.setup_plot()
 
     def setup_plot(self):
+        """
+        Set up the plot for visualizing the graph and ants' movement.
+
+        Steps performed:
+        1. Set the current node to the first node in the graph (if available).
+        2. Create a figure and axes for the plot.
+        3. Adjust the layout to make space for buttons.
+        4. Set up the control buttons.
+        5. Initialize the animation for updating the plot.
+        6. Adjust the margins and turn off the axis.
+        7. Display the plot.
+        8. Stop the colony's activity.
+
+        :return: None
+        """
+
         self.current_node = list(self.G.nodes())[0] if self.G.nodes() else None
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
         plt.subplots_adjust(bottom=0.3)
@@ -67,10 +83,9 @@ class AcoPlot:
         plt.show()
         self.colony.stop()
 
-
     def setup_buttons(self):
         """
-        defines the buttons and input fields on the plot
+        defines the buttons and input fields on the plot uses a 7 x 7 gridlayout
         """
         gs = gridspec.GridSpec(7, 7, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
 
@@ -86,12 +101,13 @@ class AcoPlot:
 
         self.check_prioritize_pheromone_routes = CheckButtons(plt.subplot(gs[3, 0]), ['Prioritize Pheromones'],
                                                               [self.colony.waves[0].prioritize_pheromone_routes])
+        self.check_prioritize_pheromone_routes.on_clicked(self.toggle_prioritize_pheromone_routes)
 
         self.check_stop_on_success = CheckButtons(plt.subplot(gs[4, 0]), ['Stop on Success'],
                                                   [self.colony.waves[0].stop_on_success])
         self.check_stop_on_success.on_clicked(self.toggle_stop_on_success)
 
-                        #-------------------------Second Row----------------------------#
+        #-------------------------Second Row----------------------------#
 
         self.check_random_spawn = CheckButtons(plt.subplot(gs[0, 2]), ['Random Spawn'],
                                                [self.colony.waves[0].ant_random_spawn])
@@ -116,7 +132,7 @@ class AcoPlot:
         self.textbox_wave_sleep = TextBox(plt.subplot(gs[2, 5]), '', initial=str(self.colony.waves[0].wave_sleep))
         self.textbox_wave_sleep.on_submit(self.update_wave_sleep)
 
-                        # -------------------------Third Row----------------------------#
+        # -------------------------Third Row----------------------------#
 
         plt.subplot(gs[1, 3]).annotate('Alpha', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_alpha = TextBox(plt.subplot(gs[1, 3]), '', initial=str(self.colony.waves[0].alpha))
@@ -130,8 +146,7 @@ class AcoPlot:
         self.update_params_button = Button(plt.subplot(gs[3, 3]), label='Update Params')
         self.update_params_button.on_clicked(self.update_parameters)
 
-
-                        # -------------------------Fourth Row----------------------------#
+        # -------------------------Fourth Row----------------------------#
 
         self.add_edge_button = Button(plt.subplot(gs[3, 1]), label='Add')
         self.add_edge_button.on_clicked(
@@ -150,7 +165,7 @@ class AcoPlot:
         self.delete_edge_button.on_clicked(
             lambda event: self.delete_edge(self.textbox_tail.text, self.textbox_head.text))
 
-                        # -------------------------Fith Row----------------------------#
+        # -------------------------Fith Row----------------------------#
         plt.subplot(gs[0, 3]).annotate('Evap. Rate', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_evaporation_rate = TextBox(plt.subplot(gs[0, 3]), '',
                                                 initial=str(self.colony.waves[0].evaporation_rate))
@@ -162,7 +177,7 @@ class AcoPlot:
         self.textbox_max_iterations = TextBox(plt.subplot(gs[0, 5]), '',
                                               initial=str(self.colony.waves[0].max_iterations))
 
-                        # -------------------------Sixth Row----------------------------#
+        # -------------------------Sixth Row----------------------------#
         plt.subplot(gs[2, 6]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_concurrent_ants = TextBox(plt.subplot(gs[2, 6]), '',
                                                initial=str(self.colony.waves[0].concurrent_ants))
@@ -187,12 +202,38 @@ class AcoPlot:
         self.start_colony_button.on_clicked(lambda event: self.colony.start())
 
     def update_spawn_node(self, text):
+        """
+        Update the spawn node for ants.
+
+        :param text: The spawn node identifier. ex node AB
+        :type text: str
+        :return: None
+        """
         self.colony.waves[0].ant_spawn_node = text
 
     def update_ant_class(self, label):
+        """
+        Update the ant class for the first wave of the colony.
+
+        This method sets the ant class for ants in the first wave of the colony based on the selected radio button.
+        Either random, routing or minority.
+
+        :param label: The label of the selected radio button (unused) but required.
+        :type label: str
+        :return: None
+        """
         self.colony.waves[0].ant_class = self.radio_ant_class.value_selected
 
     def update_parameters(self, event):
+        """
+        Update various parameters that have been set via the UI for all waves in the colony.
+
+        :param event: The event that triggered this update (unused) but required.
+        :type event: object
+        :return: None
+        :return:
+        """
+
         try:
             alpha = float(self.textbox_alpha.text)
             beta = float(self.textbox_beta.text)
@@ -211,16 +252,24 @@ class AcoPlot:
                 wave.concurrent_ants = concurrent_ants
                 wave.evaporation_rate = evaporation_rate
 
-            print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}, '
-                  f'Max Steps={ant_max_steps}, Max Iterations={max_iterations}, Concurrent Ants={concurrent_ants}, '
-                  f'Evaporation Rate={evaporation_rate}')
+            # print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}, '
+            #       f'Max Steps={ant_max_steps}, Max Iterations={max_iterations}, Concurrent Ants={concurrent_ants}, '
+            #       f'Evaporation Rate={evaporation_rate}')
         except ValueError:
             print("Please enter valid numerical values for all parameters.")
 
-    def update_ant_class(self, event):
-        self.colony.waves[0].ant_class = event
-
     def toggle_random_spawn(self, label):
+        """
+        Toggle the random spawn setting for ants.
+
+        This method toggles the random spawn setting for ants in the first wave of the colony.
+        It also enables or disables the spawn node text box based on the new state.
+
+        :param label: The label associated with the toggle (unused) but required.
+        :type label: str
+        :return: None
+        """
+
         self.colony.waves[0].ant_random_spawn = not self.colony.waves[0].ant_random_spawn
         if self.colony.waves[0].ant_random_spawn:
             self.textbox_spawn_node.set_active(False)  # Disable the text box
@@ -228,23 +277,52 @@ class AcoPlot:
             self.textbox_spawn_node.set_active(True)  # Enable the text box
 
     def toggle_put_pheromones_always(self, label):
+        """
+        Toggle the put pheromones always setting.
+
+        This method toggles whether ants always put down pheromones in the first wave of the colony.
+
+        :param label: The label associated with the toggle (unused) but required.
+        :type label: str
+        :return: None
+        """
         self.colony.waves[0].put_pheromones_always = not self.colony.waves[0].put_pheromones_always
 
     def toggle_stop_on_success(self, label):
+        """
+        Toggle the stop on success setting.
+
+        This method toggles whether the ants of the colony die when they reach a success node
+        (multiple success nodes are possible) or continue to live.
+
+        :param label: The label associated with the toggle (unused) but required.
+        :type label: str
+        :return: None
+        """
         self.colony.waves[0].stop_on_success = not self.colony.waves[0].stop_on_success
 
     def toggle_prioritize_pheromone_routes(self, label):
+        """
+        Toggle the priority pheromone routes setting.
+
+        This method toggles whether MINORITY ants only prioritize routes with the least pheromones or all routes.
+
+        :param label: The label associated with the toggle (unused) but required.
+        :type label: str
+        :return: None
+        """
         self.colony.waves[0].prioritize_pheromone_routes = not self.colony.waves[0].prioritize_pheromone_routes
 
-    def update_speed(self, val):
-        self.speed_factor = val
-        for wave in self.colony.waves:
-            wave.step_sleep = 0.5 / self.speed_factor
-            wave.iteration_sleep = 0.5 / self.speed_factor
-            wave.wave_sleep = 0.5 / self.speed_factor
-        print(f'Updated speed factor: {self.speed_factor}')
-
     def update_step_sleep(self, text):
+        """
+        Update the step sleep time for all waves in the colony.
+
+        This method updates the duration between ant steps.
+
+        :param text: The new step sleep time.
+        :type text: str
+        :return: None
+        """
         try:
             val = float(text)
             for wave in self.colony.waves:
@@ -253,6 +331,16 @@ class AcoPlot:
             print("Please enter a valid number for step sleep.")
 
     def update_iteration_sleep(self, text):
+        """
+        Update the step sleep time for all waves in the colony.
+
+        This method updates the duration between iterations.
+        Iterations contain all the ants.
+
+        :param text: The new step sleep time.
+        :type text: str
+        :return: None
+        """
         try:
             val = float(text)
             for wave in self.colony.waves:
@@ -261,6 +349,16 @@ class AcoPlot:
             print("Please enter a valid number for iteration sleep.")
 
     def update_wave_sleep(self, text):
+        """
+        Update the step sleep time for all waves in the colony.
+
+        This method updates the duration between waves.
+        Waves contain all the iterations.
+
+        :param text: The new step sleep time.
+        :type text: str
+        :return: None
+        """
         try:
             val = float(text)
             for wave in self.colony.waves:
@@ -269,6 +367,17 @@ class AcoPlot:
             print("Please enter a valid number for wave sleep.")
 
     def toggle_buttons(self, event):
+        """
+        Toggle the visibility of control buttons and text boxes.
+
+        This method toggles the visibility of various control buttons and text boxes in the
+        user interface.
+
+        :param event: The event that triggered this toggle (unused) but required.
+        :type event: object
+        :return: None
+        """
+
         self.buttons_visible = not self.buttons_visible
 
         # Toggle visibility of TextBox widgets
@@ -295,12 +404,32 @@ class AcoPlot:
         plt.draw()
 
     def reset(self, config_path):
+        """
+        Reset the colony and reinitialize the configuration.
+
+        This method stops the current colony activity, closes the existing plot,
+        reinitialized the configuration from the given path, and sets up the plot again.
+
+        :param config_path: The path to the configuration file.
+        :type config_path: str
+        :return: None
+        """
         self.colony.stop()
         plt.close(self.fig)
         self.init_config(config_path)
         self.setup_plot()
 
     def save_config(self, event):
+        """
+        Save the current configuration to a JSON file.
+
+        This method updates the parameters, opens a file dialog for the user to specify the
+        save location, and saves the current configuration to a JSON file.
+
+        :param event: The event that triggered this save (unused) but required.
+        :type event: object
+        :return: None
+        """
         self.update_parameters('')
         root = tk.Tk()
         root.withdraw()
@@ -313,6 +442,16 @@ class AcoPlot:
             print(f"Configuration saved to {file_path}")
 
     def on_load_config_clicked(self, event):
+        """
+        Load a configuration from a JSON file and reset the colony.
+
+        This method opens a file dialog for the user to select a configuration file,
+        and resets the colony with the selected configuration.
+
+        :param event: The event that triggered this load (unused) but required.
+        :type event: object
+        :return: None
+        """
         root = tk.Tk()
         root.withdraw()
         file_path = filedialog.askopenfilename(
@@ -322,33 +461,62 @@ class AcoPlot:
             self.reset(file_path)
 
     def update_check_edge(self, label):
+        """
+        Toggle the visibility of edge parameters.
+
+        This method toggles the visibility of edge parameters in the plot.
+
+        :param label: The label associated with the toggle (unused) but required.
+        :type label: str
+        :return: None
+        """
         self.show_edge_parameters = not self.show_edge_parameters
 
     def update_check_ant(self, label):
+        """
+        Toggle the visibility of ant animation.
+
+        This method toggles the visibility of the ant animation in the plot.
+
+        :param label: The label associated with the toggle (unused) but required.
+        :type label: str
+        :return: None
+        """
         self.show_ant_animation = not self.show_ant_animation
 
     def update_plot(self, frame):
         """
         renders the graph
         """
+
+        # Find the minimum and maximum weight among all edges in the graph
         min_weight, max_weight = min(data['weight'] for _, _, data in self.G.edges(data=True)), max(
             data['weight'] for _, _, data in self.G.edges(data=True))
+
+        # Find the minimum and maximum pheromone level among all edges in the graph
         min_pheromone, max_pheromone = min(data['pheromone'] for _, _, data in self.G.edges(data=True)), max(
             data['pheromone'] for _, _, data in self.G.edges(data=True))
+
+        # Find the minimum and maximum value among all nodes in the graph
         min_value, max_value = min(data['value'] for _, data in self.G.nodes(data=True)), max(
             data['value'] for _, data in self.G.nodes(data=True))
 
+        # Normalize the node values and edge pheromone levels for color mapping
         node_norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
         edge_norm = mcolors.Normalize(vmin=min_pheromone, vmax=max_pheromone)
 
         self.ax.clear()
 
+        # Generate the color map for nodes based on their values
         node_colors = [self.cmap_nodes(node_norm(data['value'])) for _, data in self.G.nodes(data=True)]
         nodes = nx.draw_networkx_nodes(self.G, pos=self.pos, nodelist=list(self.G.nodes()), node_color=node_colors,
                                        ax=self.ax)
 
         edges = self.G.edges(data=True)
+
+        # Generate the color map for edges based on their pheromone levels
         edge_colors = [self.cmap_edges(edge_norm(data['pheromone'])) for _, _, data in edges]
+        # Calculate the width for each edge based on its weight
         widths = [1 + (data['weight'] - min_weight) / (max_weight - min_weight + 1) for _, _, data in edges]
         edges = nx.draw_networkx_edges(self.G, pos=self.pos, edgelist=list(edges), width=widths,
                                        edge_color=edge_colors,
@@ -358,24 +526,29 @@ class AcoPlot:
                                               font_color=self.node_label_color,
                                               labels={n: n for n in self.G.nodes()})
 
+        # If edge parameters are to be shown, draw edge weight and pheromone labels
         if self.show_edge_parameters:
+            # Create labels for edge weights
             weight_labels = {(tail, head): f"{data['weight']}" for tail, head, data in self.G.edges(data=True)}
             edge_weight_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=weight_labels,
                                                               font_color=self.edge_weight_label_color,
                                                               label_pos=0.1, ax=self.ax)
 
+            # Create labels for edge pheromone levels
             pheromone_labels = {(tail, head): f"{round(data['pheromone'], 1)}" for tail, head, data in
                                 self.G.edges(data=True)}
             edge_pheromone_labels = nx.draw_networkx_edge_labels(self.G, self.pos, edge_labels=pheromone_labels,
                                                                  font_color=self.edge_pheromone_label_color,
                                                                  label_pos=0.3, ax=self.ax)
 
+            # Collect all artists (visual elements) to be drawn required for animations
             artists = [nodes] + list(edges) + list(node_labels.values()) + list(edge_weight_labels.values()) + list(
                 edge_pheromone_labels.values())
         else:
+            # Collect only the node and edge artists if edge parameters are not shown
             artists = [nodes] + list(edges) + list(node_labels.values())
 
-
+        # If there are ants and ant animation is enabled, draw the ants on the graph
         if len(self.colony.ants) > 0 and self.show_ant_animation:
             ant_positions = [ant.current_node for ant in self.colony.ants]
             current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, nodelist=ant_positions, node_size=700,
@@ -394,10 +567,10 @@ class AcoPlot:
 
         try:
             #if not self.colony.waves[0].ant_random_spawn:
-                current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, ax=self.ax, node_size=700,
-                                                              nodelist=[self.colony.waves[0].ant_spawn_node],
-                                                              node_color=self.ant_animation_color)
-                artists.append(current_node_artists)
+            current_node_artists = nx.draw_networkx_nodes(self.G, self.pos, ax=self.ax, node_size=700,
+                                                          nodelist=[self.colony.waves[0].ant_spawn_node],
+                                                          node_color=self.ant_animation_color)
+            artists.append(current_node_artists)
         except:
             pass
 

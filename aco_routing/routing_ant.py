@@ -2,12 +2,14 @@ import random
 import random_ant
 import numpy as np
 
-class Routing_Ant(random_ant.Random_Ant):
+
+class RoutingAnt(random_ant.Random_Ant):
     """
     The traditional routing ant
     """
 
-    def _get_all_unvisited_nodes_value(self) -> tuple[np.ndarray[np.dtype[float], np.dtype[float]], np.ndarray[np.dtype[str], np.dtype[str]]]:
+    def _get_all_unvisited_nodes_value(self) -> tuple[
+        np.ndarray[np.dtype[float], np.dtype[float]], np.ndarray[np.dtype[str], np.dtype[str]]]:
         possible_edges = self.G.edges([self.current_node], data=True)
         target_nodes = np.array([])
         node_values = np.array([])
@@ -34,7 +36,7 @@ class Routing_Ant(random_ant.Random_Ant):
         # pheromone sensitive behaviour, if pheromones on its way
         node_values, target_nodes = self._get_all_unvisited_nodes_value()
         sum_node_values = np.sum(node_values)
-        if(sum_node_values > 0):
+        if (sum_node_values > 0):
             node_probabilities = (node_values / sum_node_values)
             return random.choices(target_nodes, weights=node_probabilities, k=1)[0]
 
@@ -53,7 +55,7 @@ class Routing_Ant(random_ant.Random_Ant):
             if i < len(self.path) - 1:
                 next_node = self.path[i + 1]
                 current_weight = self.G[current_node][next_node]['weight']
-                cost += current_weight 
+                cost += current_weight
         return cost
 
     def _increase_pheromone_on_success(self):
