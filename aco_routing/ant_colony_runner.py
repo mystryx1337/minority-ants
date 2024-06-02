@@ -23,10 +23,11 @@ class AntColonyRunner:
     thread: threading.Thread                # thread object
     stop_event: threading.Event             # stop event
 
-    def __init__(self, plot):
+    def __init__(self, plot, log_callback):
         self.plot = plot
         self.G = plot.G
         self.stop_event = threading.Event()
+        self.log_callback = log_callback
 
         self.waves = []
         for wave in plot.ants_config:
@@ -36,7 +37,7 @@ class AntColonyRunner:
         """
         starts _run() in a separate thread
         """
-
+        self.log_callback("Running")
         self.thread = threading.Thread(target=self._run)
         self.stop_event = threading.Event()
         self.thread.start()
@@ -165,6 +166,7 @@ class AntColonyRunner:
 
             time.sleep(wave.wave_sleep)
 
-        print("Run finished")
+        # print("Run finished")
+        self.log_callback("Run finished")
 
         self.stop()

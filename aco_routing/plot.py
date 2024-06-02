@@ -34,7 +34,7 @@ class Plot:
         """
 
         self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_config_from_json(config_path)
-        self.colony = AntColonyRunner(self)
+        self.colony = AntColonyRunner(self, self.print_message)
 
         self.show_edge_parameters = self.plot_config.get('show_edge_parameters', True)
         self.show_ant_animation = self.plot_config.get('show_ant_animation', True)
@@ -85,9 +85,9 @@ class Plot:
 
     def setup_buttons(self):
         """
-        defines the buttons and input fields on the plot uses a 7 x 7 gridlayout
+        defines the buttons and input fields on the plot uses an 8 x 7 gridlayout
         """
-        gs = gridspec.GridSpec(7, 7, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
+        gs = gridspec.GridSpec(8, 7, bottom=0, top=0.25, hspace=0.5, wspace=0.5)
 
         self.check_edge = CheckButtons(plt.subplot(gs[0, 0]), ['Parameter'], [self.show_edge_parameters])
         self.check_edge.on_clicked(self.update_check_edge)
@@ -199,7 +199,13 @@ class Plot:
         # self.toggle_buttons_button.on_clicked(self.toggle_buttons)
 
         self.start_colony_button = Button(plt.subplot(gs[3, 4]), label='Run Colony')
-        self.start_colony_button.on_clicked(lambda event: self.colony.start())
+        self.start_colony_button.on_clicked(self.run_colony)
+
+        # Add a TextBox for displaying print messages (non-editable)
+        plt.subplot(gs[6, 0:7]).annotate('Logs', (0.5, 1.05), xycoords='axes fraction', ha='center')
+        ax_log = plt.subplot(gs[6, 0:7])
+        self.textbox_logs = TextBox(ax_log, '', initial='')
+        self.textbox_logs.set_active(False)
 
     def update_spawn_node(self, text):
         """
@@ -210,6 +216,25 @@ class Plot:
         :return: None
         """
         self.colony.waves[0].ant_spawn_node = text
+
+    def run_colony(self, label):
+        """
+        Updates all parameters and start the colony
+
+        :param label: The label of Button (unused) but required
+        :return: None
+        """
+        self.update_parameters('')
+        self.colony.start()
+
+    def print_message(self, msg):
+        """
+        Displays messages in UI
+
+        :param msg: Display message
+        :return: None
+        """
+        self.textbox_logs.set_val(msg)
 
     def update_ant_class(self, label):
         """
@@ -252,11 +277,11 @@ class Plot:
                 wave.concurrent_ants = concurrent_ants
                 wave.evaporation_rate = evaporation_rate
 
-            # print(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}, '
-            #       f'Max Steps={ant_max_steps}, Max Iterations={max_iterations}, Concurrent Ants={concurrent_ants}, '
-            #       f'Evaporation Rate={evaporation_rate}')
+            self.print_message(f'Updated parameters: Alpha={alpha}, Beta={beta}, Random Chance={random_chance}, '
+                               f'Max Steps={ant_max_steps}, Max Iterations={max_iterations},'
+                               f' Concurrent Ants={concurrent_ants},'f'Evaporation Rate={evaporation_rate}')
         except ValueError:
-            print("Please enter valid numerical values for all parameters.")
+            self.print_message("Please enter valid numerical values for all parameters.")
 
     def toggle_random_spawn(self, label):
         """
@@ -325,10 +350,11 @@ class Plot:
         """
         try:
             val = float(text)
+            self.print_message(f'Step sleep set to {val}')
             for wave in self.colony.waves:
                 wave.step_sleep = val
         except ValueError:
-            print("Please enter a valid number for step sleep.")
+            self.print_message("Please enter a valid number for step sleep.")
 
     def update_iteration_sleep(self, text):
         """
@@ -343,10 +369,11 @@ class Plot:
         """
         try:
             val = float(text)
+            self.print_message(f'Iteration sleep set to {val}')
             for wave in self.colony.waves:
                 wave.iteration_sleep = val
         except ValueError:
-            print("Please enter a valid number for iteration sleep.")
+            self.print_message("Please enter a valid number for iteration sleep.")
 
     def update_wave_sleep(self, text):
         """
@@ -361,10 +388,11 @@ class Plot:
         """
         try:
             val = float(text)
+            self.print_message(f'Wave sleep set to {val}')
             for wave in self.colony.waves:
                 wave.wave_sleep = val
         except ValueError:
-            print("Please enter a valid number for wave sleep.")
+            self.print_message("Please enter a valid number for wave sleep.")
 
     def toggle_buttons(self, event):
         """
@@ -439,7 +467,7 @@ class Plot:
         if file_path:
             with open(file_path, 'w') as f:
                 json.dump(GraphTools.save_config_as_json(self), f, indent=4)
-            print(f"Configuration saved to {file_path}")
+            self.print_message(f"Configuration saved to {file_path}")
 
     def on_load_config_clicked(self, event):
         """
