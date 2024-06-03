@@ -58,6 +58,13 @@ class AntColonyRunner:
 
         for u, v, data in self.G.edges(data=True):
             self.G[u][v]['pheromone'] *= (1 - rate)
+            
+    def _clear_pheromones(self):
+        """
+        sets all pheromones to 0
+        """
+        
+        self.evaporation(1)
 
     def spawn_ant(self, wave):
         """
@@ -122,9 +129,12 @@ class AntColonyRunner:
         with waves it it possible to configure different groups of iterations.
         It can be useful for elite ants or combining different ant types in one experiment
         """
-        for wave in self.waves:
+        for wave_i, wave in enumerate(self.waves):
             if self.stop_event.is_set():
                 break
+                
+            if wave.clear_pheromones:
+                self._clear_pheromones()
 
             self._change_graph_values(wave)
             self._remove_edges(wave)
@@ -162,7 +172,10 @@ class AntColonyRunner:
                         time.sleep(wave.step_sleep)
 
                 time.sleep(wave.iteration_sleep)
-                print("Edges found so far: " + str(self._count_pheromoned_edges()))
+                self.log_callback("Edges found so far: " + str(self._count_pheromoned_edges())
+                                  + " / " + str(len(self.G.edges.keys()))
+                                  + " in wave " + str(wave_i)
+                                  + " interation " + str(iteration))
 
             time.sleep(wave.wave_sleep)
 

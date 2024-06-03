@@ -57,6 +57,9 @@ class WaveConfig:
 
     # remove edges
     remove_edges: list[list[str]]
+    
+    # clear pheromones before start
+    clear_pheromones: bool = False
 
     def __init__(self, wave: dict):
         self.ant_class = wave.get('class', 'routing')
@@ -79,6 +82,8 @@ class WaveConfig:
 
         self.node_value_changes = wave.get('node_value_changes', {})
         self.remove_edges = wave.get('remove_edges', [])
+        
+        self.clear_pheromones = wave.get('clear_pheromones', False)
 
     def to_dict(self):
         """
@@ -104,7 +109,8 @@ class WaveConfig:
             'iteration_sleep': self.iteration_sleep,
             'wave_sleep': self.wave_sleep,
             'node_value_changes': self.node_value_changes,
-            'remove_edges': self.remove_edges
+            'remove_edges': self.remove_edges,
+            'clear_pheromones': self.clear_pheromones
         }
 
 

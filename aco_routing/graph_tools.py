@@ -81,9 +81,13 @@ class GraphTools:
         alphabet = list(string.ascii_uppercase)
         if n <= 26:
             return alphabet[0:n]
-        else:
+        elif n <= 26*26:
             double_alphabet = [letter1 + letter2 for letter1 in alphabet for letter2 in alphabet]
             return double_alphabet[0:n]
+        elif n <= 26*26*26:
+            double_alphabet = [letter1 + letter2 for letter1 in alphabet for letter2 in alphabet]
+            triple_alphabet = [letter + needle for letter in alphabet for needle in double_alphabet]
+            return triple_alphabet[0:n]
 
     @staticmethod
     def save_config_as_json(self):

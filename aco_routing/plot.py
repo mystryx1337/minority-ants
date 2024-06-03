@@ -20,6 +20,7 @@ class Plot:
 
     show_edge_parameters: bool = True  # if parameters (weights, pheromones) on the edge shall be shown, uses a lot of calculation time
     show_ant_animation: bool = True  # if the steps and paths of the ants shall be shown
+    show_graph: bool = True  # if the graph shall be shown
     node_label_color: str = 'white'  # color of the label of the node
     node_label_size: int = 12  # font size of the node label
     edge_weight_label_color: str = 'red'  # color for the weight parameter shown for edges
@@ -38,6 +39,7 @@ class Plot:
 
         self.show_edge_parameters = self.plot_config.get('show_edge_parameters', True)
         self.show_ant_animation = self.plot_config.get('show_ant_animation', True)
+        self.show_graph = self.plot_config.get('show_graph', True)
         self.node_label_color = self.plot_config.get('node_label_color', 'white')
         self.node_label_size = self.plot_config.get('node_label_size', 12)
         self.edge_weight_label_color = self.plot_config.get('edge_weight_label_color', 'red')
@@ -75,8 +77,9 @@ class Plot:
         plt.subplots_adjust(bottom=0.3)
         self.setup_buttons()
         plt.sca(self.ax)
-        self.ani = animation.FuncAnimation(self.fig, self.update_plot, frames=200,
-                                           interval=50, blit=True, repeat=True, fargs=())
+        if self.show_graph:
+            animation.FuncAnimation(self.fig, self.update_plot, frames=200,
+                                               interval=50, blit=True, repeat=True, fargs=())
         self.ax.margins(0.08)
         plt.axis("off")
 
@@ -257,6 +260,7 @@ class Plot:
         :param msg: Display message
         :return: None
         """
+        print(msg)
         self.textbox_logs.set_val(msg)
 
     def update_ant_class(self, label):
