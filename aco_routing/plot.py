@@ -78,7 +78,7 @@ class Plot:
         self.setup_buttons()
         plt.sca(self.ax)
         if self.show_graph:
-            animation.FuncAnimation(self.fig, self.update_plot, frames=200,
+            self.ani = animation.FuncAnimation(self.fig, self.update_plot, frames=200,
                                                interval=50, blit=True, repeat=True, fargs=())
         self.ax.margins(0.08)
         plt.axis("off")
