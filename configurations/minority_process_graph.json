@@ -79,7 +79,7 @@
   "ants": [
     {
       "class": "minority",
-      "max_steps": 20,
+      "ant_max_steps": 20,
       "max_iterations": 40,
       "random_spawn": false,
       "spawn_node": "Kind (u12) ist erkrankt",

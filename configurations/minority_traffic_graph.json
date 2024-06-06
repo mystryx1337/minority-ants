@@ -63,7 +63,7 @@
   },
   "ants": [{
       "class": "minority",
-      "max_steps": 20,
+      "ant_max_steps": 20,
       "max_iterations": 0,
       "random_spawn": false,
       "spawn_node": "München",
@@ -85,7 +85,7 @@
     },
     {
       "class": "minority",
-      "max_steps": 20,
+      "ant_max_steps": 20,
       "max_iterations": 15,
       "random_spawn": false,
       "spawn_node": "Zürich",

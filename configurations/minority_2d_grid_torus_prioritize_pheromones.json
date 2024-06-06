@@ -12,7 +12,7 @@
   "ants": [
     {
       "class": "minority",
-      "max_steps": 35,
+      "ant_max_steps": 35,
       "max_iterations": 100,
       "random_spawn": false,
       "spawn_node": "AU",

@@ -135,7 +135,7 @@ class Random_Ant:
         :return: True if step was successful or False if there is no new step and the ant wants to die
         """
 
-        if (self.current_node != self.start_node or not self.success) and len(self.path) < self.max_steps:
+        if (self.current_node != self.start_node or not self.success):
             # Pick a new node
             new_node = self._pick_a_new_node()
 

@@ -17,8 +17,8 @@ class AntColonyRunner:
     G: nx.DiGraph                           # the graph
 
     ants: list[random_ant.Random_Ant] = []  # list of currently stepping (alive) ants
-    iteration: int                          # number of the current iteration
-    waves: list[WaveConfig]                 # config for the current wave
+    iteration: int = 0                      # number of the current iteration
+    waves: list[WaveConfig] = []            # config for the current wave
 
     thread: threading.Thread                # thread object
     stop_event: threading.Event             # stop event
@@ -30,10 +30,16 @@ class AntColonyRunner:
         self.log_callback = log_callback
 
         self.waves = []
-        for wave in plot.ants_config:
-            self.waves.append(WaveConfig(wave))
+        for wave_conf in plot.ants_config:
+            self.waves.append(WaveConfig(wave_conf))
 
     def start(self):
+        self.waves = []
+        for wave_conf in self.plot.ants_config:
+            self.waves.append(WaveConfig(wave_conf))
+            
+        for wave in self.waves:
+            print(wave.to_dict())
         """
         starts _run() in a separate thread
         """
@@ -55,9 +61,9 @@ class AntColonyRunner:
 
         :param rate: reducing factor
         """
-
-        for u, v, data in self.G.edges(data=True):
-            self.G[u][v]['pheromone'] *= (1 - rate)
+        if rate > 0.0:
+            for u, v, data in self.G.edges(data=True):
+                self.G[u][v]['pheromone'] *= (1 - rate)
             
     def _clear_pheromones(self):
         """
@@ -130,6 +136,7 @@ class AntColonyRunner:
         It can be useful for elite ants or combining different ant types in one experiment
         """
         for wave_i, wave in enumerate(self.waves):
+            
             if self.stop_event.is_set():
                 break
                 
@@ -175,7 +182,8 @@ class AntColonyRunner:
                 self.log_callback("Edges found so far: " + str(self._count_pheromoned_edges())
                                   + " / " + str(len(self.G.edges.keys()))
                                   + " in wave " + str(wave_i)
-                                  + " interation " + str(iteration))
+                                  + " interation " + str(iteration)
+                                  + " at " + str(wave.ant_max_steps) + " steps")
 
             time.sleep(wave.wave_sleep)
 

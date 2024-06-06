@@ -12,7 +12,7 @@
   "ants": [
     {
       "class": "minority",
-      "max_steps": 35,
+      "ant_max_steps": 35,
       "max_iterations": 100,
       "random_spawn": false,
       "spawn_node": "AI",
@@ -25,12 +25,12 @@
       "stop_on_success": true,
       "prioritize_pheromone_routes": true,
       "step_sleep": 0.0,
-      "iteration_sleep": 0.05,
+      "iteration_sleep": 0.00,
       "wave_sleep": 60.0
     },
     {
       "class": "minority",
-      "max_steps": 35,
+      "ant_max_steps": 35,
       "max_iterations": 100,
       "random_spawn": false,
       "spawn_node": "AU",
@@ -62,7 +62,7 @@
     },
     {
       "class": "minority",
-      "max_steps": 35,
+      "ant_max_steps": 35,
       "max_iterations": 100,
       "random_spawn": false,
       "spawn_node": "AU",
@@ -94,7 +94,7 @@
     },
     {
       "class": "minority",
-      "max_steps": 35,
+      "ant_max_steps": 35,
       "max_iterations": 100,
       "random_spawn": false,
       "spawn_node": "AU",
