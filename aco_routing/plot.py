@@ -110,6 +110,10 @@ class Plot:
                                                   [self.colony.waves[0].stop_on_success])
         self.check_stop_on_success.on_clicked(self.toggle_stop_on_success)
 
+        self.check_show_graph = CheckButtons(plt.subplot(gs[5, 0]), ['Show Graph'],
+                                                  [self.graph_visibly])
+        self.check_show_graph.on_clicked(self.graph_visibly)
+
         #-------------------------Second Row----------------------------#
 
         self.add_edge_button = Button(plt.subplot(gs[3, 1]), label='Add')
@@ -206,6 +210,9 @@ class Plot:
         self.stop_colony_button.on_clicked(self.stop_colony)
         self.stop_colony_button.ax.set_visible(False)
 
+        self.save_graphml_button = Button(plt.subplot(gs[5, 6]), label='Save GraphML')
+        self.save_graphml_button.on_clicked(self.save_graphml)
+
         # self.toggle_buttons_button = Button(plt.subplot(gs[4, 3]), label='Hide Buttons')
         # self.toggle_buttons_button.on_clicked(self.toggle_buttons)
 
@@ -216,6 +223,20 @@ class Plot:
         ax_log = plt.subplot(gs[6, 0:7])
         self.textbox_logs = TextBox(ax_log, '', initial='')
         self.textbox_logs.set_active(False)
+
+    def graph_visibly(self, label):
+        """
+        Changes visibility of the graph.
+
+        :param label: str (unused)
+        :return: None
+        """
+        self.show_graph = not self.show_graph
+        if self.show_graph:
+            self.ani.event_source.start()
+        else:
+            self.ani.event_source.stop()
+        plt.draw()
 
     def update_spawn_node(self, text):
         """
@@ -251,7 +272,33 @@ class Plot:
         self.update_parameters('')
         self.colony.stop()
 
+    def save_graphml(self, event):
+        """
+        Save the graph to a GraphML file, including all node and edge attributes.
 
+        :param event: The event that triggered this save (unused) but required.
+        :type event: object
+        :return: None
+        """
+        root = tk.Tk()
+        root.withdraw()
+        file_path = filedialog.asksaveasfilename(defaultextension=".graphml",
+                                                 filetypes=[("GraphML files", "*.graphml"), ("All files", "*.*")])
+
+        if file_path:
+            # Add necessary attributes to nodes and edges
+            for node in self.G.nodes:
+                self.G.nodes[node]['label'] = str(node)
+                self.G.nodes[node]['color'] = str(self.cmap_nodes(self.G.nodes[node]['value']))
+
+            for u, v in self.G.edges:
+                self.G.edges[u, v]['weight'] = float(self.G[u][v]['weight'])
+                self.G.edges[u, v]['pheromone'] = float(self.G[u][v]['pheromone'])
+                self.G.edges[u, v]['color'] = str(self.cmap_edges(self.G[u][v]['pheromone']))
+
+            # Write the GraphML file
+            nx.write_graphml(self.G, file_path)
+            self.print_message(f"Graph saved to {file_path}")
 
     def print_message(self, msg):
         """

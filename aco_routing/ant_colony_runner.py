@@ -52,6 +52,8 @@ class AntColonyRunner:
         """
         stops the current thread
         """
+        self.plot.start_colony_button.ax.set_visible(True)
+        self.plot.stop_colony_button.ax.set_visible(False)
         self.log_callback("Stopped")
         self.stop_event.set()
 
