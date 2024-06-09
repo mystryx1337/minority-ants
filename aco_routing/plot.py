@@ -26,6 +26,7 @@ class Plot:
     edge_weight_label_color: str = 'red'  # color for the weight parameter shown for edges
     edge_pheromone_label_color: str = 'blue'  # color for the pheromone parameter shown for edges
     ant_animation_color: str = 'red'  # color of the ant paths shown on the graph
+    last_message: str = ''  # last message of the log
 
     def init_config(self, config_path: str):
         """
@@ -111,7 +112,7 @@ class Plot:
         self.check_stop_on_success.on_clicked(self.toggle_stop_on_success)
 
         self.check_show_graph = CheckButtons(plt.subplot(gs[5, 0]), ['Show Graph'],
-                                                  [self.graph_visibly])
+                                             [self.graph_visibly])
         self.check_show_graph.on_clicked(self.graph_visibly)
 
         #-------------------------Second Row----------------------------#
@@ -189,7 +190,6 @@ class Plot:
 
         self.update_params_button = Button(plt.subplot(gs[3, 5]), label='Update Params')
         self.update_params_button.on_clicked(self.update_parameters)
-
 
         # -------------------------Seventh Row----------------------------#
         plt.subplot(gs[2, 6]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
@@ -315,7 +315,7 @@ class Plot:
         :return: None
         """
         print(msg)
-        self.textbox_logs.set_val(msg)
+        self.last_message = msg
 
     def update_ant_class(self, label):
         """
@@ -684,6 +684,8 @@ class Plot:
             artists.append(current_node_artists)
         except:
             pass
+
+        self.textbox_logs.set_val(self.last_message)
 
         return artists
 
