@@ -52,6 +52,7 @@ class Plot:
         self.cmap_nodes = mpl.colormaps.get(self.plot_config.get('cmap_nodes', 'winter'))
 
     def __init__(self, config_path):
+        self.config_path = config_path
         self.init_config(config_path)
         self.buttons_visible = True
         self.setup_plot()
@@ -191,6 +192,9 @@ class Plot:
         self.update_params_button = Button(plt.subplot(gs[3, 5]), label='Update Params')
         self.update_params_button.on_clicked(self.update_parameters)
 
+        self.clear_button = Button(plt.subplot(gs[5, 5]), label='Clear')
+        self.clear_button.on_clicked(self.reset_to_initial)
+
         # -------------------------Seventh Row----------------------------#
         plt.subplot(gs[2, 6]).annotate('Conc. Ants', (0.5, 1.05), xycoords='axes fraction', ha='center')
         self.textbox_concurrent_ants = TextBox(plt.subplot(gs[2, 6]), '',
@@ -223,6 +227,19 @@ class Plot:
         ax_log = plt.subplot(gs[6, 0:7])
         self.textbox_logs = TextBox(ax_log, '', initial='')
         self.textbox_logs.set_active(False)
+
+    def reset_to_initial(self, event):
+        """
+        Resets the graph and colony to the last loaded configuration values.
+        """
+        if hasattr(self, 'config_path'):
+            self.init_config(self.config_path)  # Reinitialize the configuration with the last loaded config path
+            self.colony.stop()  # Stop any running colony processes
+            plt.close(self.fig)  # Close the current figure
+            self.setup_plot()  # Set up the plot again
+            self.print_message("Graph and colony reset to initial values.")
+        else:
+            self.print_message("No configuration file loaded to reset.")
 
     def graph_visibly(self, label):
         """
@@ -560,7 +577,6 @@ class Plot:
         and resets the colony with the selected configuration.
 
         :param event: The event that triggered this load (unused) but required.
-        :type event: object
         :return: None
         """
         root = tk.Tk()
@@ -569,6 +585,7 @@ class Plot:
             filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
         )
         if file_path:
+            self.config_path = file_path  # Store the path of the loaded configuration file
             self.reset(file_path)
 
     def update_check_edge(self, label):
