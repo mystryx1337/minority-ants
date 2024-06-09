@@ -280,21 +280,28 @@ class Plot:
         :type event: object
         :return: None
         """
+
+        def rgba_to_hex(rgba):
+            # Convert RGBA tuple to a hex string
+            return '#{:02x}{:02x}{:02x}'.format(int(rgba[0] * 255), int(rgba[1] * 255), int(rgba[2] * 255))
+
         root = tk.Tk()
         root.withdraw()
         file_path = filedialog.asksaveasfilename(defaultextension=".graphml",
                                                  filetypes=[("GraphML files", "*.graphml"), ("All files", "*.*")])
 
         if file_path:
-            # Add necessary attributes to nodes and edges
             for node in self.G.nodes:
-                self.G.nodes[node]['label'] = str(node)
-                self.G.nodes[node]['color'] = str(self.cmap_nodes(self.G.nodes[node]['value']))
+                self.G.nodes[node]['label'] = str(node)  # Ensure label is set for each node
+                rgba = self.cmap_nodes(self.G.nodes[node]['value'])
+                self.G.nodes[node]['color'] = rgba_to_hex(rgba)
+                self.G.nodes[node]['value'] = self.G.nodes[node].get('value', 0)  # Ensure value is set for each node
 
             for u, v in self.G.edges:
                 self.G.edges[u, v]['weight'] = float(self.G[u][v]['weight'])
                 self.G.edges[u, v]['pheromone'] = float(self.G[u][v]['pheromone'])
-                self.G.edges[u, v]['color'] = str(self.cmap_edges(self.G[u][v]['pheromone']))
+                rgba = self.cmap_edges(self.G[u][v]['pheromone'])
+                self.G.edges[u, v]['color'] = rgba_to_hex(rgba)
 
             # Write the GraphML file
             nx.write_graphml(self.G, file_path)
