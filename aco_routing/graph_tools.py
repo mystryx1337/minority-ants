@@ -20,9 +20,12 @@ class GraphTools:
 
         G = nx.DiGraph()
 
-        # Opening JSON file
-        with open(path, 'r') as f:
-            data = json.load(f)
+        try:
+            # Opening JSON file
+            with open(path, 'r') as f:
+                data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            raise e
 
         if 'macro' in data['nodes']:
             macro_config = data['nodes']['macro']
@@ -70,6 +73,74 @@ class GraphTools:
         plot_config = data.get('plot', {})
 
         return G, ants_config, plot_config, pos
+
+    @staticmethod
+    def load_default_config():
+        """
+        Load the default configuration.
+
+        :return: A tuple containing the constructed graph, ants configuration, plot configuration, and node positions.
+        """
+        G = nx.DiGraph()
+
+        default_macro_config = {
+            'type': '2d_grid_torus',
+            'x': 9,
+            'y': 9
+        }
+
+        nodes = GraphTools.generate_nodes(default_macro_config['x'] * default_macro_config['y'])
+        nodes_2d = np.array(nodes).reshape(default_macro_config['x'], default_macro_config['y'])
+        pos = {}
+        for i in range(default_macro_config['x']):
+            for j in range(default_macro_config['y']):
+                node = nodes_2d[i, j]
+                neighborhood_nodes = [
+                    nodes_2d[(i - 1) % default_macro_config['x'], j],
+                    nodes_2d[(i + 1) % default_macro_config['x'], j],
+                    nodes_2d[i, (j + 1) % default_macro_config['y']],
+                    nodes_2d[i, (j - 1) % default_macro_config['y']]]
+                GraphTools.add_edges_from_outgoing_node(G, node, neighborhood_nodes)
+                pos[node] = np.array([i * 100, j * 100])
+
+        # Setting a specific value for node "BX"
+        G.nodes['BX']['value'] = 1
+
+        default_ants_config = [
+            {
+                "class": "minority",
+                "ant_max_steps": 35,
+                "max_iterations": 50,
+                "random_spawn": False,
+                "spawn_node": "AU",
+                "evaporation_rate": 0.0,
+                "alpha": 0.9,
+                "beta": 0.3,
+                "random_chance": 0.0,
+                "concurrent_ants": 2,
+                "put_pheromones_always": True,
+                "stop_on_success": True,
+                "prioritize_pheromone_routes": False,
+                "step_sleep": 0.0,
+                "iteration_sleep": 0.01,
+                "wave_sleep": 0.5
+            }
+        ]
+
+        default_plot_config = {
+            'show_edge_parameters': False,
+            'show_ant_animation': False,
+            'cmap_edges': 'Purples',
+            'show_graph': True,
+            'node_label_color': 'white',
+            'node_label_size': 12,
+            'edge_weight_label_color': 'red',
+            'edge_pheromone_label_color': 'blue',
+            'ant_animation_color': 'red',
+            'cmap_nodes': 'winter'
+        }
+
+        return G, default_ants_config, default_plot_config, pos
 
     @staticmethod
     def generate_nodes(n: int) -> list[str]:

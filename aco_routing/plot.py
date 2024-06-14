@@ -35,7 +35,12 @@ class Plot:
         :param config_path: file path for the config file, that has to be loaded
         """
 
-        self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_config_from_json(config_path)
+        if config_path:
+            self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_config_from_json(config_path)
+            self.last_message = f"Config file from {config_path} loaded"
+        else:
+            self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_default_config()
+            self.last_message = f"Couldn't load config file using default values"
         self.colony = AntColonyRunner(self, self.print_message)
 
         self.show_edge_parameters = self.plot_config.get('show_edge_parameters', True)
@@ -51,7 +56,7 @@ class Plot:
         self.cmap_edges = mpl.colormaps.get(self.plot_config.get('cmap_edges', 'cool'))
         self.cmap_nodes = mpl.colormaps.get(self.plot_config.get('cmap_nodes', 'winter'))
 
-    def __init__(self, config_path):
+    def __init__(self, config_path=None):
         self.config_path = config_path
         self.init_config(config_path)
         self.buttons_visible = True
