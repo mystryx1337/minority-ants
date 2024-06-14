@@ -5,8 +5,8 @@ import time
 import networkx as nx
 
 from aco_routing import random_ant, routing_ant, minority_ant
-from aco_routing.wave_config import WaveConfig
-from aco_routing.graph_tools import GraphTools
+from wave_config import WaveConfig
+from graph_tools import GraphTools
 
 
 class AntColonyRunner:
