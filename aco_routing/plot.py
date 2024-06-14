@@ -7,7 +7,7 @@ import matplotlib.colors as mcolors
 import matplotlib as mpl
 import networkx as nx
 from matplotlib.widgets import Button, TextBox, CheckButtons, RadioButtons
-from aco_routing.ant_colony_runner import AntColonyRunner
+from ant_colony_runner import AntColonyRunner
 from graph_tools import GraphTools
 
 
