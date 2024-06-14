@@ -67,7 +67,7 @@ class RoutingAnt(random_ant.RandomAnt):
         # when value node arrived: mark current path
         if self._check_success() and not self.put_pheromones_always:
             cost: int = self._get_cost_of_current_path()
-            pheromones_to_put: float = self.max_steps / 2 / cost
+            pheromones_to_put: float = self.max_steps / 2 / len(self.path)
             for i, current_node in enumerate(self.path):
                 if i < len(self.path) - 1:
                     next_node = self.path[i + 1]
