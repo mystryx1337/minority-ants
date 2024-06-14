@@ -3,7 +3,7 @@ import random_ant
 import numpy as np
 
 
-class RoutingAnt(random_ant.Random_Ant):
+class RoutingAnt(random_ant.RandomAnt):
     """
     The traditional routing ant
     """

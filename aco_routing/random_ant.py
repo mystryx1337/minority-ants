@@ -3,7 +3,7 @@ import random
 from typing import List
 
 
-class Random_Ant:
+class RandomAnt:
     """
     a basic ant with primitive edge choosing but with a lot of methods for inheriting specialized ant types
     """

@@ -16,7 +16,7 @@ class AntColonyRunner:
 
     G: nx.DiGraph                           # the graph
 
-    ants: list[random_ant.Random_Ant] = []  # list of currently stepping (alive) ants
+    ants: list[random_ant.RandomAnt] = []  # list of currently stepping (alive) ants
     iteration: int = 0                      # number of the current iteration
     waves: list[WaveConfig] = []            # config for the current wave
 
@@ -83,7 +83,7 @@ class AntColonyRunner:
         """
 
         if wave.ant_class == "random":
-            return random_ant.Random_Ant(self.G, wave)
+            return random_ant.RandomAnt(self.G, wave)
         if wave.ant_class == "routing":
             return routing_ant.RoutingAnt(self.G, wave)
         if wave.ant_class == "minority":
