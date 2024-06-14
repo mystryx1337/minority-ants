@@ -20,12 +20,12 @@ Wenn Sie PyCharm verwenden, wird das Projektverzeichnis automatisch zum `PYTHONP
 
 2. Setzen Sie den `PYTHONPATH`:
     ```cmd
-    set PYTHONPATH=%PYTHONPATH%;path\to\your\project\minority-ants
+    set PYTHONPATH=%PYTHONPATH%;path\to\your\project\minority-ants\aco_routing
     ```
 
 3. Führen Sie das Skript aus:
     ```cmd
-    python aco_routing\main.py
+    python main.py
     ```
 
 ### Schritte zur Einrichtung in der PowerShell
