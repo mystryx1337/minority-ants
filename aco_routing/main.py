@@ -5,4 +5,11 @@ if __name__ == '__main__':
     """
     Starts the Software with a default configuration
     """
-    AcoPlotObj = plot.Plot('configurations/minority_2d_grid_torus.json')
+    try:
+        AcoPlotObj = plot.Plot('configurations/minority_2d_grid_torus.json')
+    except:
+        #Pycharm
+        print("loading pycharm")
+        AcoPlotObj = plot.Plot('../configurations/minority_2d_grid_torus.json')
+    finally:
+        print("Error config not found or program got closed")
