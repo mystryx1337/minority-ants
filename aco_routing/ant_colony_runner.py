@@ -4,9 +4,11 @@ import time
 
 import networkx as nx
 
-from aco_routing import random_ant, routing_ant, minority_ant
-from wave_config import WaveConfig
+import minority_ant
+import random_ant
+import routing_ant
 from graph_tools import GraphTools
+from wave_config import WaveConfig
 
 
 class AntColonyRunner:
@@ -22,6 +24,8 @@ class AntColonyRunner:
 
     thread: threading.Thread                # thread object
     stop_event: threading.Event             # stop event
+
+    visited_nodes: dict = {}                # counts visits on the nodes
 
     def __init__(self, plot, log_callback):
         self.plot = plot
@@ -174,7 +178,14 @@ class AntColonyRunner:
 
                     # delete an ant from the list of this iteration if it stops stepping
                     for i, ant in enumerate(self.ants):
-                        if not ant.step():  # Each ant performs one step and dies if not
+                        if not ant.step() or steps == wave.ant_max_steps -1:  # Each ant performs one step and dies if not
+                            # Count the visits on the node
+                            for node in ant.path:
+                                if node in self.visited_nodes:
+                                    self.visited_nodes[node] += 1
+                                else:
+                                    self.visited_nodes[node] = 1
+                                
                             self.ants.pop(i)
 
                     if len(self.ants) > 0:
@@ -186,10 +197,13 @@ class AntColonyRunner:
                                   + " in wave " + str(wave_i)
                                   + " interation " + str(iteration)
                                   + " at " + str(wave.ant_max_steps) + " steps")
+                
+            self.log_callback("Nodes visited in this wave: " + str(
+                dict(sorted(self.visited_nodes.items(), key=lambda item: item[1], reverse=True))))
 
             time.sleep(wave.wave_sleep)
 
         # print("Run finished")
         self.log_callback("Run finished")
-
+        
         self.stop()
