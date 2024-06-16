@@ -72,7 +72,9 @@ class GraphTools:
         ants_config = data.get('ants', {})
         plot_config = data.get('plot', {})
 
-        return G, ants_config, plot_config, pos
+        visited_nodes = data.get('visited_nodes', {})  # Load visit counts
+
+        return G, ants_config, plot_config, pos, visited_nodes
 
     @staticmethod
     def load_default_config():
@@ -140,7 +142,9 @@ class GraphTools:
             'cmap_nodes': 'winter'
         }
 
-        return G, default_ants_config, default_plot_config, pos
+        visited_nodes = {}
+
+        return G, default_ants_config, default_plot_config, pos, visited_nodes
 
     @staticmethod
     def generate_nodes(n: int) -> list[str]:
@@ -192,7 +196,8 @@ class GraphTools:
                 'ant_animation_color': self.ant_animation_color,
                 'cmap_edges': self.plot_config.get('cmap_edges', 'cool'),
                 'cmap_nodes': self.plot_config.get('cmap_nodes', 'winter')
-            }
+            },
+            'visited_nodes': self.colony.visited_nodes  # Add visit counts
         }
 
         for node, data in self.G.nodes(data=True):

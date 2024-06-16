@@ -36,12 +36,14 @@ class Plot:
         """
 
         if config_path:
-            self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_config_from_json(config_path)
+            self.G, self.ants_config, self.plot_config, self.pos, visited_nodes = GraphTools.load_config_from_json(
+                config_path)
             self.last_message = f"Config file from {config_path} loaded"
         else:
-            self.G, self.ants_config, self.plot_config, self.pos = GraphTools.load_default_config()
+            self.G, self.ants_config, self.plot_config, self.pos, visited_nodes = GraphTools.load_default_config()
             self.last_message = f"Couldn't load config file using default values"
         self.colony = AntColonyRunner(self, self.print_message)
+        self.colony.visited_nodes = visited_nodes  # Set the visited_nodes
 
         self.show_edge_parameters = self.plot_config.get('show_edge_parameters', True)
         self.show_ant_animation = self.plot_config.get('show_ant_animation', True)
@@ -318,6 +320,7 @@ class Plot:
                 rgba = self.cmap_nodes(self.G.nodes[node]['value'])
                 self.G.nodes[node]['color'] = rgba_to_hex(rgba)
                 self.G.nodes[node]['value'] = self.G.nodes[node].get('value', 0)  # Ensure value is set for each node
+                self.G.nodes[node]['visits'] = self.colony.visited_nodes.get(node, 0)  # Add visit count
 
             for u, v in self.G.edges:
                 self.G.edges[u, v]['weight'] = float(self.G[u][v]['weight'])
