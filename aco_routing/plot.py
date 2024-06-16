@@ -655,9 +655,16 @@ class Plot:
                                        edge_color=edge_colors,
                                        connectionstyle="arc3,rad=0.07", ax=self.ax)
 
+        # Determine labels to show based on show_edge_parameters flag
+        if self.show_edge_parameters:
+            visit_counts = {node: self.colony.visited_nodes.get(node, 0) for node in self.G.nodes()}
+            labels = {n: f"{visit_counts[n]}" for n in self.G.nodes()}
+        else:
+            labels = {n: n for n in self.G.nodes()}
+
         node_labels = nx.draw_networkx_labels(self.G, self.pos, font_size=self.node_label_size, ax=self.ax,
                                               font_color=self.node_label_color,
-                                              labels={n: n for n in self.G.nodes()})
+                                              labels=labels)
 
         # If edge parameters are to be shown, draw edge weight and pheromone labels
         if self.show_edge_parameters:
